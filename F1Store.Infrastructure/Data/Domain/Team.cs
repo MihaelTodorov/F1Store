@@ -14,6 +14,6 @@ namespace F1Store.Infrastructure.Data.Domain
         [MaxLength(30)]
         public string TeamName { get; set; } = null!;
 
-        public virtual IEnumerable<Team> Teams { get; set; } = new List<Product>();
+        public virtual IEnumerable<Product> Products { get; set; } = new List<Product>();
     }
 }
