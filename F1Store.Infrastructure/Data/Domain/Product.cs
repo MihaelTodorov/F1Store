@@ -25,7 +25,11 @@ namespace F1Store.Infrastructure.Data.Domain
 
         public virtual Category Category { get; set; } = null!;
 
+
         public string Picture { get; set; } = null!;
+
+        [MaxLength(80)]
+        public string Discription { get; set; } = null!;
 
         [Range(0, 5000)]
         public int Quantity { get; set; }
