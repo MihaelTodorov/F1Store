@@ -78,13 +78,24 @@ namespace F1Store.Infrastructure.Data.Infrastructure
 
             dataCategory.Categories.AddRange(new[]
             {
-                new Category { CategoryName = "Hat" },   //must add alphabetical
-                new Category { CategoryName = "Computer" },
-                new Category { CategoryName = "Monitor" },
-                new Category { CategoryName = "Accessory" },
-                new Category { CategoryName = "TV" },
-                new Category { CategoryName = "Mobile phone" },
-                new Category { CategoryName = "Smart watch" }
+                new Category { CategoryName = "Accessories" },   //must add alphabetical
+                new Category { CategoryName = "Auto Accessories" },
+                new Category { CategoryName = "Backpacks & Bags" },
+                new Category { CategoryName = "Collectibles & Memorabilia" },
+                new Category { CategoryName = "Face Coverings" },
+                new Category { CategoryName = "Footwear" },
+                new Category { CategoryName = "Headwear" },
+                new Category { CategoryName = "Home & Office" },
+                new Category { CategoryName = "Hoodies & Sweatshirts" },
+                new Category { CategoryName = "Jackets" },
+                new Category { CategoryName = "Jerseys" },
+                new Category { CategoryName = "Pajamas & Underwear" },
+                new Category { CategoryName = "Pants" },
+                new Category { CategoryName = "Polos" },
+                new Category { CategoryName = "Shirts & Sweaters" },
+                new Category { CategoryName = "Shorts" },
+                new Category { CategoryName = "Swim & Beach" },
+                new Category { CategoryName = "T-Shirts" },
             });
 
             dataCategory.SaveChanges();
