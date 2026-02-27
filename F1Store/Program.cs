@@ -37,6 +37,7 @@ namespace F1Store
 
             builder.Services.AddTransient<ICategoryService, CategoryService>();
             builder.Services.AddTransient<ITeamService, TeamService>();
+            builder.Services.AddTransient<IProductService, ProductService>();
 
 
             var app = builder.Build();
