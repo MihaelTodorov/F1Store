@@ -10,9 +10,9 @@ namespace F1Store.Models.Product
         [Display(Name = "Product Name")]
         public string ProductName { get; set; }
 
-        public int BrandId { get; set; }
-        [Display(Name = "Brand")]
-        public string BrandName { get; set; }
+        public int TeamId { get; set; }
+        [Display(Name = "Team")]
+        public string TeamName { get; set; }
 
         public int CategoryId { get; set; }
         [Display(Name = "Category")]
@@ -33,5 +33,4 @@ namespace F1Store.Models.Product
         [Display(Name = "Discount")]
         public decimal Discount { get; set; }
     }
-
 }

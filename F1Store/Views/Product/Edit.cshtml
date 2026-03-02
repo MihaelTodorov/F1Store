@@ -1,4 +1,4 @@
-﻿﻿@model F1Store.Models.Product.ProductEditVM
+﻿@model F1Store.Models.Product.ProductEditVM
 @{
     ViewData["Title"] = "Edit";
 }
@@ -19,7 +19,7 @@
                 <label asp-for="TeamId" class="control-label"></label>
                 @*<input asp-for="TeamId" class="form-control" />*@
                 <select asp-for="TeamId" class="form-control text-center">
-                    @foreach (var brand in Model.Brands)
+                    @foreach (var team in Model.Teams)
                     {
                         <option value=" @team.Id">@team.Name</option>
                     }

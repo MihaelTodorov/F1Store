@@ -48,21 +48,21 @@ namespace F1Store.Core.Services
             return products;
         }
 
-        public List<Product> GetProducts(string searchStringCategoryName, string searchStringBrandName)
+        public List<Product> GetProducts(string searchStringCategoryName, string searchStringTeamName)
         {
             List<Product> products = _context.Products.ToList();
-            if (!String.IsNullOrEmpty(searchStringCategoryName) && !String.IsNullOrEmpty(searchStringBrandName))
+            if (!String.IsNullOrEmpty(searchStringCategoryName) && !String.IsNullOrEmpty(searchStringTeamName))
             {
                 products = products.Where(x => x.Category.CategoryName.ToLower().Contains(searchStringCategoryName.ToLower())
-                && x.Team.TeamName.ToLower().Contains(searchStringBrandName.ToLower())).ToList();
+                && x.Team.TeamName.ToLower().Contains(searchStringTeamName.ToLower())).ToList();
             }
             else if (!String.IsNullOrEmpty(searchStringCategoryName))
             {
                 products = products.Where(x => x.Category.CategoryName.ToLower().Contains(searchStringCategoryName.ToLower())).ToList();
             }
-            else if (!String.IsNullOrEmpty(searchStringBrandName))
+            else if (!String.IsNullOrEmpty(searchStringTeamName))
             {
-                products = products.Where(x => x.Team.TeamName.ToLower().Contains(searchStringBrandName.ToLower())).ToList();
+                products = products.Where(x => x.Team.TeamName.ToLower().Contains(searchStringTeamName.ToLower())).ToList();
             }
             return products;
         }
@@ -79,7 +79,7 @@ namespace F1Store.Core.Services
             return _context.SaveChanges() != 0;
         }
 
-        public bool Update(int productId, string name, int brandId, int categoryId, string picture, string discription, int quantity, decimal price, decimal discount)
+        public bool Update(int productId, string name, int teamId, int categoryId, string picture, string discription, int quantity, decimal price, decimal discount)
         {
             var product = GetProductById(productId);
             if (product == default(Product))
@@ -88,10 +88,10 @@ namespace F1Store.Core.Services
             }
             product.ProductName = name;
 
-            //product.BrandId = brandId;
+            //product.TeamId = teamId;
             //product.CategoryId = categoryId;
 
-            product.Team = _context.Teams.Find(brandId);
+            product.Team = _context.Teams.Find(teamId);
             product.Category = _context.Categories.Find(categoryId);
             product.Picture = picture;
             product.Discription = discription;

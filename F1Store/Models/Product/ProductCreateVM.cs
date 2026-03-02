@@ -16,9 +16,9 @@ namespace F1Store.Models.Product
         public string ProductName { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Brand")]
-        public int BrandId { get; set; }
-        public virtual List<TeamPairVM> Brands { get; set; } = new List<TeamPairVM>();
+        [Display(Name = "Team")]
+        public int TeamId { get; set; }
+        public virtual List<TeamPairVM> Teams { get; set; } = new List<TeamPairVM>();
 
         [Required]
         [Display(Name = "Category")]

@@ -17,7 +17,7 @@ namespace F1Store.Models.Product
 
         [Required]
         [Display(Name = "Team")]
-        public int BrandId { get; set; }
+        public int TeamId { get; set; }
         public virtual List<TeamPairVM> Teams { get; set; } = new List<TeamPairVM>();
 
         [Required]

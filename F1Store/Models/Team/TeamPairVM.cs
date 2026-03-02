@@ -8,5 +8,4 @@ namespace F1Store.Models.Team
         [Display(Name = "Team")]
         public string Name { get; set; } = null!;
     }
-
 }
