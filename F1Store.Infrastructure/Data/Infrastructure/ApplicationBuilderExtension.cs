@@ -119,6 +119,7 @@ namespace F1Store.Infrastructure.Data.Infrastructure
                 new Team { TeamName = "McLaren" },
                 new Team { TeamName = "Mercedes" },
                 new Team { TeamName = "Racing Bulls" },
+                new Team { TeamName = "Red Bull" },
                 new Team { TeamName = "Williams" },
             });
 

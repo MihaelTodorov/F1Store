@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace F1Store.Core.Contracts
 {
-    internal interface IStatisticsService
+    public interface IStatisticsService
     {
+        int CountProducts();
+        int CountClients();
+        int CountOrders();
+        decimal SumOrders();
     }
 }

@@ -1,29 +1,45 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using F1Store.Core.Contracts;
+using F1Store.Models.Statistic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Store.Controllers
 {
-    public class StatisticsController : Controller
+    public class StatisticController : Controller
     {
-        // GET: StatisticsController
-        public ActionResult Index()
+        // GET: StatisticController
+        private readonly IStatisticsService statisticsService;
+
+        public StatisticController(IStatisticsService statisticsService)
         {
-            return View();
+            this.statisticsService = statisticsService;
         }
 
-        // GET: StatisticsController/Details/5
+        public IActionResult Index()
+        {
+            StatisticVM statistics = new StatisticVM();
+
+            statistics.CountClients = statisticsService.CountClients();
+            statistics.CountProducts = statisticsService.CountProducts();
+            statistics.CountOrders = statisticsService.CountOrders();
+            statistics.SumOrders = statisticsService.SumOrders();
+
+            return View(statistics);
+        }
+
+        // GET: StatisticController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: StatisticsController/Create
+        // GET: StatisticController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: StatisticsController/Create
+        // POST: StatisticController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -38,13 +54,13 @@ namespace F1Store.Controllers
             }
         }
 
-        // GET: StatisticsController/Edit/5
+        // GET: StatisticController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: StatisticsController/Edit/5
+        // POST: StatisticController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -59,13 +75,13 @@ namespace F1Store.Controllers
             }
         }
 
-        // GET: StatisticsController/Delete/5
+        // GET: StatisticController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: StatisticsController/Delete/5
+        // POST: StatisticController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

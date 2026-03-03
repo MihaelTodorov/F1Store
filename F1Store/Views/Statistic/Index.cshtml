@@ -1,5 +1,36 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model F1Store.Models.Statistic.StatisticVM
+
 @{
+    ViewData["Title"] = "Statistics";
 }
+
+<h4 class="text-center">Statistics</h4>
+
+<div class="text-center">
+    <div class="col-xl-8 mx-auto">
+        <div class="card-group pb-0">
+            <div class="card-columns text-center">
+                <!-- Място за допълнителни карти или визуализации -->
+            </div>
+        </div>
+
+        <table class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.CountClients)</th>
+                    <th>@Html.DisplayNameFor(model => model.CountProducts)</th>
+                    <th>@Html.DisplayNameFor(model => model.CountOrders)</th>
+                    <th>@Html.DisplayNameFor(model => model.SumOrders)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Html.DisplayFor(model => model.CountClients)</td>
+                    <td>@Html.DisplayFor(model => model.CountProducts)</td>
+                    <td>@Html.DisplayFor(model => model.CountOrders)</td>
+                    <td>@Html.DisplayFor(model => model.SumOrders)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

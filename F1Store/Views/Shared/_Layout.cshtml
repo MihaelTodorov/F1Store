@@ -28,6 +28,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
                         </li>
+                        <li class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                Products
+                            </button>
+
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Alpine">Alpine</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Aston Martin">Aston Martin</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Audi">Audi</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Cadillac">Cadillac</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Ferrari">Ferrari</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Haas">Haas</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="McLaren">McLaren</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Mercedes">Mercedes</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Racing Bulls">Racing Bulls</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Red Bull">Red Bull</a>
+                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Williams">Williams</a>
+                                </li>
+                            </ul>
+                        </li>
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Administrator"))
                         {
                             <li class="dropdown">
