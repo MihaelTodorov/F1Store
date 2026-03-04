@@ -29,7 +29,7 @@ namespace F1Store.Models.Product
         public string Picture { get; set; } = null!;
 
         [Display(Name = "Discriprion")]
-        public string Discription { get; set; } = null!;
+        public string Description { get; set; } = null!;
 
         [Range(0, 5000)]
         [Display(Name = "Quantity")]

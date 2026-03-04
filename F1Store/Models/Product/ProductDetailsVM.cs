@@ -22,7 +22,7 @@ namespace F1Store.Models.Product
         public string Picture { get; set; } = null!;
 
         [Display(Name = "Disctiption")]
-        public string Discription { get; set; } = null!;
+        public string Description { get; set; } = null!;
 
         [Display(Name = "Quantity")]
         public int Quantity { get; set; }

@@ -37,7 +37,7 @@ namespace F1Store.Controllers
                     CategoryId = product.CategoryId,
                     CategoryName = product.Category.CategoryName,
                     Picture = product.Picture,
-                    Discription = product.Discription,
+                    Description = product.Description,
                     Quantity = product.Quantity,
                     Price = product.Price,
                     Discount = product.Discount
@@ -65,7 +65,7 @@ namespace F1Store.Controllers
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category.CategoryName,
                 Picture = item.Picture,
-                Discription = item.Discription,
+                Description = item.Description,
                 Quantity = item.Quantity,
                 Price = item.Price,
                 Discount = item.Discount
@@ -102,7 +102,7 @@ namespace F1Store.Controllers
             if (ModelState.IsValid)
             {
                 var createdId = _productService.Create(product.ProductName, product.TeamId,
-                    product.CategoryId, product.Picture, product.Discription,
+                    product.CategoryId, product.Picture, product.Description,
                     product.Quantity, product.Price, product.Discount);
                 if (createdId)
                 {
@@ -127,7 +127,7 @@ namespace F1Store.Controllers
                 TeamId = product.TeamId,
                 CategoryId = product.CategoryId,
                 Picture = product.Picture,
-                Discription = product.Discription,
+                Description = product.Description,
                 Quantity = product.Quantity,
                 Price = product.Price,
                 Discount = product.Discount
@@ -147,7 +147,7 @@ namespace F1Store.Controllers
             if (ModelState.IsValid)
             {
                 var updated = _productService.Update(id, product.ProductName, product.TeamId,
-                    product.CategoryId, product.Picture, product.Discription, product.Quantity, product.Price, product.Discount);
+                    product.CategoryId, product.Picture, product.Description, product.Quantity, product.Price, product.Discount);
                 if (updated)
                 {
                     return RedirectToAction("Index");
@@ -173,7 +173,7 @@ namespace F1Store.Controllers
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category.CategoryName,
                 Picture = item.Picture,
-                Discription = item.Discription,
+                Description = item.Description,
                 Quantity = item.Quantity,
                 Price = item.Price,
                 Discount = item.Discount

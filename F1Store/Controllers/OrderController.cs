@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebShopApp.Controllers
+namespace F1Store.Controllers
 {
     [Authorize]
     public class OrderController : Controller

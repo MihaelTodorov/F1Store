@@ -19,7 +19,7 @@ namespace F1Store.Core.Services
             _context = context;
         }
 
-        public bool Create(string name, int teamId, int categoryId, string picture, string discription, int quantity, decimal price, decimal discount)
+        public bool Create(string name, int teamId, int categoryId, string picture, string description, int quantity, decimal price, decimal discount)
         {
             Product item = new Product
             {
@@ -27,7 +27,7 @@ namespace F1Store.Core.Services
                 Team = _context.Teams.Find(teamId),
                 Category = _context.Categories.Find(categoryId),
                 Picture = picture,
-                Discription = discription,
+                Description = description,
                 Quantity = quantity,
                 Price = price,
                 Discount = discount
@@ -79,7 +79,7 @@ namespace F1Store.Core.Services
             return _context.SaveChanges() != 0;
         }
 
-        public bool Update(int productId, string name, int teamId, int categoryId, string picture, string discription, int quantity, decimal price, decimal discount)
+        public bool Update(int productId, string name, int teamId, int categoryId, string picture, string description, int quantity, decimal price, decimal discount)
         {
             var product = GetProductById(productId);
             if (product == default(Product))
@@ -94,7 +94,7 @@ namespace F1Store.Core.Services
             product.Team = _context.Teams.Find(teamId);
             product.Category = _context.Categories.Find(categoryId);
             product.Picture = picture;
-            product.Discription = discription;
+            product.Description = description;
             product.Quantity = quantity;
             product.Price = price;
             product.Discount = discount;
