@@ -67,6 +67,12 @@
                                 </ul>
                             </li>
                         }
+                        @if (User.Identity?.IsAuthenticated ?? false)
+                        {
+                            <li class="nav-item">
+                                @await Component.InvokeAsync("CartSummary")
+                            </li>
+                        }
 
                     </ul>
                     <partial name="_LoginPartial" />

@@ -16,7 +16,17 @@ namespace F1Store.Core.Contracts
         List<Order> GetOrdersByUser(string userId);
         Order GetOrderById(int orderId);
 
-        bool RemoveById(int orderId);
-        bool Update(int orderId, int productId, string userId, int quantity);
+        bool Delete(int orderId);
+
+        bool CreateFromCart(string userId);
+
+        Guid? GetLatestOrderGroupIdByUser(string userId);
+
+        List<Order> GetOrdersByGroupId(Guid orderGroupId, string userId);
+
+        bool UserHasOrders(string userId);
+
+        (bool Success, Guid? OrderGroupId, List<(int ProductId, string ProductName, int Requested, int Available, string Action)> Issues)
+        TryCheckoutFromCart(string userId);
     }
 }

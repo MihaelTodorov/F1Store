@@ -147,5 +147,10 @@ namespace F1Store.Controllers
         {
             return View();
         }
+
+        public ActionResult DeleteDenied()
+        {
+            return View();
+        }
     }
 }

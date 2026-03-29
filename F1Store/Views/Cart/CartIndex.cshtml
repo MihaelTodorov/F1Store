@@ -1,0 +1,350 @@
+﻿@model IEnumerable<F1Store.Models.Cart.CartItemVM>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+
+    string Eur(decimal x) => $"{x:0.00} €";
+    var items = Model?.ToList() ?? new List<F1Store.Models.Cart.CartItemVM>();
+    var total = items.Sum(x => x.Subtotal);
+}
+
+<div class="pf-cart-page">
+    <div class="pf-cart-page-head mb-4">
+        <div>
+            <h1 class="pf-page-title mb-1"><i class="bi bi-cart3 me-2"></i>Shopping Cart</h1>
+            <div class="pf-page-subtitle">@items.Count item(s) in your cart</div>
+
+            <div class="mt-3">
+                <a asp-controller="Product" asp-action="Index" class="pf-inline-back-link">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Continue shopping</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (!items.Any())
+    {
+        <div class="pf-empty-state">
+            <div class="pf-empty-icon"><i class="bi bi-cart-x"></i></div>
+            <h4>Your cart is empty</h4>
+            <p>Add products to your cart and come back here to checkout.</p>
+            <a asp-controller="Product" asp-action="Index" class="btn details-cart-btn px-4">
+                <i class="bi bi-grid me-2"></i>Browse products
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-12 col-xl-8">
+                <div class="pf-cart-card">
+                    <div class="pf-cart-card-header">
+                        <span>Your items</span>
+                    </div>
+
+                    <div class="pf-cart-items">
+                        @foreach (var item in items)
+                        {
+                            var isOut = item.AvailableQuantity <= 0;
+                            var isInsufficient = !isOut && item.Quantity > item.AvailableQuantity;
+
+                            <div class="pf-cart-item @(isInsufficient || isOut ? "pf-cart-item--insufficient" : "")"
+                                 data-cart-item-id="@item.CartItemId">
+
+                                <div class="pf-cart-item-media">
+                                    @if (!string.IsNullOrWhiteSpace(item.Picture))
+                                    {
+                                        <img src="@item.Picture" alt="@item.ProductName" />
+                                    }
+                                    else
+                                    {
+                                        <div class="pf-cart-item-placeholder">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="pf-cart-item-main">
+                                    <div class="pf-cart-item-top">
+                                        <div>
+                                            <div class="pf-cart-item-title">@item.ProductName</div>
+                                            <a class="pf-cart-item-link"
+                                               asp-controller="Product"
+                                               asp-action="Details"
+                                               asp-route-id="@item.ProductId">
+                                                View details
+                                            </a>
+                                        </div>
+
+                                        <form asp-controller="Cart" asp-action="Remove" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                            <button type="submit" class="pf-cart-remove-btn" title="Remove">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div class="pf-cart-item-bottom">
+                                        <div class="pf-cart-qty-wrap">
+                                            <label class="pf-cart-qty-label">Qty</label>
+
+                                            <form class="pf-cart-qty-form js-cart-qty-form"
+                                                  asp-controller="Cart"
+                                                  asp-action="UpdateQuantityAjax"
+                                                  method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+
+                                                <button type="button" class="pf-qty-btn js-qty-minus">
+                                                    <i class="bi bi-dash"></i>
+                                                </button>
+
+                                                <input type="number"
+                                                       name="quantity"
+                                                       value="@item.Quantity"
+                                                       min="1"
+                                                       class="pf-cart-qty-input js-qty-input" />
+
+                                                <button type="button" class="pf-qty-btn js-qty-plus">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </form>
+
+                                            <div class="pf-cart-stockline js-stockline">
+                                                <span class="pf-muted">
+                                                    In stock: <strong class="js-available">@item.AvailableQuantity</strong>
+                                                </span>
+
+                                                @if (isOut)
+                                                {
+                                                    <span class="pf-cart-warn js-stock-warn">
+                                                        <i class="bi bi-exclamation-triangle"></i> Out of stock
+                                                    </span>
+                                                }
+                                                else if (isInsufficient)
+                                                {
+                                                    <span class="pf-cart-warn js-stock-warn">
+                                                        <i class="bi bi-exclamation-triangle"></i>
+                                                        Only @item.AvailableQuantity available
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="pf-cart-ok js-stock-ok" style="display:none;"></span>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="pf-cart-prices">
+                                            <div class="pf-cart-price-line">
+                                                <span>Unit price</span>
+                                                <strong class="js-unit-price">@Eur(item.FinalUnitPrice)</strong>
+                                            </div>
+                                            <div class="pf-cart-price-line total">
+                                                <span>Subtotal</span>
+                                                <strong class="js-subtotal">@Eur(item.Subtotal)</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="pf-cart-actions-row">
+                        <form asp-controller="Cart" asp-action="Clear" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="pf-clear-cart-btn">
+                                <i class="bi bi-trash3 me-2"></i>Clear cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4">
+                <div class="pf-summary-card">
+                    <div class="pf-summary-top">
+                        <h4 class="mb-0">Order Summary</h4>
+                        <div class="pf-summary-note">Ready for checkout</div>
+                    </div>
+
+                    <div class="pf-summary-lines">
+                        <div class="pf-summary-line">
+                            <span>Subtotal</span>
+                            <strong class="js-cart-total">@Eur(total)</strong>
+                        </div>
+                        <div class="pf-summary-line">
+                            <span>Delivery</span>
+                            <strong>Calculated at checkout</strong>
+                        </div>
+                    </div>
+
+                    <div class="pf-summary-total">
+                        <span>Total</span>
+                        <strong class="js-cart-total">@Eur(total)</strong>
+                    </div>
+
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-dark w-100">
+                            <i class="bi bi-bag-check me-1"></i> Checkout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const eur = value => `${Number(value).toFixed(2)} €`;
+
+            async function updateQuantity(form) {
+                const input = form.querySelector('.js-qty-input');
+                const formData = new FormData(form);
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData
+                    });
+
+                    const data = await res.json().catch(() => ({}));
+
+                    if (!res.ok) {
+                        window.showAppToast(data.message || "Could not update quantity.", false);
+                        return;
+                    }
+
+                    // ✅ If server removed the item (stock = 0)
+                    if (data.removed) {
+                        const row = form.closest('.pf-cart-item');
+                        row?.remove();
+
+                        document.querySelectorAll('.js-cart-total').forEach(el => {
+                            el.textContent = eur(data.total);
+                        });
+
+                        window.showAppToast(data.message || "Item removed.", false);
+
+                        if (document.querySelectorAll('.pf-cart-item').length === 0) {
+                            window.location.reload();
+                        }
+                        return;
+                    }
+
+                    // ✅ Update UI values
+                    input.value = data.quantity;
+
+                    const item = form.closest('.pf-cart-item');
+                    item.querySelector('.js-unit-price').textContent = eur(data.finalUnitPrice);
+                    item.querySelector('.js-subtotal').textContent = eur(data.subtotal);
+
+                    document.querySelectorAll('.js-cart-total').forEach(el => {
+                        el.textContent = eur(data.total);
+                    });
+
+                    // ✅ Update stock line + warning
+                    const availableEl = item.querySelector('.js-available');
+                    if (availableEl && typeof data.available !== "undefined") {
+                        availableEl.textContent = data.available;
+                    }
+
+                    const stockline = item.querySelector('.js-stockline');
+                    const warn = stockline?.querySelector('.js-stock-warn');
+
+                    // remove existing warn if quantity now OK
+                    if (warn) warn.remove();
+
+                    const available = Number(data.available ?? 0);
+                    const qty = Number(data.quantity ?? 1);
+
+                    if (available <= 0) {
+                        stockline?.insertAdjacentHTML('beforeend',
+                            `<span class="pf-cart-warn js-stock-warn"><i class="bi bi-exclamation-triangle"></i> Out of stock</span>`
+                        );
+                        item.classList.add("pf-cart-item--insufficient");
+                    } else if (qty > available) {
+                        stockline?.insertAdjacentHTML('beforeend',
+                            `<span class="pf-cart-warn js-stock-warn"><i class="bi bi-exclamation-triangle"></i> Only ${available} available</span>`
+                        );
+                        item.classList.add("pf-cart-item--insufficient");
+                    } else {
+                        item.classList.remove("pf-cart-item--insufficient");
+                    }
+
+                    // ✅ If server clamped quantity, show message
+                    if (data.message) {
+                        window.showAppToast(data.message, false);
+                    }
+
+                } catch {
+                    window.showAppToast("Network error. Please try again.", false);
+                }
+            }
+
+            document.querySelectorAll('.js-cart-qty-form').forEach(form => {
+                const input = form.querySelector('.js-qty-input');
+                const minus = form.querySelector('.js-qty-minus');
+                const plus = form.querySelector('.js-qty-plus');
+
+                // ✅ CRITICAL FIX 1: Never allow this form to submit normally (Enter would navigate to JSON).
+                form.addEventListener('submit', (e) => e.preventDefault());
+
+                // ✅ CRITICAL FIX 2: Block Enter inside the quantity form so it doesn't:
+                // - submit to UpdateQuantityAjax
+                // - "re-press" the last focused control
+                form.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Enter') return;
+
+                    const target = e.target;
+                    const isQtyInput = target && target.classList && target.classList.contains('js-qty-input');
+                    const isMinus = target && target.classList && target.classList.contains('js-qty-minus');
+                    const isPlus = target && target.classList && target.classList.contains('js-qty-plus');
+
+                    if (isQtyInput || isMinus || isPlus) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // If user pressed Enter in the input, treat it like "confirm change"
+                        if (isQtyInput) {
+                            // Trigger the same behavior as change, without submitting/navigating
+                            let value = parseInt(input.value || "1", 10);
+                            if (isNaN(value) || value < 1) value = 1;
+                            input.value = value;
+                            updateQuantity(form);
+                            input.blur();
+                        }
+                    }
+                });
+
+                minus?.addEventListener('click', () => {
+                    let value = parseInt(input.value || "1", 10);
+                    value = Math.max(1, value - 1);
+                    input.value = value;
+                    updateQuantity(form);
+                });
+
+                plus?.addEventListener('click', () => {
+                    let value = parseInt(input.value || "1", 10);
+                    value = value + 1;
+                    input.value = value;
+                    updateQuantity(form);
+                });
+
+                input?.addEventListener('change', () => {
+                    let value = parseInt(input.value || "1", 10);
+                    if (isNaN(value) || value < 1) value = 1;
+                    input.value = value;
+                    updateQuantity(form);
+                });
+            });
+        })();
+    </script>
+}

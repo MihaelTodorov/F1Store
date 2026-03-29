@@ -1,57 +1,111 @@
-﻿using System;
+﻿using F1Store.Core.Contracts;
+using F1Store.Infrastructure.Data.Domain;
+using F1Store.Infrastructure.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using F1Store.Core.Contracts;
-using F1Store.Infrastructure.Data;
-using F1Store.Infrastructure.Data.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace F1Store.Core.Services
 {
     public class CartService : ICartService
     {
-        // In-memory storage for demonstration. Replace with DB or session as needed.
-        private static readonly ConcurrentDictionary<string, Cart> carts = new();
+        private readonly ApplicationDbContext _context;
 
-        public Task<Cart> GetCartAsync(string userId)
+        public CartService(ApplicationDbContext context)
         {
-            carts.TryGetValue(userId, out var cart);
-            return Task.FromResult(cart ?? new Cart { UserId = userId });
+            _context = context;
         }
 
-        public Task AddItemAsync(string userId, int productId, string name, decimal price, int quantity = 1)
+        public List<CartItem> GetCart(string userId)
+        => _context.CartItems
+        .Include(x => x.Product)
+        .Where(x => x.UserId == userId)
+        .ToList();
+
+        public decimal GetTotal(string userId)
         {
-            var cart = carts.GetOrAdd(userId, new Cart { UserId = userId });
-            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-            if (item == null)
+            var items = GetCart(userId);
+            return items.Sum(i => i.Quantity * i.Price - i.Quantity * i.Price * i.Discount / 100m);
+        }
+
+        public bool Add(int productId, string userId, int quantity = 1)
+        {
+            var product = _context.Products.SingleOrDefault(p => p.Id == productId);
+            if (product == null || product.Quantity <= 0) return false;
+
+            if (quantity < 1) quantity = 1;
+
+            // current cart quantity for this product
+            var existing = _context.CartItems.SingleOrDefault(x => x.UserId == userId && x.ProductId == productId);
+
+            var requestedTotal = quantity + (existing?.Quantity ?? 0);
+            if (requestedTotal > product.Quantity) return false;
+
+            if (existing == null)
             {
-                cart.Items.Add(new CartItem { ProductId = productId, Name = name, Price = price, Quantity = quantity });
+                _context.CartItems.Add(new CartItem
+                {
+                    UserId = userId,
+                    ProductId = productId,
+                    Quantity = quantity,
+                    Price = product.Price,
+                    Discount = product.Discount
+                });
             }
             else
             {
-                item.Quantity += quantity;
+                existing.Quantity += quantity;
+
+                // keep snapshots fresh (optional)
+                existing.Price = product.Price;
+                existing.Discount = product.Discount;
+
+                _context.CartItems.Update(existing);
             }
-            return Task.CompletedTask;
+
+            return _context.SaveChanges() != 0;
         }
 
-        public Task RemoveItemAsync(string userId, int productId)
+        public bool UpdateQuantity(int cartItemId, string userId, int quantity)
         {
-            if (carts.TryGetValue(userId, out var cart))
-            {
-                cart.Items.RemoveAll(i => i.ProductId == productId);
-            }
-            return Task.CompletedTask;
+            var item = _context.CartItems.SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);
+            if (item == null) return false;
+
+            if (quantity < 1) quantity = 1;
+
+            var product = _context.Products.SingleOrDefault(p => p.Id == item.ProductId);
+            if (product == null) return false;
+
+            if (quantity > product.Quantity) return false;
+
+            item.Quantity = quantity;
+
+            // optional refresh
+            item.Price = product.Price;
+            item.Discount = product.Discount;
+
+            _context.CartItems.Update(item);
+            return _context.SaveChanges() != 0;
         }
 
-        public Task ClearCartAsync(string userId)
+        public bool Remove(int cartItemId, string userId)
         {
-            if (carts.TryGetValue(userId, out var cart))
-            {
-                cart.Items.Clear();
-            }
-            return Task.CompletedTask;
+            var item = _context.CartItems.SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);
+            if (item == null) return false;
+
+            _context.CartItems.Remove(item);
+            return _context.SaveChanges() != 0;
+        }
+
+        public bool Clear(string userId)
+        {
+            var items = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
+            _context.CartItems.RemoveRange(items);
+            _context.SaveChanges();
+            return true;
         }
     }
 }

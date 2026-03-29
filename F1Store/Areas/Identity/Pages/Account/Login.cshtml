@@ -34,3 +34,92 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    /* Background */
+    body {
+        background: linear-gradient(135deg, #0b0b0b, #1a1a1a);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Title */
+    h1 {
+        color: #e10600; /* F1 червено */
+        font-weight: bold;
+        letter-spacing: 1px;
+        margin-bottom: 30px;
+    }
+
+    /* Center form vertically */
+    .row {
+        justify-content: center;
+        margin-top: 80px;
+    }
+
+    /* Card style container */
+    .col-md-4 {
+        background: #111;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(225, 6, 0, 0.3);
+        border: 1px solid rgba(255, 0, 0, 0.2);
+    }
+
+    /* Subtitle */
+    h2 {
+        font-size: 18px;
+        color: #ccc;
+        margin-bottom: 15px;
+    }
+
+    /* Inputs */
+    .form-control {
+        background: #1c1c1c;
+        border: 1px solid #333;
+        color: white;
+        border-radius: 10px;
+    }
+
+        .form-control:focus {
+            border-color: #e10600;
+            box-shadow: 0 0 8px rgba(225, 6, 0, 0.6);
+            background: #1c1c1c;
+            color: white;
+        }
+
+    /* Labels */
+    .form-label {
+        color: #aaa;
+    }
+
+    /* Button */
+    .btn-primary {
+        background: linear-gradient(90deg, #e10600, #ff2a2a);
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #ff2a2a, #e10600);
+            transform: scale(1.03);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+    /* Error messages */
+    .text-danger {
+        color: #ff4d4d !important;
+    }
+
+    /* Floating labels fix */
+    .form-floating label {
+        color: #888;
+    }
+
+    /* HR line */
+    hr {
+        border-color: #333;
+    }
+</style>

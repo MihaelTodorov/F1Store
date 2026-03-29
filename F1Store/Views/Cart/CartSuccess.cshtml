@@ -1,0 +1,114 @@
+﻿@model F1Store.Models.Cart.CartCheckoutSuccessVM
+
+@{
+    ViewData["Title"] = "Order completed";
+
+    string Eur(decimal x) => $"{x:0.00} €";
+}
+
+<section class="pf-order-success-page">
+    <div class="container-fluid px-3">
+        <div class="pf-order-success-hero">
+            <div class="pf-order-success-kicker">Order confirmed</div>
+
+            <div class="pf-order-success-title-row">
+                <div class="pf-order-success-icon">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+
+                <div>
+                    <h1 class="pf-order-success-title">Order completed successfully</h1>
+                    <p class="pf-order-success-subtitle">
+                        Your order has been placed and your cart has been checked out successfully.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pf-order-success-meta">
+                <div class="pf-order-success-meta-item">
+                    <span class="pf-order-success-meta-label">Order date</span>
+                    <span class="pf-order-success-meta-value">@Model.OrderDate</span>
+                </div>
+
+                <div class="pf-order-success-meta-item">
+                    <span class="pf-order-success-meta-label">Products</span>
+                    <span class="pf-order-success-meta-value">@Model.TotalProducts item(s)</span>
+                </div>
+
+                <div class="pf-order-success-meta-item">
+                    <span class="pf-order-success-meta-label">Total</span>
+                    <span class="pf-order-success-meta-value">@Eur(Model.TotalAmount)</span>
+                </div>
+            </div>
+
+            <div class="pf-order-success-actions">
+                <a asp-controller="Order" asp-action="MyOrders" class="pf-order-action-btn pf-order-action-btn--primary">
+                    <i class="bi bi-bag-check me-2"></i>
+                    <span>View My Orders</span>
+                </a>
+
+                <a asp-controller="Product" asp-action="Index" class="pf-order-action-btn pf-order-action-btn--secondary">
+                    <i class="bi bi-grid me-2"></i>
+                    <span>Continue Shopping</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="pf-order-success-card">
+            <div class="pf-order-success-card-head">
+                <div>
+                    <div class="pf-order-success-card-kicker">Just ordered</div>
+                    <h2 class="pf-order-success-card-title">Products in this order</h2>
+                </div>
+
+                <div class="pf-order-success-card-total">
+                    Total: <strong>@Eur(Model.TotalAmount)</strong>
+                </div>
+            </div>
+
+            <div class="pf-order-success-items">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="pf-order-success-item">
+                        <div class="pf-order-success-item-left">
+                            <div class="pf-order-success-thumb-wrap">
+                                @if (!string.IsNullOrWhiteSpace(item.Picture))
+                                {
+                                    <img src="@item.Picture" alt="@item.ProductName" class="pf-order-success-thumb" />
+                                }
+                                else
+                                {
+                                    <div class="pf-order-success-thumb-placeholder">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                }
+                            </div>
+
+                            <div>
+                                <div class="pf-order-success-product-name">@item.ProductName</div>
+                                <div class="pf-order-success-product-meta">
+                                    Quantity: @item.Quantity
+                                    @if (item.Discount > 0)
+                                    {
+                                        <span class="pf-order-success-discount">• -@item.Discount.ToString("0.##")%</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pf-order-success-item-right">
+                            <div class="pf-order-success-price-line">
+                                <span>Unit price</span>
+                                <strong>@Eur(item.FinalUnitPrice)</strong>
+                            </div>
+                            <div class="pf-order-success-price-line">
+                                <span>Subtotal</span>
+                                <strong class="pf-order-success-subtotal">@Eur(item.Subtotal)</strong>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
