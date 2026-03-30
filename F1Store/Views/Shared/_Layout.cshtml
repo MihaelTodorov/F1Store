@@ -4,93 +4,225 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - F1Store</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/F1Store.styles.css" asp-append-version="true" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+
+    <style>
+        /* F1 Theme Styles */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background-color: #1a1a1a;
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        }
+
+        .navbar-team {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: #fff !important;
+        }
+
+        .navbar-toggler {
+            border: none;
+        }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+                outline: 1px solid #ff0000;
+            }
+
+        /* Top Right User Menu Links */
+        .user-menu .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+            .user-menu .nav-link:hover {
+                color: #ff0000 !important;
+            }
+
+        /* Offcanvas (Left Pop-up Menu) */
+        .offcanvas {
+            background-color: #1a1a1a;
+            border-right: 1px solid #333;
+        }
+
+        .offcanvas-header {
+            border-bottom: 1px solid #333;
+        }
+
+        .offcanvas-title {
+            color: #ff0000;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .offcanvas-body .nav-link {
+            color: #ddd;
+            font-size: 1.1rem;
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+
+            .offcanvas-body .nav-link:hover,
+            .offcanvas-body .nav-link:focus {
+                background-color: #2a2a2a;
+                color: #ff0000;
+                padding-left: 25px; /* Лек ефект на приплъзване надясно */
+            }
+
+        /* Dropdowns */
+        .dropdown-menu {
+            background-color: #222;
+            border: 1px solid #444;
+            border-left: 3px solid #ff0000; /* F1 акцент */
+        }
+
+        .dropdown-item {
+            color: #ccc;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+            .dropdown-item:hover {
+                background-color: #ff0000;
+                color: #fff;
+            }
+
+        .f1-font {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+
+        footer {
+            background-color: #1a1a1a;
+            color: #aaa;
+            padding: 1.5rem 0;
+            margin-top: auto;
+        }
+
+        .dropdown-divider {
+            border-color: #444;
+        }
+    </style>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">F1Store</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
-                        </li>
-                        <li class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                Products
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+
+                <div class="d-flex align-items-center">
+                    <button class="navbar-toggler me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <a class="navbar-brand f1-font m-0" asp-area="" asp-controller="Home" asp-action="Index">F1Store</a>
+                </div>
+
+                <ul class="navbar-nav ms-auto flex-row align-items-center user-menu">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a></li>
+                        <li class="nav-item dropdown px-2">
+                            <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">
+                                @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end position-absolute">
+                                <li>@await Component.InvokeAsync("CartSummary")</li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Alpine">Alpine</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Aston Martin">Aston Martin</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Audi">Audi</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Cadillac">Cadillac</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Ferrari">Ferrari</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Haas">Haas</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="McLaren">McLaren</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Mercedes">Mercedes</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Racing Bulls">Racing Bulls</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Red Bull">Red Bull</a>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Williams">Williams</a>
+                                    <form method="post" asp-area="" asp-page="/Account/Logout">
+                                        <button type="submit" class="dropdown-item f1-font">Logout</button>
+                                    </form>
                                 </li>
                             </ul>
                         </li>
-                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Administrator"))
-                        {
-                            <li class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle"
-                                type="button"
-                                id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                    Statistic Modul
-                                </button>
-
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                    <li><a class="dropdown-item" href="/Client/Index">Clients</a></li>
-                                    <li><a class="dropdown-item" href="/Order/Index">Orders</a></li>
-                                    <li><a class="dropdown-item" href="/Statistic/Index">Statistics</a></li>
-                                </ul>
-                            </li>
-                        }
-                        @if (User.Identity?.IsAuthenticated ?? false)
-                        {
-                            <li class="nav-item">
-                                @await Component.InvokeAsync("CartSummary")
-                            </li>
-                        }
-
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
+                    }
+                    else
+                    {
+                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
+                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
+                    }
+                </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title f1-font" id="offcanvasNavbarLabel">F1 Store</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item">
+                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Contacts">Contacts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Policy">Policy</a>
+                </li>
+
+                @if (User.Identity?.IsAuthenticated ?? false && User.IsInRole("Administrator"))
+                {
+                    <li class="nav-item dropdown mt-3">
+                        <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">Products</a>
+                        <ul class="dropdown-menu border-0 shadow">
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Alpine">Alpine</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Aston Martin">Aston Martin</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Audi">Audi</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Cadillac">Cadillac</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Ferrari">Ferrari</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Haas">Haas</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="McLaren">McLaren</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Mercedes">Mercedes</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Racing Bulls">Racing Bulls</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Red Bull">Red Bull</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Williams">Williams</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">Statistic Modul</a>
+                        <ul class="dropdown-menu border-0 shadow">
+                            <li><a class="dropdown-item" href="/Client/Index">Clients</a></li>
+                            <li><a class="dropdown-item" href="/Order/Index">Orders</a></li>
+                            <li><a class="dropdown-item" href="/Statistic/Index">Statistics</a></li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="container mt-4 flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top border-danger text-center">
         <div class="container">
-            &copy; 2026 - F1Store - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - F1Store - <a asp-area="" asp-controller="Home" asp-action="Policy" class="text-danger text-decoration-none">Policy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

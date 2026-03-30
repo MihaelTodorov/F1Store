@@ -18,7 +18,12 @@ namespace F1Store.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Contacts()
+        {
+            return View();
+        }
+
+        public IActionResult Policy()
         {
             return View();
         }

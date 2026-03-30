@@ -348,3 +348,119 @@
         })();
     </script>
 }
+
+<style>
+
+    /* BACKGROUND */
+    body {
+        background: linear-gradient(135deg, #0b0b0b, #1a1a1a);
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* NAVBAR */
+    .navbar {
+        background: #0d0d0d !important;
+        border-bottom: 2px solid #e10600;
+    }
+
+        .navbar a {
+            color: white !important;
+        }
+
+            .navbar a:hover {
+                color: #e10600 !important;
+            }
+
+    /* TITLE */
+    h1 {
+        color: #e10600;
+        font-weight: bold;
+        letter-spacing: 2px;
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    /* CART CONTAINER */
+    .container {
+        margin-top: 50px;
+    }
+
+        /* EMPTY CART BOX */
+        .container > div,
+        .container p,
+        .container h3 {
+            text-align: center;
+        }
+
+    /* EMPTY MESSAGE */
+    h3 {
+        color: #fff;
+        margin-top: 30px;
+    }
+
+    /* LINKS */
+    a {
+        color: #e10600;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        a:hover {
+            text-shadow: 0 0 8px #e10600;
+        }
+
+    /* BUTTON STYLE (ако добавиш по-късно) */
+    .btn {
+        background: linear-gradient(90deg, #e10600, #ff2a2a);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,0,0,0.7);
+        }
+
+    /* FOOTER */
+    footer {
+        background: #0d0d0d;
+        color: #aaa;
+        border-top: 1px solid #222;
+        padding: 10px;
+    }
+
+    /* F1 BACKGROUND CAR (същия ефект като login) */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 60%;
+        left: 50%;
+        width: 1000px;
+        height: 400px;
+        background: url('/images/audi-f1.png') no-repeat center;
+        background-size: contain;
+        transform: translate(-50%, -50%);
+        opacity: 0.15;
+        z-index: 0;
+    }
+
+    /* OVERLAY */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        z-index: 0;
+    }
+
+    /* CONTENT ABOVE */
+    .container, .navbar, footer {
+        position: relative;
+        z-index: 2;
+    }
+
+</style>
