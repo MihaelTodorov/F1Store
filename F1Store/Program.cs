@@ -1,6 +1,7 @@
 using F1Store.Core.Contacts;
 using F1Store.Core.Contracts;
 using F1Store.Core.Services;
+using F1Store.Core.Services.F1Store.Services;
 using F1Store.Infrastructure.Data;
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Infrastructure.Data.Infrastructure;
@@ -41,6 +42,7 @@ namespace F1Store
             builder.Services.AddTransient<IOrderService, OrderService>();
             builder.Services.AddTransient<IStatisticsService, StatisticsService>();
             builder.Services.AddTransient<ICartService, CartService>();
+            builder.Services.AddTransient<IFavoritesService, FavoritesService>();
 
 
             var app = builder.Build();

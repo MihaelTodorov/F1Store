@@ -156,6 +156,21 @@ namespace F1Store.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Favorite", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -397,6 +412,25 @@ namespace F1Store.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.CartItem", b =>
+                {
+                    b.HasOne("F1Store.Infrastructure.Data.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("F1Store.Infrastructure.Data.Domain.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Favorite", b =>
                 {
                     b.HasOne("F1Store.Infrastructure.Data.Domain.Product", "Product")
                         .WithMany()

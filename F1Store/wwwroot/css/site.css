@@ -1,4 +1,4 @@
-html {
+﻿html {
     font-size: 14px;
 }
 
@@ -19,4 +19,29 @@ html {
 
 body {
     margin-bottom: 60px;
+}
+
+/* Стил за бутона "Сърце" */
+.btn-f1-favorite {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #444;
+    color: white;
+    transition: 0.3s all ease;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-f1-favorite:hover {
+        background: #e10600; /* F1 червено */
+        border-color: #e10600;
+        color: white;
+        transform: scale(1.1);
+    }
+
+.product-card:hover .btn-f1-favorite {
+    opacity: 1;
 }

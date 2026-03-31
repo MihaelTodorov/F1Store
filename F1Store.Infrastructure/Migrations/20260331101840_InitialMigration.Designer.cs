@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace F1Store.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260330071209_Initialigration")]
-    partial class Initialigration
+    [Migration("20260331101840_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,6 +157,21 @@ namespace F1Store.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Favorite", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Order", b =>
@@ -400,6 +415,25 @@ namespace F1Store.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.CartItem", b =>
+                {
+                    b.HasOne("F1Store.Infrastructure.Data.Domain.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("F1Store.Infrastructure.Data.Domain.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Favorite", b =>
                 {
                     b.HasOne("F1Store.Infrastructure.Data.Domain.Product", "Product")
                         .WithMany()

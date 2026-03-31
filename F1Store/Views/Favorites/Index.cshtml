@@ -1,0 +1,32 @@
+﻿@model F1Store.Models.Favorite.FavoriteVM
+
+<div class="container py-5">
+    <h1 class="f1-font text-white mb-4">MY <span class="text-danger">PADDOCK</span></h1>
+
+    <div class="row g-4">
+        @foreach (var item in Model.Items)
+        {
+            <div class="col-md-3">
+                <div class="card bg-dark border-secondary h-100 rounded-0 shadow-lg">
+                    <img src="@item.Picture" class="card-img-top p-3" alt="@item.ProductName">
+
+                    <div class="card-body text-center pt-0">
+                        <h6 class="f1-font text-white small">@item.ProductName</h6>
+                        <p class="text-danger fw-bold">@item.Price.ToString("C")</p>
+
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId"
+                               class="btn btn-outline-light btn-sm w-100 rounded-0 f1-font">DETAILS</a>
+
+                            <form asp-action="Remove" asp-route-productId="@item.ProductId" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-0">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

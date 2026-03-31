@@ -78,14 +78,24 @@
                             }
                         </td>
                         <td class="text-end px-4">
-                            <div class="btn-group">
+                            <div class="btn-group align-items-center">
+
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline me-1">
+                                        <input type="hidden" name="productId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-0 border-opacity-25 fav-btn" title="Add to Paddock">
+                                            <i class="bi bi-heart-fill"></i>
+                                        </button>
+                                    </form>
+                                }
+
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light rounded-0 border-opacity-25" title="Details">
                                     <i class="bi bi-eye"></i>
                                 </a>
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    @* Поправена грешка: използваме item.Id вместо product.Id *@
                                     <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline ms-1">
                                         <input type="hidden" name="productId" value="@item.Id" />
                                         <input type="hidden" name="quantity" value="1" />
@@ -112,6 +122,20 @@
         </table>
     </div>
 </div>
+
+<style>
+    /* Малко допълнителен стил за сърцето */
+    .fav-btn {
+        transition: 0.3s all ease;
+    }
+
+        .fav-btn:hover {
+            background-color: #e10600 !important;
+            color: white !important;
+            border-color: #e10600 !important;
+            transform: scale(1.1);
+        }
+</style>
 
 @section Scripts {
     @{

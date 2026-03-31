@@ -20,5 +20,7 @@ namespace F1Store.Infrastructure.Data
         public DbSet<Product> Products { get; set; }
 
         public DbSet<CartItem> CartItems { get; set; }
+
+        public DbSet<Favorite> Favorites { get; set; }
     }
 }
