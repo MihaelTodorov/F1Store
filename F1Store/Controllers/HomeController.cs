@@ -18,7 +18,7 @@ namespace F1Store.Controllers
             return View();
         }
 
-        public IActionResult Contacts()
+        public IActionResult Contact()
         {
             return View();
         }

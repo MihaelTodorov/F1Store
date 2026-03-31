@@ -1,112 +1,118 @@
 ﻿@model IEnumerable<F1Store.Models.Product.ProductIndexVM>
 @{
-    ViewData["Title"] = "Index";
-}
-<h1>Products</h1>
-
-@if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
-{
-    <p>
-        <a asp-action="Create" class="btn btn-success">Create New</a>
-    </p>
+    ViewData["Title"] = "F1 Store - Products";
 }
 
-<form asp-controller="Product" asp-action="Index" method="get">
-    <p>
-        Team: <input type="text" name="SearchStringTeamName" />
-        Category: <input type="text" name="SearchStringCategoryName" />
-        <input type="submit" value="Filter" />
-    </p>
-</form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            @*<th>
-            @Html.DisplayNameFor(model => model.BrandId)  </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.TeamName)
-            </th>
-            @*<th>
-            @Html.DisplayNameFor(model => model.CategoryId)  </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Picture)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Discount)
-            </th>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="f1-font text-white m-0" style="border-left: 5px solid var(--f1-red); padding-left: 15px;">Available Gear</h1>
 
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+        @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                @*<td>
-            @Html.DisplayFor(modelItem => item.BrandId)
-            </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.TeamName)
-                </td>
-                @*<td>
-            @Html.DisplayFor(modelItem => item.CategoryId)  </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.CategoryName)
-                </td>
-                <td>
-                    <img src="@Html.DisplayFor(modelItem => item.Picture)" alt="Image" width="100" />
-                    @*@Html.DisplayFor(modelItem => item.Pictute)*@
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Discount) %
-                </td>
-
-                <td>
-                    
-
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success">Details</a>
-                    
-                    @if (this.User.Identity.IsAuthenticated)
-                    {
-                        <a asp-action="Create" asp-controller="Order" asp-route-id="@item.Id" class="btn btn-primary">Order</a>
-                    }
-
-                    @if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                    }
-                </td>
-            </tr>
+            <a asp-action="Create" class="btn btn-danger f1-font px-4 rounded-0">
+                <i class="bi bi-plus-lg"></i> Add New Product
+            </a>
         }
-    </tbody>
-</table>
+    </div>
+
+    <div class="card mb-4" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0;">
+        <div class="card-body">
+            <form asp-controller="Product" asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="small text-secondary f1-font">Team</label>
+                    <input type="text" name="SearchStringTeamName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none" placeholder="e.g. Red Bull" />
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-secondary f1-font">Category</label>
+                    <input type="text" name="SearchStringCategoryName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none" placeholder="e.g. Helmets" />
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-outline-danger w-100 f1-font rounded-0">
+                        <i class="bi bi-filter"></i> Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover text-white align-middle" style="background: rgba(0,0,0,0.2);">
+            <thead class="f1-font text-secondary small" style="border-bottom: 2px solid var(--f1-red);">
+                <tr>
+                    <th class="py-3">Product</th>
+                    <th>Team</th>
+                    <th>Category</th>
+                    <th>Preview</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th class="text-end px-4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td class="fw-bold text-uppercase">@item.ProductName</td>
+                        <td><span class="badge bg-secondary rounded-0 px-2" style="font-size: 0.7rem;">@item.TeamName</span></td>
+                        <td class="text-secondary small">@item.CategoryName</td>
+                        <td>
+                            <div style="background: white; padding: 4px; display: inline-block; border-radius: 2px;">
+                                <img src="@item.Picture" alt="Product" width="60" style="object-fit: contain;" />
+                            </div>
+                        </td>
+                        <td>
+                            @if (item.Quantity > 0)
+                            {
+                                <span class="text-success small">● @item.Quantity Units</span>
+                            }
+                            else
+                            {
+                                <span class="text-danger small fw-bold">OUT OF STOCK</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="f1-font fw-bold">@item.Price.ToString("C2")</div>
+                            @if (item.Discount > 0)
+                            {
+                                <small class="text-danger fw-bold">-@item.Discount% OFF</small>
+                            }
+                        </td>
+                        <td class="text-end px-4">
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light rounded-0 border-opacity-25" title="Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @* Поправена грешка: използваме item.Id вместо product.Id *@
+                                    <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline ms-1">
+                                        <input type="hidden" name="productId" value="@item.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-0 px-3 f1-font" style="font-size: 0.7rem;">
+                                            <i class="bi bi-cart-plus-fill"></i> Add
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning rounded-0 ms-1 shadow-none">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-dark rounded-0 ms-1 shadow-none border border-secondary">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

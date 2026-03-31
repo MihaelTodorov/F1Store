@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="f1-font text-danger display-4">GET IN TOUCH</h1>
+        <div class="f1-border-bottom mx-auto" style="width: 100px; height: 4px; background: #e10600;"></div>
+        <p class="text-secondary mt-3 uppercase">Paddock Support & Fan Inquiries</p>
+    </div>
+
+    <div class="row g-5 justify-content-center">
+        <div class="col-12 col-lg-4">
+            <div class="card bg-dark border-secondary h-100 p-4 shadow-lg">
+                <h3 class="f1-font text-white mb-4">CONTACT INFO</h3>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="contact-icon me-3">
+                        <i class="bi bi-geo-alt fs-3 text-danger"></i>
+                    </div>
+                    <div>
+                        <div class="text-secondary small">HEADQUARTERS</div>
+                        <div class="text-white fw-bold">Pernik, Bulgaria</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="contact-icon me-3">
+                        <i class="bi bi-envelope fs-3 text-danger"></i>
+                    </div>
+                    <div>
+                        <div class="text-secondary small">EMAIL</div>
+                        <div class="text-white fw-bold">support@f1store.bg</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="contact-icon me-3">
+                        <i class="bi bi-telephone fs-3 text-danger"></i>
+                    </div>
+                    <div>
+                        <div class="text-secondary small">PHONE</div>
+                        <div class="text-white fw-bold">+359 888 000 111</div>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-top border-secondary text-center">
+                    <h5 class="f1-font text-white mb-3">FOLLOW THE RACE</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="card bg-dark border-danger p-4 shadow-lg">
+                <h3 class="f1-font text-white mb-4">SEND A MESSAGE</h3>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small uppercase">Full Name</label>
+                            <input type="text" class="form-control bg-black border-secondary text-white rounded-0" placeholder="Max Verstappen">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small uppercase">Email Address</label>
+                            <input type="email" class="form-control bg-black border-secondary text-white rounded-0" placeholder="max@redbull.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small uppercase">Subject</label>
+                            <select class="form-select bg-black border-secondary text-white rounded-0">
+                                <option selected>General Inquiry</option>
+                                <option>Order Status</option>
+                                <option>Returns & Refunds</option>
+                                <option>Technical Issue</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small uppercase">Message</label>
+                            <textarea class="form-control bg-black border-secondary text-white rounded-0" rows="5" placeholder="Write your message here..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-danger w-100 f1-font py-3">
+                                <i class="bi bi-send me-2"></i>SEND MESSAGE
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+
+    /* Стилизиране на полетата */
+    .form-control:focus, .form-select:focus {
+        background-color: #000;
+        border-color: #e10600;
+        box-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
+        color: white;
+    }
+
+    .card {
+        background-color: rgba(21, 21, 30, 0.9) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-danger {
+        background-color: #e10600;
+        border: none;
+        border-radius: 0;
+        transition: 0.3s;
+    }
+
+        .btn-danger:hover {
+            background-color: #ff1e1e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 6, 0, 0.4);
+        }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(225, 6, 0, 0.1);
+        border-radius: 50%;
+    }
+</style>

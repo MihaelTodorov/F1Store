@@ -1,6 +1,90 @@
 ﻿@{
-    ViewData["Title"] = "Priviet";
+    ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="mb-5 border-start border-danger border-4 ps-4">
+                <h1 class="f1-font text-white display-5 mb-2">PRIVACY <span class="text-danger">POLICY</span></h1>
+                <p class="text-secondary small uppercase">Version 2026.1 | Data Protection & Telemetry Regulations</p>
+            </div>
+
+            <div class="card bg-dark border-secondary shadow-lg rounded-0">
+                <div class="card-body p-4 p-md-5">
+
+                    <section class="mb-5">
+                        <h3 class="f1-font text-danger h5 mb-3"><i class="bi bi-shield-check me-2"></i>1. DATA COLLECTION (TELEMETRY)</h3>
+                        <p class="text-light opacity-75">
+                            Just like an F1 car sends telemetry to the pit wall, we collect certain data to improve your experience.
+                            This includes your name, email address, and shipping details when you create a "Paddock" account or place an order.
+                        </p>
+                    </section>
+
+                    <section class="mb-5">
+                        <h3 class="f1-font text-danger h5 mb-3"><i class="bi bi-eye me-2"></i>2. HOW WE USE YOUR DATA</h3>
+                        <p class="text-light opacity-75">Your data is used strictly for:</p>
+                        <ul class="list-unstyled text-light opacity-75 ms-3">
+                            <li class="mb-2"><i class="bi bi-chevron-right text-danger me-2"></i>Processing your race-day orders.</li>
+                            <li class="mb-2"><i class="bi bi-chevron-right text-danger me-2"></i>Sending technical updates regarding your account.</li>
+                            <li class="mb-2"><i class="bi bi-chevron-right text-danger me-2"></i>Optimizing our store performance (Lap time improvements).</li>
+                        </ul>
+                    </section>
+
+                    <section class="mb-5">
+                        <h3 class="f1-font text-danger h5 mb-3"><i class="bi bi-lock me-2"></i>3. DATA SECURITY</h3>
+                        <p class="text-light opacity-75">
+                            We implement high-grade encryption to protect your personal information.
+                            We do not sell your data to third-party "constructors" or sponsors.
+                        </p>
+                    </section>
+
+                    <section class="mb-4">
+                        <h3 class="f1-font text-danger h5 mb-3"><i class="bi bi-cookie me-2"></i>4. COOKIES</h3>
+                        <p class="text-light opacity-75">
+                            We use cookies to remember your session and keep your cart ready for the next pit stop.
+                            You can disable them in your browser settings, but some parts of the store might slow down.
+                        </p>
+                    </section>
+
+                    <div class="mt-5 pt-4 border-top border-secondary text-center">
+                        <p class="text-secondary small italic">Last updated: March 2026. For any questions, contact our Race Control via the <a asp-controller="Home" asp-action="Contact" class="text-danger">Contact Us</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+
+    .card {
+        background-color: rgba(21, 21, 30, 0.8) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    section h3 {
+        border-bottom: 1px solid rgba(225, 6, 0, 0.2);
+        padding-bottom: 10px;
+    }
+
+    /* Стил за линковете в текста */
+    a.text-danger {
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        a.text-danger:hover {
+            text-shadow: 0 0 10px rgba(225, 6, 0, 0.5);
+            color: #ff1e1e !important;
+        }
+</style>

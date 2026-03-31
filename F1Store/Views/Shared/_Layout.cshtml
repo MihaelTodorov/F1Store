@@ -4,228 +4,173 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - F1Store</title>
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/F1Store.styles.css" asp-append-version="true" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet" />
 
     <style>
-        /* F1 Theme Styles */
+        :root {
+            --f1-red: #e10600;
+            --f1-black: #15151e;
+        }
+
         body {
-            font-family: 'Orbitron', sans-serif;
-            background-color: #121212;
-            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--f1-black);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-
-        /* Top Navbar */
-        .navbar {
-            background-color: #1a1a1a;
-            border-bottom: 2px solid #ff0000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-        }
-
-        .navbar-team {
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-            color: #fff !important;
-        }
-
-        .navbar-toggler {
-            border: none;
-        }
-
-            .navbar-toggler:focus {
-                box-shadow: none;
-                outline: 1px solid #ff0000;
-            }
-
-        /* Top Right User Menu Links */
-        .user-menu .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-            .user-menu .nav-link:hover {
-                color: #ff0000 !important;
-            }
-
-        /* Offcanvas (Left Pop-up Menu) */
-        .offcanvas {
-            background-color: #1a1a1a;
-            border-right: 1px solid #333;
-        }
-
-        .offcanvas-header {
-            border-bottom: 1px solid #333;
-        }
-
-        .offcanvas-title {
-            color: #ff0000;
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .offcanvas-body .nav-link {
-            color: #ddd;
-            font-size: 1.1rem;
-            padding: 12px 20px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            margin-bottom: 5px;
-        }
-
-            .offcanvas-body .nav-link:hover,
-            .offcanvas-body .nav-link:focus {
-                background-color: #2a2a2a;
-                color: #ff0000;
-                padding-left: 25px; /* Лек ефект на приплъзване надясно */
-            }
-
-        /* Dropdowns */
-        .dropdown-menu {
-            background-color: #222;
-            border: 1px solid #444;
-            border-left: 3px solid #ff0000; /* F1 акцент */
-        }
-
-        .dropdown-item {
-            color: #ccc;
-            padding: 10px 20px;
-            transition: all 0.2s ease;
-        }
-
-            .dropdown-item:hover {
-                background-color: #ff0000;
-                color: #fff;
-            }
 
         .f1-font {
             font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
+        /* NAVBAR */
+        .navbar {
+            border-bottom: 2px solid var(--f1-red);
+            background: var(--f1-black);
+            padding: 10px 0;
+        }
+
+        /* Логото и иконата като един кликаем елемент за менюто */
+        .brand-trigger {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            text-decoration: none !important;
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: var(--f1-red) !important;
+            margin-left: 10px;
+        }
+
+        /* КОЛИЧКА - Връщаме ясна видимост */
+        .cart-link {
+            color: white !important;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+            .cart-link:hover {
+                color: var(--f1-red) !important;
+            }
+
+        /* OFFCANVAS MENU */
+        .offcanvas {
+            background: var(--f1-black);
+            border-right: 2px solid var(--f1-red);
+            width: 280px;
+        }
+
+        .sidebar-link {
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px 20px;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+            .sidebar-link:hover {
+                background: var(--f1-red);
+                padding-left: 30px;
+            }
 
         footer {
-            background-color: #1a1a1a;
-            color: #aaa;
-            padding: 1.5rem 0;
+            padding: 15px 0;
+            background: #0b0b10;
+            border-top: 1px solid rgba(255,255,255,0.1);
             margin-top: auto;
-        }
-
-        .dropdown-divider {
-            border-color: #444;
         }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
-    <header>
-        <nav class="navbar navbar-dark">
-            <div class="container-fluid">
+<body>
 
-                <div class="d-flex align-items-center">
-                    <button class="navbar-toggler me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <a class="navbar-brand f1-font m-0" asp-area="" asp-controller="Home" asp-action="Index">F1Store</a>
+    <header>
+        <nav class="navbar navbar-dark sticky-top">
+            <div class="container-fluid px-3">
+                <div class="brand-trigger" data-bs-toggle="offcanvas" data-bs-target="#f1Menu">
+                    <i class="bi bi-list fs-2 text-white"></i>
+                    <span class="navbar-brand f1-font">F1<span class="text-white">STORE</span></span>
                 </div>
 
-                <ul class="navbar-nav ms-auto flex-row align-items-center user-menu">
+                <div class="d-flex align-items-center gap-3">
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a></li>
-                        <li class="nav-item dropdown px-2">
-                            <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">
+                        @* ВРЪЩАМЕ СТАРИЯ КОД ЗА КОЛИЧКАТА *@
+                        <div class="cart-link">
+                            @await Component.InvokeAsync("CartSummary")
+                        </div>
+
+                        <div class="dropdown ms-2">
+                            <a class="nav-link dropdown-toggle f1-font small text-white" href="#" data-bs-toggle="dropdown">
                                 @User.Identity.Name
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end position-absolute">
-                                <li>@await Component.InvokeAsync("CartSummary")</li>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark border-danger rounded-0 shadow-lg">
+                                <li><a class="dropdown-item small" asp-area="Identity" asp-page="/Account/Manage/Index">PROFILE</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="post" asp-area="" asp-page="/Account/Logout">
-                                        <button type="submit" class="dropdown-item f1-font">Logout</button>
+                                    <form method="post" asp-area="Identity" asp-page="/Account/Logout">
+                                        <button type="submit" class="dropdown-item text-danger fw-bold small">LOGOUT</button>
                                     </form>
                                 </li>
                             </ul>
-                        </li>
+                        </div>
                     }
                     else
                     {
-                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Account" asp-action="Register">Register</a></li>
-                        <li class="nav-item px-2"><a class="nav-link f1-font" asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
+                        <a class="nav-link f1-font small text-white border border-danger px-3 py-1" asp-area="Identity" asp-page="/Account/Login">LOGIN</a>
                     }
-                </ul>
+                </div>
             </div>
         </nav>
     </header>
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title f1-font" id="offcanvasNavbarLabel">F1 Store</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <div class="offcanvas offcanvas-start text-white" id="f1Menu">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="f1-font text-danger m-0">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="offcanvas-body">
-            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                <li class="nav-item">
-                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Contacts">Contacts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link f1-font" asp-area="" asp-controller="Home" asp-action="Policy">Policy</a>
-                </li>
-
-                @if (User.Identity?.IsAuthenticated ?? false && User.IsInRole("Administrator"))
-                {
-                    <li class="nav-item dropdown mt-3">
-                        <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">Products</a>
-                        <ul class="dropdown-menu border-0 shadow">
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Alpine">Alpine</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Aston Martin">Aston Martin</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Audi">Audi</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Cadillac">Cadillac</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Ferrari">Ferrari</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Haas">Haas</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="McLaren">McLaren</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Mercedes">Mercedes</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Racing Bulls">Racing Bulls</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Red Bull">Red Bull</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Index" asp-route-searchStringTeamName="Williams">Williams</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle f1-font" href="#" role="button" data-bs-toggle="dropdown">Statistic Modul</a>
-                        <ul class="dropdown-menu border-0 shadow">
-                            <li><a class="dropdown-item" href="/Client/Index">Clients</a></li>
-                            <li><a class="dropdown-item" href="/Order/Index">Orders</a></li>
-                            <li><a class="dropdown-item" href="/Statistic/Index">Statistics</a></li>
-                        </ul>
-                    </li>
-                }
-            </ul>
+        <div class="offcanvas-body p-0">
+            <a class="sidebar-link" asp-controller="Home" asp-action="Index">HOME</a>
+            <a class="sidebar-link" asp-controller="Product" asp-action="Index">STORE</a>
+            <a class="sidebar-link" asp-controller="Home" asp-action="Contact">CONTACTS</a>
+            @if (User.IsInRole("Administrator"))
+            {
+                <div class="p-3 text-secondary fw-bold small bg-dark">ADMIN</div>
+                <a class="sidebar-link" asp-controller="Order" asp-action="Index">ORDERS</a>
+                <a class="sidebar-link" asp-controller="Statistic" asp-action="Index">STATISTICS</a>
+                <a class="sidebar-link" asp-controller="Client" asp-action="Index">CLIENTS</a>
+            }
         </div>
     </div>
 
-    <div class="container mt-4 flex-grow-1">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="container-fluid px-4 mt-4 flex-grow-1">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top border-danger text-center">
+    <footer class="text-center">
         <div class="container">
-            &copy; 2026 - F1Store - <a asp-area="" asp-controller="Home" asp-action="Policy" class="text-danger text-decoration-none">Policy</a>
+            <p class="text-secondary mb-1" style="font-size: 0.7rem;">&copy; 2026 F1 STORE. NOT OFFICIAL.</p>
+            <a asp-controller="Home" asp-action="Policy" class="text-danger text-decoration-none small fw-bold">PRIVACY POLICY</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* ФИКС ЗА ГРЕШКАТА: RenderSection винаги трябва да е тук *@
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

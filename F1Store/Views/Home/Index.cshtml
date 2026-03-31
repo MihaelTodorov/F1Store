@@ -1,8 +1,256 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "F1 Store - Home of Speed";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="f1HeroCarousel" class="carousel slide carousel-fade mb-5 shadow-lg" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="false">
+
+    <div class="carousel-inner custom-f1-clip">
+
+        <div class="carousel-item active">
+            <div class="hero-slide-bg" style="background-image: url('https://f1store.formula1.com/content/ws/all/10fc32f4-33cd-4bb9-9558-18cef3f540a3__1370X450.png');">
+                <div class="hero-overlay">
+                    <div class="container-fluid h-100 px-md-5">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-5 col-md-8 slide-content animate-slide-in ms-md-4">
+                                <span class="badge bg-danger f1-font mb-2 px-3 py-2">SEASON 2026</span>
+                                <h1 class="display-1 f1-font fw-900 text-white mb-0 tracking-tighter">UNLEASH</h1>
+                                <h1 class="display-1 f1-font fw-900 text-danger mb-4 tracking-tighter">THE SPEED</h1>
+                                <p class="lead text-white mb-5 hero-text-shadow max-w-400">
+                                    Get the official 2026 team gear. From Oracle Red Bull Racing to Scuderia Ferrari HP.
+                                </p>
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-danger btn-lg f1-font rounded-0 px-5 py-3 shadow-red">SHOP NOW</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="hero-slide-bg" style="background-image: url('https://f1store.formula1.com/content/ws/all/94f9555f-6df9-4547-9239-e66d90c92b5b__1370X450.png');">
+                <div class="hero-overlay">
+                    <div class="container-fluid h-100 px-md-5">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-5 col-md-8 slide-content animate-slide-in ms-md-4">
+                                <span class="badge bg-white text-dark f1-font mb-2 px-3 py-2">LIMITED EDITION</span>
+                                <h1 class="display-1 f1-font fw-900 text-white mb-0 tracking-tighter">PREMIUM</h1>
+                                <h1 class="display-1 f1-font fw-900 text-danger mb-4 tracking-tighter">GEAR</h1>
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-danger btn-lg f1-font rounded-0 px-5 py-3 shadow-red">VIEW RANGE</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="hero-slide-bg" style="background-image: url('https://cdn-6.motorsport.com/images/amp/0mb4DnG2/s1000/andrea-kimi-antonelli-mercedes.jpg'); background-position: center 20%;">
+                <div class="hero-overlay">
+                    <div class="container-fluid h-100 px-md-5">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-lg-5 col-md-8 slide-content animate-slide-in ms-md-4">
+                                <span class="badge bg-danger f1-font mb-2 px-3 py-2">MERCEDES-AMG</span>
+                                <h1 class="display-1 f1-font fw-900 text-white mb-0 tracking-tighter">NEXT</h1>
+                                <h1 class="display-1 f1-font fw-900 text-danger mb-4 tracking-tighter">GEN STAR</h1>
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-outline-light btn-lg f1-font rounded-0 px-5 py-3">EXPLORE</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="carousel-control-prev custom-nav" type="button" data-bs-target="#f1HeroCarousel" data-bs-slide="prev">
+        <div class="nav-circle"><i class="bi bi-chevron-left"></i></div>
+    </button>
+    <button class="carousel-control-next custom-nav" type="button" data-bs-target="#f1HeroCarousel" data-bs-slide="next">
+        <div class="nav-circle"><i class="bi bi-chevron-right"></i></div>
+    </button>
 </div>
+
+<div class="container mt-n5 position-relative z-3">
+    <div class="section-head d-flex justify-content-between align-items-end mb-4 border-bottom border-secondary pb-3">
+        <h2 class="f1-font text-white mb-0 uppercase">Race <span class="text-danger">Departments</span></h2>
+    </div>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="category-card position-relative overflow-hidden border border-secondary border-opacity-25">
+                <img src="https://images.unsplash.com/photo-1594739130541-69f889270e53?q=80&w=600" class="img-fluid" alt="Helmets">
+                <div class="category-overlay d-flex align-items-end p-4">
+                    <h3 class="f1-font text-white mb-0">HELMETS</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card position-relative overflow-hidden border border-secondary border-opacity-25">
+                <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?q=80&w=600" class="img-fluid" alt="Teamwear">
+                <div class="category-overlay d-flex align-items-end p-4">
+                    <h3 class="f1-font text-white mb-0">TEAMWEAR</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="category-card position-relative overflow-hidden border border-secondary border-opacity-25">
+                <img src="https://images.unsplash.com/photo-1600706432502-77a0e2e32771?q=80&w=600" class="img-fluid" alt="Accessories">
+                <div class="category-overlay d-flex align-items-end p-4">
+                    <h3 class="f1-font text-white mb-0">ACCESSORIES</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .fw-900 {
+        font-weight: 900;
+    }
+
+    .tracking-tighter {
+        letter-spacing: -3px;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+
+    .max-w-400 {
+        max-width: 400px;
+    }
+
+    /* Unique Shape */
+    .custom-f1-clip {
+        clip-path: polygon(0 0, 100% 0, 100% 92%, 0% 100%);
+    }
+
+    .hero-slide-bg {
+        height: 85vh;
+        min-height: 600px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* Градиентът е силен само в самото начало вляво */
+    .hero-overlay {
+        height: 100%;
+        background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 30%, transparent 60%);
+    }
+
+    /* Подравняване на съдържанието максимално вляво */
+    .slide-content {
+        z-index: 5;
+    }
+
+    /* Стрелки за навигация */
+    .custom-nav {
+        width: 60px;
+        opacity: 0.8;
+        z-index: 10;
+    }
+
+    .nav-circle {
+        width: 50px;
+        height: 50px;
+        background: rgba(225, 6, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: 0.3s;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .custom-nav:hover .nav-circle {
+        background: #e10600;
+        transform: scale(1.1);
+        border-color: #e10600;
+    }
+
+    /* Анимация при влизане */
+    .animate-slide-in {
+        animation: f1FadeLeft 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @@keyframes f1FadeLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-80px) skewX(-5deg);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0) skewX(0);
+        }
+    }
+
+    .hero-text-shadow {
+        text-shadow: 2px 2px 10px rgba(0,0,0,1);
+    }
+
+    .shadow-red {
+        box-shadow: 0 0 20px rgba(225, 6, 0, 0.4);
+    }
+
+    /* Category Cards */
+    .category-card {
+        height: 300px;
+        transition: 0.4s;
+        cursor: pointer;
+    }
+
+        .category-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+    .category-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    }
+
+    .category-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .category-card:hover {
+        border-color: #e10600 !important;
+    }
+
+    .btn {
+        border-radius: 0 !important;
+    }
+
+    @@media (max-width: 992px) {
+        .custom-f1-clip {
+            clip-path: none;
+        }
+
+        .hero-overlay {
+            background: rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .slide-content {
+            margin: 0 auto !important;
+            text-align: center;
+        }
+
+        .max-w-400 {
+            max-width: 100%;
+        }
+
+        .custom-nav {
+            display: none;
+        }
+        /* Скриваме стрелките на мобилни устройства за по-изчистен вид */
+    }
+</style>
