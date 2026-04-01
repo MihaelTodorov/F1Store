@@ -1,70 +1,103 @@
 ﻿@model F1Store.Models.Product.ProductDetailsVM
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.ProductName + " - Details";
 }
-<h1>Details</h1>
-<div>
-    <h4>ProductDetailsVM</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ProductName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TeamName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TeamName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CategoryName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Picture)
-        </dt>
-        <dd class="col-sm-10">
-            <img src="@Html.DisplayFor(model => model.Picture)" alt="Image"
-                 width="100" />
-            @*@Html.DisplayFor(model => model.Picture)*@
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Quantity)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Quantity)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Discount)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Discount)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+<style>
+    .details-container {
+        background: #15151e;
+        color: white;
+        padding: 40px;
+        border-radius: 8px;
+        border-top: 4px solid #e10600;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        margin-top: 50px;
     }
-}
+
+    .product-img {
+        border: 1px solid #333;
+        transition: 0.3s;
+        max-width: 100%;
+        height: auto;
+    }
+
+        .product-img:hover {
+            border-color: #e10600;
+        }
+
+    .price-tag {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .btn-buy-now {
+        background-color: #e10600;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn-buy-now:hover {
+            background-color: white;
+            color: #e10600;
+        }
+</style>
+
+<div class="container">
+    <div class="details-container">
+        <div class="row">
+            <div class="col-md-5 mb-4">
+                <img src="@Model.Picture" class="product-img rounded" alt="@Model.ProductName" />
+            </div>
+
+            <div class="col-md-7">
+                <h5 class="text-danger f1-font mb-1">@Model.TeamName</h5>
+                <h1 class="f1-font mb-3">@Model.ProductName</h1>
+                <p class="text-secondary small">CATEGORY: @Model.CategoryName</p>
+
+                <hr class="border-secondary" />
+
+                <div class="my-4">
+                    <span class="price-tag">@Model.Price.ToString("F2") лв.</span>
+                    @if (Model.Discount > 0)
+                    {
+                        <span class="badge bg-danger ms-2">-@Model.Discount%</span>
+                    }
+                </div>
+
+                <p class="lead" style="font-size: 1.1rem; line-height: 1.6;">@Model.Description</p>
+
+                <div class="mt-4 d-flex gap-3">
+                    @if (Model.Quantity > 0)
+                    {
+                        @* Форма за добавяне в количката *@
+                        <form asp-controller="Cart" asp-action="Add" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-outline-light f1-font px-4 py-2">Add to Cart</button>
+                        </form>
+
+                        @* Форма за Директна поръчка (BUY IT NOW) *@
+                        <form asp-controller="Cart" asp-action="DirectCheckout" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-buy-now f1-font px-4">BUY IT NOW</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary f1-font disabled">OUT OF STOCK</button>
+                    }
+                </div>
+
+                <div class="mt-5">
+                    <a asp-action="Index" class="text-danger fw-bold text-decoration-none small">← BACK TO STORE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Order completed";
 
+    // Помощна функция за форматиране на валута
     string Eur(decimal x) => $"{x:0.00} €";
 }
 
@@ -27,12 +28,14 @@
             <div class="pf-order-success-meta">
                 <div class="pf-order-success-meta-item">
                     <span class="pf-order-success-meta-label">Order date</span>
+                    @* Показваме датата от модела *@
                     <span class="pf-order-success-meta-value">@Model.OrderDate</span>
                 </div>
 
                 <div class="pf-order-success-meta-item">
-                    <span class="pf-order-success-meta-label">Products</span>
-                    <span class="pf-order-success-meta-value">@Model.TotalProducts item(s)</span>
+                    <span class="pf-order-success-meta-label">Order ID</span>
+                    @* Коригирано на OrderGroupId според контролера ти *@
+                    <span class="pf-order-success-meta-value">#@Model.OrderGroupId</span>
                 </div>
 
                 <div class="pf-order-success-meta-item">
@@ -72,6 +75,7 @@
                     <div class="pf-order-success-item">
                         <div class="pf-order-success-item-left">
                             <div class="pf-order-success-thumb-wrap">
+                                @* Проверка за Picture, за да избегнем грешки CS0117 *@
                                 @if (!string.IsNullOrWhiteSpace(item.Picture))
                                 {
                                     <img src="@item.Picture" alt="@item.ProductName" class="pf-order-success-thumb" />
@@ -99,7 +103,7 @@
                         <div class="pf-order-success-item-right">
                             <div class="pf-order-success-price-line">
                                 <span>Unit price</span>
-                                <strong>@Eur(item.FinalUnitPrice)</strong>
+                                <strong>@Eur(item.UnitPrice)</strong>
                             </div>
                             <div class="pf-order-success-price-line">
                                 <span>Subtotal</span>
@@ -112,3 +116,41 @@
         </div>
     </div>
 </section>
+
+@* --- ИНТЕГРАЦИЯ НА EMAILJS --- *@
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+    (function() {
+        // Твоят Public Key
+        emailjs.init("1vKhLN6RXmbviX3bU");
+    })();
+
+    window.onload = function() {
+        // 1. Генерираме текста с продуктите
+        let productsSummary = "";
+        @foreach (var item in Model.Items)
+        {
+                <text>
+                productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\n";
+                </text>
+        }
+
+        // 2. Параметри за шаблона - С КАВИЧКИ ЗА ИЗБЯГВАНЕ НА ГРЕШКИ
+        const templateParams = {
+            user_name: "@User.Identity?.Name",
+            user_email: "@User.Identity?.Name",
+            order_id: "@Model.OrderGroupId",
+            products_summary: productsSummary,
+            total_price: "@Eur(Model.TotalAmount)",
+            message: "Благодарим за вашата поръчка във F1 Store!"
+        };
+
+        // 3. Изпращане
+        emailjs.send("service_yip1a1k", "template_127whdh", templateParams)
+            .then(function(response) {
+                console.log('EMAIL SENT SUCCESS!', response.status, response.text);
+            }, function(error) {
+                console.log('EMAIL SEND FAILED...', error);
+            });
+    };
+</script>

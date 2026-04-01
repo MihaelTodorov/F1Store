@@ -42,8 +42,6 @@ namespace F1Store.Controllers
                     Quantity = ci.Quantity,
                     UnitPrice = ci.Price,
                     Discount = ci.Discount,
-
-                    // NEW
                     AvailableQuantity = ci.Product.Quantity
                 })
                 .ToList();
@@ -68,7 +66,6 @@ namespace F1Store.Controllers
                 return RedirectToSafe(returnUrl);
             }
 
-            // current quantity already in cart
             var alreadyInCart = _context.CartItems
                 .Where(ci => ci.UserId == userId && ci.ProductId == productId)
                 .Select(ci => ci.Quantity)
@@ -80,25 +77,56 @@ namespace F1Store.Controllers
                 return RedirectToSafe(returnUrl);
             }
 
-            // user tries to exceed stock
             if (alreadyInCart + quantity > product.Quantity)
             {
-                TempData["ErrorMessage"] =
-                    $"You already have {alreadyInCart} in your cart. Only {product.Quantity} total are available.";
+                TempData["ErrorMessage"] = $"You already have {alreadyInCart} in your cart. Only {product.Quantity} total are available.";
                 return RedirectToSafe(returnUrl);
             }
 
             var ok = _cartService.Add(productId, userId, quantity);
-
             if (!ok)
             {
-                // Safety fallback (shouldn’t happen due to checks above)
-                TempData["ErrorMessage"] = "Could not add item (stock changed). Please try again.";
+                TempData["ErrorMessage"] = "Could not add item (stock changed).";
                 return RedirectToSafe(returnUrl);
             }
 
             TempData["SuccessMessage"] = "Added to cart.";
             return RedirectToSafe(returnUrl);
+        }
+
+        // --- НОВ МЕТОД ЗА "BUY NOW" ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DirectCheckout(int productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
+
+            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
+            if (product == null || product.Quantity <= 0)
+            {
+                TempData["ErrorMessage"] = "Продуктът не е наличен.";
+                return RedirectToAction("Details", "Product", new { id = productId });
+            }
+
+            // Добавяме го в количката (ако вече е там, услугата обикновено увеличава количеството)
+            var ok = _cartService.Add(productId, userId, 1);
+            if (!ok)
+            {
+                TempData["ErrorMessage"] = "Грешка при добавяне в количката.";
+                return RedirectToAction("Details", "Product", new { id = productId });
+            }
+
+            // Директно изпълняваме Checkout логиката
+            var orderOk = _orderService.CreateFromCart(userId);
+            if (!orderOk)
+            {
+                TempData["ErrorMessage"] = "Грешка при създаване на поръчката.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
+            return RedirectToAction(nameof(Success), new { orderGroupId = groupId });
         }
 
         [HttpPost]
@@ -109,31 +137,19 @@ namespace F1Store.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized(new { message = "Unauthorized." });
 
-            if (quantity < 1) quantity = 1;
-
             var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            if (product == null)
-                return NotFound(new { message = "Product not found." });
+            if (product == null) return NotFound(new { message = "Product not found." });
 
             var alreadyInCart = _context.CartItems
                 .Where(ci => ci.UserId == userId && ci.ProductId == productId)
                 .Select(ci => ci.Quantity)
                 .FirstOrDefault();
 
-            if (product.Quantity <= 0)
-                return BadRequest(new { message = "This product is out of stock." });
-
-            if (alreadyInCart + quantity > product.Quantity)
-                return BadRequest(new
-                {
-                    message = $"You already have {alreadyInCart} in your cart. Only {product.Quantity} total are available."
-                });
+            if (product.Quantity <= 0 || (alreadyInCart + quantity > product.Quantity))
+                return BadRequest(new { message = "Insufficient stock." });
 
             var ok = _cartService.Add(productId, userId, quantity);
-            if (!ok)
-                return BadRequest(new { message = "Could not add item (stock changed). Please try again." });
-
-            return Ok(new { message = "Added to cart." });
+            return ok ? Ok(new { message = "Added to cart." }) : BadRequest();
         }
 
         [HttpPost]
@@ -141,56 +157,35 @@ namespace F1Store.Controllers
         public IActionResult UpdateQuantityAjax(int cartItemId, int quantity)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId))
-                return Unauthorized(new { message = "Unauthorized." });
+            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
 
             if (quantity < 1) quantity = 1;
 
             var item = _context.CartItems.FirstOrDefault(x => x.Id == cartItemId && x.UserId == userId);
-            if (item == null)
-                return BadRequest(new { message = "Cart item not found." });
+            if (item == null) return BadRequest();
 
             var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
-            if (product == null)
-                return BadRequest(new { message = "Product not found." });
+            if (product == null) return BadRequest();
 
-            // ✅ IMPORTANT: allow decreasing even if stock is 0 / changed
-            // If requested > stock -> clamp to stock (and if stock == 0 remove)
             if (quantity > product.Quantity)
             {
                 if (product.Quantity <= 0)
                 {
                     _cartService.Remove(cartItemId, userId);
-                    return Ok(new
-                    {
-                        removed = true,
-                        message = "Item removed: product is out of stock.",
-                        total = _cartService.GetTotal(userId)
-                    });
+                    return Ok(new { removed = true, total = _cartService.GetTotal(userId) });
                 }
-
                 quantity = product.Quantity;
             }
 
-            var ok = _cartService.UpdateQuantity(cartItemId, userId, quantity);
-            if (!ok)
-                return BadRequest(new { message = "Could not update quantity." });
-
-            // reload totals
+            _cartService.UpdateQuantity(cartItemId, userId, quantity);
             var updated = _cartService.GetCart(userId).FirstOrDefault(x => x.Id == cartItemId);
-            if (updated == null)
-                return BadRequest(new { message = "Cart item not found." });
 
-            decimal finalUnitPrice = updated.Price * (1 - updated.Discount / 100m);
-            decimal subtotal = updated.Quantity * finalUnitPrice;
-            decimal total = _cartService.GetTotal(userId);
-
+            decimal finalPrice = updated.Price * (1 - updated.Discount / 100m);
             return Ok(new
             {
                 quantity = updated.Quantity,
-                finalUnitPrice,
-                subtotal,
-                total,
+                subtotal = updated.Quantity * finalPrice,
+                total = _cartService.GetTotal(userId),
                 available = product.Quantity
             });
         }
@@ -206,88 +201,43 @@ namespace F1Store.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Clear()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _cartService.Clear(userId);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId))
-                return Challenge();
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
 
-            // Auto-adjust before checkout (no full-page “not allowed”)
             var cart = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
-            if (cart.Count == 0)
-            {
-                TempData["ErrorMessage"] = "Your cart is empty.";
-                return RedirectToAction(nameof(Index));
-            }
+            if (!cart.Any()) return RedirectToAction(nameof(Index));
 
-            var changes = new List<string>();
-
+            // Проверка и корекция на наличности преди финализиране
             foreach (var ci in cart)
             {
                 var product = _context.Products.FirstOrDefault(p => p.Id == ci.ProductId);
-                if (product == null) continue;
-
-                if (product.Quantity <= 0)
-                {
-                    _context.CartItems.Remove(ci);
-                    changes.Add($"{ci.ProductId}: removed (out of stock)");
-                    continue;
-                }
-
-                if (ci.Quantity > product.Quantity)
-                {
-                    ci.Quantity = product.Quantity;
-                    _context.CartItems.Update(ci);
-                    changes.Add($"{product.ProductName}: adjusted to {product.Quantity}");
-                }
+                if (product == null || product.Quantity <= 0) _context.CartItems.Remove(ci);
+                else if (ci.Quantity > product.Quantity) ci.Quantity = product.Quantity;
             }
-
             _context.SaveChanges();
 
-            // now try create
             var ok = _orderService.CreateFromCart(userId);
-
-            if (!ok)
-            {
-                TempData["ErrorMessage"] = changes.Count > 0
-                    ? "Stock updated: " + string.Join(" | ", changes)
-                    : "Could not checkout. Please try again.";
-                return RedirectToAction(nameof(Index));
-            }
+            if (!ok) return RedirectToAction(nameof(Index));
 
             var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
-            if (groupId == null)
-                return RedirectToAction(nameof(Index));
-
-            return RedirectToAction(nameof(Success), new { orderGroupId = groupId.Value });
+            return RedirectToAction(nameof(Success), new { orderGroupId = groupId });
         }
 
         [HttpGet]
         public IActionResult Success(Guid orderGroupId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId))
-                return Challenge();
-
             var orders = _orderService.GetOrdersByGroupId(orderGroupId, userId);
-            if (orders == null || orders.Count == 0)
-                return RedirectToAction(nameof(Index));
+            if (orders == null || !orders.Any()) return RedirectToAction(nameof(Index));
 
             var first = orders.First();
-
             var vm = new CartCheckoutSuccessVM
             {
-                OrderGroupId = orderGroupId,
+                OrderGroupId = orderGroupId.ToString,
                 OrderDate = first.OrderDate.ToString("dd MMM yyyy, HH:mm", CultureInfo.InvariantCulture),
+                TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m))),
                 Items = orders.Select(o => new CartCheckoutSuccessItemVM
                 {
                     ProductId = o.ProductId,
@@ -306,17 +256,6 @@ namespace F1Store.Controllers
         {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
-
-            // referer fallback
-            var referer = Request.Headers["Referer"].ToString();
-            if (!string.IsNullOrWhiteSpace(referer) &&
-                Uri.TryCreate(referer, UriKind.Absolute, out var uri))
-            {
-                var local = uri.PathAndQuery;
-                if (Url.IsLocalUrl(local))
-                    return Redirect(local);
-            }
-
             return RedirectToAction(nameof(Index));
         }
     }

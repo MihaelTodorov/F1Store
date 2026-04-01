@@ -3,12 +3,9 @@ using System.Security.Claims;
 using F1Store.Core.Contracts;
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Models.Order;
+using F1Store.Models.Cart; // Добави това, ако CartCheckoutSuccessVM е тук
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-using System.Globalization;
-using System.Security.Claims;
 
 namespace F1Store.Controllers
 {
@@ -24,7 +21,7 @@ namespace F1Store.Controllers
             _orderService = orderService;
         }
 
-        // GET: OrderController/Create
+        // GET: Order/Create/5
         public ActionResult Create(int id)
         {
             Product product = _productService.GetProductById(id);
@@ -33,7 +30,6 @@ namespace F1Store.Controllers
                 return NotFound();
             }
 
-            //Ако има продукт с това id, го зареждаме във формата за поръчка
             OrderCreateVM order = new OrderCreateVM()
             {
                 ProductId = product.Id,
@@ -46,42 +42,52 @@ namespace F1Store.Controllers
             return View(order);
         }
 
-
-        // POST: OrderController/Create
+        // POST: Order/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(OrderCreateVM bindingModel)
         {
             string currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var product = this._productService.GetProductById(bindingModel.ProductId);
+
+            // Проверка за наличност и валиден потребител
             if (currentUserId == null || product == null || product.Quantity < bindingModel.Quantity || product.Quantity == 0)
             {
-                // ако потребителят не съществува или продуктът не съществува или няма достатъчно наличност
                 return RedirectToAction("Denied", "Order");
             }
 
             if (ModelState.IsValid)
             {
+                // Записваме поръчката в базата
                 _orderService.Create(bindingModel.ProductId, currentUserId, bindingModel.Quantity);
+
+                // ВАЖНО: Пренасочваме към Success екшъна, за да се активира EmailJS
+                return RedirectToAction(nameof(Success), new
+                {
+                    productId = bindingModel.ProductId,
+                    qty = bindingModel.Quantity
+                });
             }
-            // при успешна поръчка се връща в списъка на продуктите
-            return this.RedirectToAction("Index", "Product");
+
+            return View(bindingModel);
         }
 
-        // GET: OrderController/Denied
+        // GET: Order/Success
+        public ActionResult Success(int productId, int qty)
+        {
+            // Тук можеш да подадеш данни към View-то, ако искаш да ги покажеш
+            // или просто да заредиш View-то, което съдържа JS скрипта.
+            return View();
+        }
+
         public ActionResult Denied()
         {
             return View();
         }
 
-        // GET: OrderController
         [Authorize(Roles = "Administrator")]
         public ActionResult Index()
         {
-            // string userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // var user = context.Users.SingleOrDefault(u => u.Id == userId);
-
             List<OrderIndexVM> orders = _orderService.GetOrders()
                 .Select(x => new OrderIndexVM
                 {
@@ -103,8 +109,6 @@ namespace F1Store.Controllers
         public ActionResult MyOrders()
         {
             string currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // var user = context.Users.SingleOrDefault(u => u.Id == userId);
-
             List<OrderIndexVM> orders = _orderService.GetOrdersByUser(currentUserId)
                 .Select(x => new OrderIndexVM
                 {
@@ -127,10 +131,7 @@ namespace F1Store.Controllers
         public ActionResult Delete(int id)
         {
             var order = _orderService.GetOrderById(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            if (order == null) return NotFound();
 
             OrderDeleteVM vm = new OrderDeleteVM()
             {
@@ -144,7 +145,6 @@ namespace F1Store.Controllers
                 Discount = order.Discount,
                 TotalPrice = order.TotalPrice
             };
-
             return View(vm);
         }
 
@@ -154,45 +154,17 @@ namespace F1Store.Controllers
         public ActionResult Delete(OrderDeleteVM bindingModel)
         {
             var order = _orderService.GetOrderById(bindingModel.Id);
-            if (order == null)
-            {
-                return NotFound();
-            }
+            if (order == null) return NotFound();
 
             var product = _productService.GetProductById(order.ProductId);
-            if (product == null)
+            if (product != null)
             {
-                return NotFound();
+                product.Quantity += order.Quantity;
+                _productService.Update(product.Id, product.ProductName, product.TeamId, product.CategoryId, product.Picture, product.Description, product.Quantity, product.Price, product.Discount);
             }
 
-            product.Quantity += order.Quantity;
-
-            _productService.Update(
-                product.Id,
-                product.ProductName,
-                product.TeamId,
-                product.CategoryId,
-                product.Picture,
-                product.Description,
-                product.Quantity,
-                product.Price,
-                product.Discount
-            );
-
-            bool deleted = _orderService.Delete(order.Id);
-
-            if (deleted)
-            {
-                return RedirectToAction("Success");
-            }
-
-            return NotFound();
-        }
-
-        public ActionResult Success()
-        {
-            return View();
+            _orderService.Delete(order.Id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
-

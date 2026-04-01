@@ -42,12 +42,15 @@ namespace F1Store.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int productId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Взема ID-то на текущия юзър
+
+            if (userId == null)
             {
-                await _favoritesService.AddToFavoritesAsync(userId, productId);
+                return Challenge(); // Пренасочва към Login, ако сесията е изтекла
             }
-            return Redirect(Request.Headers["Referer"].ToString() ?? "/Product/Index");
+
+            await _favoritesService.AddToFavoritesAsync(userId, productId);
+            return RedirectToAction("Index", "Product");
         }
 
         [HttpPost]

@@ -36,7 +36,6 @@
             padding: 10px 0;
         }
 
-        /* Логото и иконата като един кликаем елемент за менюто */
         .brand-trigger {
             cursor: pointer;
             display: flex;
@@ -51,7 +50,6 @@
             margin-left: 10px;
         }
 
-        /* КОЛИЧКА - Връщаме ясна видимост */
         .cart-link {
             color: white !important;
             text-decoration: none;
@@ -91,6 +89,19 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             margin-top: auto;
         }
+
+        /* Специален стил за бутона Register */
+        .nav-register-btn {
+            background-color: var(--f1-red) !important;
+            color: white !important;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+            .nav-register-btn:hover {
+                background-color: white !important;
+                color: var(--f1-red) !important;
+            }
     </style>
 </head>
 <body>
@@ -106,7 +117,6 @@
                 <div class="d-flex align-items-center gap-3">
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        @* ВРЪЩАМЕ СТАРИЯ КОД ЗА КОЛИЧКАТА *@
                         <div class="cart-link">
                             @await Component.InvokeAsync("CartSummary")
                         </div>
@@ -119,7 +129,7 @@
                                 <li><a class="dropdown-item small" asp-area="Identity" asp-page="/Account/Manage/Index">PROFILE</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="post" asp-area="Identity" asp-page="/Account/Logout">
+                                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                         <button type="submit" class="dropdown-item text-danger fw-bold small">LOGOUT</button>
                                     </form>
                                 </li>
@@ -128,7 +138,13 @@
                     }
                     else
                     {
-                        <a class="nav-link f1-font small text-white border border-danger px-3 py-1" asp-area="Identity" asp-page="/Account/Login">LOGIN</a>
+                        <div class="d-flex gap-2">
+                            <a class="nav-link f1-font small nav-register-btn border border-danger px-3 py-1"
+                               asp-area="Identity" asp-page="/Account/Login">LOGIN</a>
+
+                            <a class="nav-link f1-font small nav-register-btn border border-danger px-3 py-1"
+                               asp-area="Identity" asp-page="/Account/Register">REGISTER</a>
+                        </div>
                     }
                 </div>
             </div>
@@ -145,6 +161,7 @@
             <a class="sidebar-link" asp-controller="Product" asp-action="Index">STORE</a>
             <a class="sidebar-link" asp-controller="Home" asp-action="Contact">CONTACTS</a>
             <a class="sidebar-link" asp-controller="Favorites" asp-action="Index">FAVORITES</a>
+
             @if (User.IsInRole("Administrator"))
             {
                 <div class="p-3 text-secondary fw-bold small bg-dark">ADMIN</div>
@@ -170,7 +187,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* ФИКС ЗА ГРЕШКАТА: RenderSection винаги трябва да е тук *@
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

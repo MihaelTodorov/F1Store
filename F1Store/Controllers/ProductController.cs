@@ -1,12 +1,12 @@
-﻿using F1Store.Core.Contracts;
+﻿using F1Store.Core.Contacts;
+using F1Store.Core.Contracts;
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Models.Category;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using F1Store.Models.Team;
 using F1Store.Models.Product;
-using F1Store.Core.Contacts;
+using F1Store.Models.Team;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace F1Store.Controllers
 {
@@ -16,19 +16,33 @@ namespace F1Store.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly ITeamService _teamService;
+        private readonly IFavoritesService _favoritesService; // Новата зависимост
 
-        public ProductController(IProductService productService, ICategoryService categoryService, ITeamService teamService)
+        public ProductController(
+            IProductService productService,
+            ICategoryService categoryService,
+            ITeamService teamService,
+            IFavoritesService favoritesService)
         {
             this._productService = productService;
             this._categoryService = categoryService;
             this._teamService = teamService;
+            this._favoritesService = favoritesService; // Инициализация
         }
 
         [AllowAnonymous]
-        public ActionResult Index(string searchStringCategoryName, string searchStringTeamName)
+        public async Task<ActionResult> Index(string searchStringCategoryName, string searchStringTeamName)
         {
-            List<ProductIndexVM> products = _productService.GetProducts(searchStringCategoryName, searchStringTeamName)
-                .Select(product => new ProductIndexVM
+            // Вземаме ID-то на потребителя, за да проверим неговите любими
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var productsFromDb = _productService.GetProducts(searchStringCategoryName, searchStringTeamName);
+
+            var products = new List<ProductIndexVM>();
+
+            foreach (var product in productsFromDb)
+            {
+                var vm = new ProductIndexVM
                 {
                     Id = product.Id,
                     ProductName = product.ProductName,
@@ -40,12 +54,15 @@ namespace F1Store.Controllers
                     Description = product.Description,
                     Quantity = product.Quantity,
                     Price = product.Price,
-                    Discount = product.Discount
-                }).ToList();
+                    Discount = product.Discount,
+                    // Visual Polish: Проверяваме дали продуктът е в списъка на потребителя
+                    IsFavorite = userId != null && await _favoritesService.IsFavoriteAsync(userId, product.Id)
+                };
+                products.Add(vm);
+            }
 
             return this.View(products);
         }
-
 
         [AllowAnonymous]
         public ActionResult Details(int id)

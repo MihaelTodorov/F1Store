@@ -82,10 +82,14 @@
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline me-1">
+                                    @* Променяме действието динамично: ако е любим -> Remove, ако не е -> Add *@
+                                    <form asp-controller="Favorites" asp-action="@(item.IsFavorite ? "Remove" : "Add")" method="post" class="d-inline me-1">
                                         <input type="hidden" name="productId" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-0 border-opacity-25 fav-btn" title="Add to Paddock">
-                                            <i class="bi bi-heart-fill"></i>
+                                        <button type="submit"
+                                                class="btn btn-sm rounded-0 border-opacity-25 fav-btn @(item.IsFavorite ? "btn-danger" : "btn-outline-danger")"
+                                                title="@(item.IsFavorite ? "Remove from Paddock" : "Add to Paddock")">
+                                            @* Променяме иконата: bi-heart-fill за любими, bi-heart за празно *@
+                                            <i class="bi @(item.IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
                                         </button>
                                     </form>
                                 }
@@ -124,15 +128,28 @@
 </div>
 
 <style>
-    /* Малко допълнителен стил за сърцето */
     .fav-btn {
         transition: 0.3s all ease;
+        min-width: 34px;
     }
 
-        .fav-btn:hover {
-            background-color: #e10600 !important;
-            color: white !important;
-            border-color: #e10600 !important;
+    /* Ховър ефект за празно сърце */
+    .btn-outline-danger.fav-btn:hover {
+        background-color: #e10600 !important;
+        color: white !important;
+        border-color: #e10600 !important;
+        transform: scale(1.1);
+    }
+
+    /* Ефект за вече активно (червено) сърце */
+    .btn-danger.fav-btn {
+        background-color: #e10600;
+        border-color: #e10600;
+        color: white;
+    }
+
+        .btn-danger.fav-btn:hover {
+            background-color: #b30500 !important;
             transform: scale(1.1);
         }
 </style>
