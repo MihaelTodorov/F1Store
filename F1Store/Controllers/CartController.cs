@@ -1,4 +1,5 @@
 ﻿using F1Store.Core.Contracts;
+using F1Store.Core.Services;
 using F1Store.Infrastructure.Data;
 using F1Store.Models.Cart;
 using Microsoft.AspNetCore.Authorization;
@@ -94,40 +95,111 @@ namespace F1Store.Controllers
             return RedirectToSafe(returnUrl);
         }
 
-        // --- НОВ МЕТОД ЗА "BUY NOW" ---
+        [HttpPost]
+        [Authorize]
+        public IActionResult DirectCheckout(int productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // 1. Добавяме продукта
+            _cartService.Add(productId, userId, 1);
+
+            // 2. Създаваме поръчката (връща bool)
+            var ok = _orderService.CreateFromCart(userId);
+            if (!ok) return RedirectToAction(nameof(Index));
+
+            // 3. ВЗИМАМЕ ИСТИНСКОТО ID (както направихме в обикновения Checkout)
+            var realGroupId = _orderService.GetLatestOrderGroupIdByUser(userId);
+
+            // 4. ПРАЩАМЕ КЪМ ПЛАЩАНЕ с истинското ID
+            return RedirectToAction("Payment", new { orderGroupId = realGroupId });
+        }
+
+        // 2. Страница за въвеждане на данни за карта
+        [HttpGet]
+        public IActionResult Payment(Guid orderGroupId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orders = _orderService.GetOrdersByGroupId(orderGroupId, userId);
+
+            if (orders == null || !orders.Any())
+                return RedirectToAction(nameof(Index));
+
+            var vm = new CartCheckoutSuccessVM
+            {
+                OrderGroupId = orderGroupId.ToString().ToUpper(), // Конвертиране към string за VM
+                TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m)))
+            };
+
+            return View(vm);
+        }
+
+        // 3. Обработка на плащането и пренасочване към финала
+        [HttpPost]
+        public IActionResult ProcessPayment(Guid orderGroupId)
+        {
+            // Тук плащането се счита за успешно и отиваме към Success екшъна
+            return RedirectToAction("Success", new { orderGroupId = orderGroupId });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult DirectCheckout(int productId)
+        public IActionResult Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(userId)) return Challenge();
 
-            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            if (product == null || product.Quantity <= 0)
-            {
-                TempData["ErrorMessage"] = "Продуктът не е наличен.";
-                return RedirectToAction("Details", "Product", new { id = productId });
-            }
+            var cart = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
+            if (!cart.Any()) return RedirectToAction(nameof(Index));
 
-            // Добавяме го в количката (ако вече е там, услугата обикновено увеличава количеството)
-            var ok = _cartService.Add(productId, userId, 1);
-            if (!ok)
+            foreach (var ci in cart)
             {
-                TempData["ErrorMessage"] = "Грешка при добавяне в количката.";
-                return RedirectToAction("Details", "Product", new { id = productId });
+                var product = _context.Products.FirstOrDefault(p => p.Id == ci.ProductId);
+                if (product == null || product.Quantity <= 0) _context.CartItems.Remove(ci);
+                else if (ci.Quantity > product.Quantity) ci.Quantity = product.Quantity;
             }
+            _context.SaveChanges();
 
-            // Директно изпълняваме Checkout логиката
-            var orderOk = _orderService.CreateFromCart(userId);
-            if (!orderOk)
-            {
-                TempData["ErrorMessage"] = "Грешка при създаване на поръчката.";
-                return RedirectToAction(nameof(Index));
-            }
+            var ok = _orderService.CreateFromCart(userId);
+            if (!ok) return RedirectToAction(nameof(Index));
 
             var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
-            return RedirectToAction(nameof(Success), new { orderGroupId = groupId });
+
+            // Пренасочване към Payment вместо директно към Success
+            return RedirectToAction("Payment", new { orderGroupId = groupId });
         }
+
+        [HttpGet]
+        public IActionResult Success(Guid orderGroupId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orders = _orderService.GetOrdersByGroupId(orderGroupId, userId);
+
+            if (orders == null || !orders.Any())
+                return RedirectToAction(nameof(Index));
+
+            var first = orders.First();
+            var vm = new CartCheckoutSuccessVM
+            {
+                OrderGroupId = orderGroupId.ToString().ToUpper(),
+                OrderDate = first.OrderDate.ToString("dd MMM yyyy, HH:mm", CultureInfo.InvariantCulture),
+                TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m))),
+                Items = orders.Select(o => new CartCheckoutSuccessItemVM
+                {
+                    ProductId = o.ProductId,
+                    ProductName = o.Product.ProductName,
+                    Picture = o.Product.Picture,
+                    Quantity = o.Quantity,
+                    UnitPrice = o.Price,
+                    Discount = o.Discount
+                }).ToList()
+            };
+
+            // ВАЖНО: Изрично зареждаме преименуваното View
+            return View("CartSuccess", vm);
+        }
+
+        // --- Ajax методи и Helper-и ---
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -197,59 +269,6 @@ namespace F1Store.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _cartService.Remove(cartItemId, userId);
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Checkout()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
-
-            var cart = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
-            if (!cart.Any()) return RedirectToAction(nameof(Index));
-
-            // Проверка и корекция на наличности преди финализиране
-            foreach (var ci in cart)
-            {
-                var product = _context.Products.FirstOrDefault(p => p.Id == ci.ProductId);
-                if (product == null || product.Quantity <= 0) _context.CartItems.Remove(ci);
-                else if (ci.Quantity > product.Quantity) ci.Quantity = product.Quantity;
-            }
-            _context.SaveChanges();
-
-            var ok = _orderService.CreateFromCart(userId);
-            if (!ok) return RedirectToAction(nameof(Index));
-
-            var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
-            return RedirectToAction(nameof(Success), new { orderGroupId = groupId });
-        }
-
-        [HttpGet]
-        public IActionResult Success(Guid orderGroupId)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var orders = _orderService.GetOrdersByGroupId(orderGroupId, userId);
-            if (orders == null || !orders.Any()) return RedirectToAction(nameof(Index));
-
-            var first = orders.First();
-            var vm = new CartCheckoutSuccessVM
-            {
-                OrderGroupId = orderGroupId.ToString,
-                OrderDate = first.OrderDate.ToString("dd MMM yyyy, HH:mm", CultureInfo.InvariantCulture),
-                TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m))),
-                Items = orders.Select(o => new CartCheckoutSuccessItemVM
-                {
-                    ProductId = o.ProductId,
-                    ProductName = o.Product.ProductName,
-                    Picture = o.Product.Picture,
-                    Quantity = o.Quantity,
-                    UnitPrice = o.Price,
-                    Discount = o.Discount
-                }).ToList()
-            };
-
-            return View(vm);
         }
 
         private IActionResult RedirectToSafe(string? returnUrl)

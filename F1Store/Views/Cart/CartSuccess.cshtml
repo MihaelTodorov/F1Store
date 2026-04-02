@@ -117,40 +117,56 @@
     </div>
 </section>
 
-@* --- ИНТЕГРАЦИЯ НА EMAILJS --- *@
+@* Поставяш това най-отдолу в CartSuccess.cshtml *@
+
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@@emailjs/browser@3/dist/email.min.js"></script>
 <script type="text/javascript">
     (function() {
-        // Твоят Public Key
-        emailjs.init("1vKhLN6RXmbviX3bU");
+        // Инициализация - двойно @@, за да не го мисли Razor за C# променлива
+        emailjs.init("gmtEXQ9LVkgWAUxxA");
     })();
 
     window.onload = function() {
-        // 1. Генерираме текста с продуктите
         let productsSummary = "";
-        @foreach (var item in Model.Items)
-        {
-                <text>
-                productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\n";
-                </text>
-        }
+    @foreach (var item in Model.Items)
+    {
+        <text>productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\\n";</text>
+    }
 
-        // 2. Параметри за шаблона - С КАВИЧКИ ЗА ИЗБЯГВАНЕ НА ГРЕШКИ
-        const templateParams = {
+        // Данни за КЛИЕНТА
+        const clientParams = {
             user_name: "@User.Identity?.Name",
-            user_email: "@User.Identity?.Name",
+            // ПРЕМАХВАМЕ текста "user_email: " от стойността!
+            user_email: "@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value",
             order_id: "@Model.OrderGroupId",
             products_summary: productsSummary,
             total_price: "@Eur(Model.TotalAmount)",
-            message: "Благодарим за вашата поръчка във F1 Store!"
+            message: "Thank you for your order at F1 Store!"
         };
 
-        // 3. Изпращане
-        emailjs.send("service_yip1a1k", "template_127whdh", templateParams)
-            .then(function(response) {
-                console.log('EMAIL SENT SUCCESS!', response.status, response.text);
+       // Данни за АДМИНА (Теб)
+        const adminParams = {
+            // ТУК Е КЛЮЧЪТ: Слагаме твоя имейл в полето, което шаблонът чете
+            user_email: "m.todorov2905@gmail.com",
+            user_name: "ADMIN NOTIFICATION",
+            order_id: "@Model.OrderGroupId",
+            products_summary: "НОВА ПОРЪЧКА:\n" + productsSummary,
+            total_price: "@Eur(Model.TotalAmount)",
+            message: "Клиентът @User.Identity?.Name току-що направи поръчка."
+        };
+
+        // 1. Изпращане до КЛИЕНТА (ползва template_127whdh)
+        emailjs.send("service_yxpydzl", "template_127whdh", clientParams)
+            .then(function() {
+                console.log('Client notified!');
             }, function(error) {
-                console.log('EMAIL SEND FAILED...', error);
+                console.error('Client email failed:', error);
+            });
+
+        // Изпращане до АДМИНА
+        emailjs.send("service_yxpydzl", "template_127whdh", adminParams)
+            .then(function() {
+                console.log('Admin notified successfully!');
             });
     };
 </script>

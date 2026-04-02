@@ -71,7 +71,7 @@
                             }
                         </td>
                         <td>
-                            <div class="f1-font fw-bold">@item.Price.ToString("C2")</div>
+                            <div class="f1-font fw-bold">@item.Price.ToString("F2") лв.</div>
                             @if (item.Discount > 0)
                             {
                                 <small class="text-danger fw-bold">-@item.Discount% OFF</small>
@@ -82,13 +82,12 @@
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    @* Променяме действието динамично: ако е любим -> Remove, ако не е -> Add *@
                                     <form asp-controller="Favorites" asp-action="@(item.IsFavorite ? "Remove" : "Add")" method="post" class="d-inline me-1">
+                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="productId" value="@item.Id" />
                                         <button type="submit"
                                                 class="btn btn-sm rounded-0 border-opacity-25 fav-btn @(item.IsFavorite ? "btn-danger" : "btn-outline-danger")"
                                                 title="@(item.IsFavorite ? "Remove from Paddock" : "Add to Paddock")">
-                                            @* Променяме иконата: bi-heart-fill за любими, bi-heart за празно *@
                                             <i class="bi @(item.IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
                                         </button>
                                     </form>
@@ -98,14 +97,23 @@
                                     <i class="bi bi-eye"></i>
                                 </a>
 
-                                @if (User.Identity.IsAuthenticated)
+                                @if (User.Identity.IsAuthenticated && item.Quantity > 0)
                                 {
+                                    @* БУТОН ЗА КОЛИЧКА *@
                                     <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline ms-1">
+                                        @Html.AntiForgeryToken()
                                         <input type="hidden" name="productId" value="@item.Id" />
                                         <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="btn btn-sm btn-danger rounded-0 px-3 f1-font" style="font-size: 0.7rem;">
-                                            <i class="bi bi-cart-plus-fill"></i> Add
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-0 px-2 f1-font" style="font-size: 0.7rem;" title="Add to Cart">
+                                            <i class="bi bi-cart-plus"></i>
                                         </button>
+                                    </form>
+
+                                    @* БУТОН BUY NOW В СПИСЪКА С ПРОДУКТИ *@
+                                    <form asp-controller="Cart" asp-action="DirectCheckout" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-danger">BUY NOW</button>
                                     </form>
                                 }
 
@@ -133,7 +141,6 @@
         min-width: 34px;
     }
 
-    /* Ховър ефект за празно сърце */
     .btn-outline-danger.fav-btn:hover {
         background-color: #e10600 !important;
         color: white !important;
@@ -141,7 +148,6 @@
         transform: scale(1.1);
     }
 
-    /* Ефект за вече активно (червено) сърце */
     .btn-danger.fav-btn {
         background-color: #e10600;
         border-color: #e10600;
@@ -152,6 +158,12 @@
             background-color: #b30500 !important;
             transform: scale(1.1);
         }
+
+    /* Стилизация за BUY бутона */
+    .btn-danger {
+        background-color: #e10600;
+        border: none;
+    }
 </style>
 
 @section Scripts {
