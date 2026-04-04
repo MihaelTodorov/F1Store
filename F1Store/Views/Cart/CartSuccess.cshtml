@@ -7,20 +7,274 @@
     string Eur(decimal x) => $"{x:0.00} €";
 }
 
+<style>
+    :root {
+        --f1-red: #e10600;
+        --f1-dark: #15151e;
+        --f1-black: #000000;
+        --f1-grey: #38383f;
+    }
+
+    .pf-order-success-page {
+        background-color: var(--f1-black);
+        color: white;
+        padding-top: 40px;
+        padding-bottom: 80px;
+        min-height: 80vh;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .pf-order-success-hero {
+        background: linear-gradient(135deg, #1e1e28 0%, #15151e 100%);
+        border-left: 8px solid var(--f1-red);
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .pf-order-success-kicker {
+        color: var(--f1-red);
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .pf-order-success-title {
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        line-height: 1.1;
+    }
+
+    .pf-order-success-subtitle {
+        color: #949498;
+        font-family: 'Titillium Web', sans-serif;
+        font-size: 1.1rem;
+        max-width: 600px;
+    }
+
+    .pf-order-success-meta {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        flex-wrap: wrap;
+    }
+
+    .pf-order-success-meta-label {
+        display: block;
+        color: #67676d;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        margin-bottom: 5px;
+    }
+
+    .pf-order-success-meta-value {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .pf-order-success-actions {
+        margin-top: 40px;
+        display: flex;
+        gap: 15px;
+    }
+
+    .pf-order-action-btn {
+        padding: 12px 25px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .pf-order-action-btn--primary {
+        background-color: var(--f1-red);
+        color: white;
+    }
+
+        .pf-order-action-btn--primary:hover {
+            background-color: #b00500;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .pf-order-action-btn--secondary {
+        border: 1px solid white;
+        color: white;
+    }
+
+        .pf-order-action-btn--secondary:hover {
+            background-color: white;
+            color: black;
+            transform: translateY(-2px);
+        }
+
+    .pf-order-success-card {
+        background: #1e1e28;
+        padding: 0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .pf-order-success-card-head {
+        padding: 25px 30px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pf-order-success-card-title {
+        margin: 0;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+    }
+
+    .pf-order-success-card-total {
+        font-size: 1.2rem;
+    }
+
+        .pf-order-success-card-total strong {
+            color: var(--f1-red);
+        }
+
+    .pf-order-success-items {
+        padding: 0 30px;
+    }
+
+    .pf-order-success-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+        .pf-order-success-item:last-child {
+            border-bottom: none;
+        }
+
+    .pf-order-success-item-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .pf-order-success-thumb-wrap {
+        width: 100px;
+        height: 100px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .pf-order-success-thumb {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .pf-order-success-product-name {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .pf-order-success-product-meta {
+        color: #949498;
+        font-family: 'Titillium Web', sans-serif;
+        font-size: 0.9rem;
+    }
+
+    .pf-order-success-discount {
+        color: var(--f1-red);
+        font-weight: bold;
+    }
+
+    .pf-order-success-item-right {
+        text-align: right;
+        min-width: 200px;
+    }
+
+    .pf-order-success-price-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-family: 'Titillium Web', sans-serif;
+    }
+
+        .pf-order-success-price-line span {
+            color: #67676d;
+        }
+
+    .pf-order-success-subtotal {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .pf-order-success-icon i {
+        font-size: 3.5rem;
+        color: #28a745;
+        margin-right: 25px;
+    }
+
+    .pf-order-success-title-row {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .pf-order-success-thumb-placeholder {
+        font-size: 2rem;
+        color: #ccc;
+    }
+
+    @@media (max-width: 768px) {
+        .pf-order-success-title-row {
+            flex-direction: column;
+        }
+
+        .pf-order-success-icon i {
+            margin-bottom: 20px;
+        }
+
+        .pf-order-success-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .pf-order-success-item-right {
+            text-align: left;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 15px;
+        }
+    }
+</style>
+
 <section class="pf-order-success-page">
-    <div class="container-fluid px-3">
+    <div class="container py-5">
         <div class="pf-order-success-hero">
             <div class="pf-order-success-kicker">Order confirmed</div>
 
             <div class="pf-order-success-title-row">
                 <div class="pf-order-success-icon">
-                    <i class="bi bi-check2-circle"></i>
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
 
                 <div>
                     <h1 class="pf-order-success-title">Order completed successfully</h1>
                     <p class="pf-order-success-subtitle">
-                        Your order has been placed and your cart has been checked out successfully.
+                        Your racing gear is being prepared! We've received your order and our pit crew is working on it.
                     </p>
                 </div>
             </div>
@@ -28,31 +282,29 @@
             <div class="pf-order-success-meta">
                 <div class="pf-order-success-meta-item">
                     <span class="pf-order-success-meta-label">Order date</span>
-                    @* Показваме датата от модела *@
                     <span class="pf-order-success-meta-value">@Model.OrderDate</span>
                 </div>
 
                 <div class="pf-order-success-meta-item">
                     <span class="pf-order-success-meta-label">Order ID</span>
-                    @* Коригирано на OrderGroupId според контролера ти *@
                     <span class="pf-order-success-meta-value">#@Model.OrderGroupId</span>
                 </div>
 
                 <div class="pf-order-success-meta-item">
-                    <span class="pf-order-success-meta-label">Total</span>
-                    <span class="pf-order-success-meta-value">@Eur(Model.TotalAmount)</span>
+                    <span class="pf-order-success-meta-label">Total Paid</span>
+                    <span class="pf-order-success-meta-value" style="color: var(--f1-red);">@Eur(Model.TotalAmount)</span>
                 </div>
             </div>
 
             <div class="pf-order-success-actions">
                 <a asp-controller="Order" asp-action="MyOrders" class="pf-order-action-btn pf-order-action-btn--primary">
-                    <i class="bi bi-bag-check me-2"></i>
-                    <span>View My Orders</span>
+                    <i class="bi bi-box-seam me-2"></i>
+                    <span>Track My Orders</span>
                 </a>
 
                 <a asp-controller="Product" asp-action="Index" class="pf-order-action-btn pf-order-action-btn--secondary">
-                    <i class="bi bi-grid me-2"></i>
-                    <span>Continue Shopping</span>
+                    <i class="bi bi-arrow-left me-2"></i>
+                    <span>Return to Store</span>
                 </a>
             </div>
         </div>
@@ -60,7 +312,7 @@
         <div class="pf-order-success-card">
             <div class="pf-order-success-card-head">
                 <div>
-                    <div class="pf-order-success-card-kicker">Just ordered</div>
+                    <div class="pf-order-success-card-kicker">Pit Stop Summary</div>
                     <h2 class="pf-order-success-card-title">Products in this order</h2>
                 </div>
 
@@ -75,7 +327,6 @@
                     <div class="pf-order-success-item">
                         <div class="pf-order-success-item-left">
                             <div class="pf-order-success-thumb-wrap">
-                                @* Проверка за Picture, за да избегнем грешки CS0117 *@
                                 @if (!string.IsNullOrWhiteSpace(item.Picture))
                                 {
                                     <img src="@item.Picture" alt="@item.ProductName" class="pf-order-success-thumb" />
@@ -91,10 +342,10 @@
                             <div>
                                 <div class="pf-order-success-product-name">@item.ProductName</div>
                                 <div class="pf-order-success-product-meta">
-                                    Quantity: @item.Quantity
+                                    Quantity: <strong>@item.Quantity</strong>
                                     @if (item.Discount > 0)
                                     {
-                                        <span class="pf-order-success-discount">• -@item.Discount.ToString("0.##")%</span>
+                                        <span class="pf-order-success-discount ms-2">• @item.Discount.ToString("0")% F1 REWARDS APPLIED</span>
                                     }
                                 </div>
                             </div>
@@ -103,9 +354,9 @@
                         <div class="pf-order-success-item-right">
                             <div class="pf-order-success-price-line">
                                 <span>Unit price</span>
-                                <strong>@Eur(item.UnitPrice)</strong>
+                                <span>@Eur(item.UnitPrice)</span>
                             </div>
-                            <div class="pf-order-success-price-line">
+                            <div class="pf-order-success-price-line mt-2 pt-2 border-top border-secondary">
                                 <span>Subtotal</span>
                                 <strong class="pf-order-success-subtotal">@Eur(item.Subtotal)</strong>
                             </div>
@@ -130,7 +381,7 @@
         let productsSummary = "";
     @foreach (var item in Model.Items)
     {
-        <text>productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\\n";</text>
+            <text>productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\\n";</text>
     }
 
         // Данни за КЛИЕНТА

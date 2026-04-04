@@ -26,8 +26,7 @@
         <div class="text-center py-5 border border-secondary rounded bg-dark bg-opacity-50">
             <div class="display-1 text-secondary mb-4"><i class="bi bi-cart-x"></i></div>
             <h2 class="f1-font">YOUR CART IS EMPTY</h2>
-            <p class="text-muted mb-4">Add some gear to your cart and come back to checkout.</p>
-            <a asp-controller="Product" asp-action="Index" class="btn btn-danger f1-font px-5 py-3">
+            <a asp-controller="Product" asp-action="Index" class="btn btn-danger f1-font px-5 py-3 mt-3">
                 BROWSE PRODUCTS
             </a>
         </div>
@@ -43,27 +42,48 @@
                     <div class="card-body p-0">
                         @foreach (var item in items)
                         {
-                            <div class="d-flex align-items-center p-3 border-bottom border-secondary gap-3">
+                            <div class="d-flex align-items-center p-3 border-bottom border-secondary gap-3 @(item.IsOutOfStock ? "opacity-50" : "")">
                                 <div class="cart-img-wrap" style="width: 100px;">
-                                    @if (!string.IsNullOrWhiteSpace(item.Picture))
-                                    {
-                                        <img src="@item.Picture" class="img-fluid rounded" alt="@item.ProductName" />
-                                    }
-                                    else
-                                    {
-                                        <div class="bg-secondary bg-opacity-50 text-center py-3 rounded"><i class="bi bi-image fs-2"></i></div>
-                                    }
+                                    <img src="@item.Picture" class="img-fluid rounded" alt="@item.ProductName" />
                                 </div>
+
                                 <div class="flex-grow-1">
                                     <h5 class="f1-font mb-1" style="font-size: 1rem;">@item.ProductName</h5>
-                                    <div class="small text-muted">UNIT: @Eur(item.FinalUnitPrice)</div>
+                                    <div class="small text-muted mb-2">UNIT: @Eur(item.FinalUnitPrice)</div>
+
+                                    @if (!item.IsOutOfStock)
+                                    {
+                                        <div class="d-flex align-items-center gap-2">
+                                            @* Форма за НАМАЛЯВАНЕ на количеството *@
+                                            <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                                <input type="hidden" name="delta" value="-1" />
+                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 btn-sm" @(item.Quantity <= 1 ? "disabled" : "")>-</button>
+                                            </form>
+
+                                            <span class="f1-font text-white px-2">@item.Quantity</span>
+
+                                            @* Форма за УВЕЛИЧАВАНЕ на количеството *@
+                                            <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                                <input type="hidden" name="delta" value="1" />
+                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 btn-sm" @(item.Quantity >= item.AvailableQuantity ? "disabled" : "")>+</button>
+                                            </form>
+
+                                            <small class="text-muted opacity-50 ms-2" style="font-size: 0.7rem;">AVAIL: @item.AvailableQuantity</small>
+                                        </div>
+                                    }
                                 </div>
+
                                 <div class="text-end px-3">
                                     <div class="f1-font text-white">@Eur(item.Subtotal)</div>
-                                    <form asp-controller="Cart" asp-action="Remove" method="post" class="mt-2">
+                                    @* Работещият бутон за премахване *@
+                                    <form asp-action="Remove" method="post" class="mt-2">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                                        <button type="submit" class="btn btn-link text-danger p-0 small">REMOVE</button>
+                                        <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none">REMOVE</button>
                                     </form>
                                 </div>
                             </div>
@@ -72,7 +92,8 @@
                 </div>
 
                 <div class="mt-4 text-end">
-                    <form asp-controller="Cart" asp-action="Clear" method="post">
+                    @* Поправеният бутон за изчистване на всичко *@
+                    <form asp-action="ClearEntireCart" method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-sm btn-outline-danger f1-font">
                             <i class="bi bi-trash3 me-2"></i>CLEAR ENTIRE CART
@@ -89,18 +110,14 @@
                             <span>SUBTOTAL</span>
                             <span>@Eur(total)</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-4 text-muted">
-                            <span>DELIVERY</span>
-                            <span class="small">CALCULATED NEXT</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-4 border-top border-secondary pt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-top border-secondary pt-3 text-white">
                             <span class="f1-font fs-5">TOTAL</span>
                             <span class="f1-font fs-4 text-danger">@Eur(total)</span>
                         </div>
 
-                        <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <form asp-action="Checkout" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger w-100 f1-font py-3 fs-5 shadow">
+                            <button type="submit" class="btn btn-danger w-100 f1-font py-3 fs-5" @(!items.Any() ? "disabled" : "")>
                                 <i class="bi bi-bag-check me-2"></i>CHECKOUT
                             </button>
                         </form>
@@ -111,57 +128,23 @@
     }
 </div>
 
-@section Scripts {
-    @* Тук можеш да запазиш твоя оригинален скрипт за UpdateQuantityAjax, ако ти трябва *@
-}
-
 <style>
-    /* ПРЕМАХВАМЕ тъмните overlay-и, които правеха страницата невидима */
-    .pf-cart-page {
-        position: relative;
-        z-index: 5;
-    }
-
     .f1-font {
         font-family: 'Orbitron', sans-serif;
         letter-spacing: 1px;
     }
 
-    .uppercase {
-        text-transform: uppercase;
-    }
-
-    /* Дизайн на количката */
     .card {
-        background-color: rgba(21, 21, 30, 0.8) !important;
-        backdrop-filter: blur(5px);
+        background-color: rgba(21, 21, 30, 0.9) !important;
     }
 
-    /* Оправяме видимостта на иконите и заглавията */
-    h1, h2, h3, h4, h5 {
-        color: white !important;
-    }
-
-    .text-muted {
-        color: #adb5bd !important;
-    }
-
-    /* Бутон за количка в стил F1 */
     .btn-danger {
         background-color: #e10600;
         border: none;
         border-radius: 0;
-        transition: 0.3s;
     }
-
-        .btn-danger:hover {
-            background-color: #ff1e1e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(225, 6, 0, 0.4);
-        }
 
     .btn-outline-light {
         border-radius: 0;
-        border-width: 2px;
     }
 </style>

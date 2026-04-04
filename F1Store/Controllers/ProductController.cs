@@ -16,7 +16,7 @@ namespace F1Store.Controllers
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
         private readonly ITeamService _teamService;
-        private readonly IFavoritesService _favoritesService; // Новата зависимост
+        private readonly IFavoritesService _favoritesService;
 
         public ProductController(
             IProductService productService,
@@ -27,41 +27,56 @@ namespace F1Store.Controllers
             this._productService = productService;
             this._categoryService = categoryService;
             this._teamService = teamService;
-            this._favoritesService = favoritesService; // Инициализация
+            this._favoritesService = favoritesService;
         }
 
         [AllowAnonymous]
-        public async Task<ActionResult> Index(string searchStringCategoryName, string searchStringTeamName)
+        public async Task<ActionResult> Index(List<string> SearchTeams, List<string> SearchCategories, string team)
         {
-            // Вземаме ID-то на потребителя, за да проверим неговите любими
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var allProducts = _productService.GetProducts(null, null);
 
-            var productsFromDb = _productService.GetProducts(searchStringCategoryName, searchStringTeamName);
+            // Превръщаме в IQueryable за по-лесно филтриране
+            var filteredQuery = allProducts.AsQueryable();
 
-            var products = new List<ProductIndexVM>();
+            // 1. Събираме всички търсени отбори в един списък
+            var teamFilters = new List<string>();
+            if (SearchTeams != null) teamFilters.AddRange(SearchTeams);
+            if (!string.IsNullOrEmpty(team)) teamFilters.Add(team);
 
-            foreach (var product in productsFromDb)
+            // 2. Филтрираме по отбор (Гъвкаво търсене)
+            if (teamFilters.Any())
             {
-                var vm = new ProductIndexVM
-                {
-                    Id = product.Id,
-                    ProductName = product.ProductName,
-                    TeamId = product.TeamId,
-                    TeamName = product.Team.TeamName,
-                    CategoryId = product.CategoryId,
-                    CategoryName = product.Category.CategoryName,
-                    Picture = product.Picture,
-                    Description = product.Description,
-                    Quantity = product.Quantity,
-                    Price = product.Price,
-                    Discount = product.Discount,
-                    // Visual Polish: Проверяваме дали продуктът е в списъка на потребителя
-                    IsFavorite = userId != null && await _favoritesService.IsFavoriteAsync(userId, product.Id)
-                };
-                products.Add(vm);
+                filteredQuery = filteredQuery.Where(p =>
+                    teamFilters.Any(filter =>
+                        filter.Contains(p.Team.TeamName) || p.Team.TeamName.Contains(filter)
+                    ));
             }
 
-            return this.View(products);
+            // 3. Филтрираме по категория
+            if (SearchCategories != null && SearchCategories.Any())
+            {
+                filteredQuery = filteredQuery.Where(p => SearchCategories.Contains(p.Category.CategoryName));
+            }
+
+            // 4. Мапване към ViewModel
+            var products = filteredQuery.Select(product => new ProductIndexVM
+            {
+                Id = product.Id,
+                ProductName = product.ProductName,
+                TeamId = product.TeamId,
+                TeamName = product.Team.TeamName,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category.CategoryName,
+                Picture = product.Picture,
+                Description = product.Description,
+                Quantity = product.Quantity,
+                Price = product.Price,
+                Discount = product.Discount,
+                IsFavorite = userId != null && _favoritesService.IsFavoriteAsync(userId, product.Id).Result
+            }).ToList();
+
+            return View(products);
         }
 
         [AllowAnonymous]

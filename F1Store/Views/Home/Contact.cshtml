@@ -2,6 +2,8 @@
     ViewData["Title"] = "Contact Us";
 }
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="f1-font text-danger display-4">GET IN TOUCH</h1>
@@ -58,19 +60,21 @@
         <div class="col-12 col-lg-6">
             <div class="card bg-dark border-danger p-4 shadow-lg">
                 <h3 class="f1-font text-white mb-4">SEND A MESSAGE</h3>
-                <form>
+                <form id="contactForm">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label text-secondary small uppercase">Full Name</label>
-                            <input type="text" class="form-control bg-black border-secondary text-white rounded-0" placeholder="Max Verstappen">
+                            <label class="form-label text-secondary small uppercase">Full Name (Auto)</label>
+                            <input type="text" class="form-control bg-black border-secondary text-white rounded-0"
+                                   value="@User.Identity?.Name" readonly disabled>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-secondary small uppercase">Email Address</label>
-                            <input type="email" class="form-control bg-black border-secondary text-white rounded-0" placeholder="max@redbull.com">
+                            <label class="form-label text-secondary small uppercase">Your Email Address</label>
+                            <input type="email" id="replyTo" class="form-control bg-black border-secondary text-white rounded-0"
+                                   placeholder="max@redbull.com" required>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-secondary small uppercase">Subject</label>
-                            <select class="form-select bg-black border-secondary text-white rounded-0">
+                            <select id="msgSubject" class="form-select bg-black border-secondary text-white rounded-0">
                                 <option selected>General Inquiry</option>
                                 <option>Order Status</option>
                                 <option>Returns & Refunds</option>
@@ -79,10 +83,11 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label text-secondary small uppercase">Message</label>
-                            <textarea class="form-control bg-black border-secondary text-white rounded-0" rows="5" placeholder="Write your message here..."></textarea>
+                            <textarea id="msgBody" class="form-control bg-black border-secondary text-white rounded-0"
+                                      rows="5" placeholder="Write your message here..." required></textarea>
                         </div>
                         <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-danger w-100 f1-font py-3">
+                            <button type="submit" id="submitBtn" class="btn btn-danger w-100 f1-font py-3">
                                 <i class="bi bi-send me-2"></i>SEND MESSAGE
                             </button>
                         </div>
@@ -103,7 +108,6 @@
         text-transform: uppercase;
     }
 
-    /* Стилизиране на полетата */
     .form-control:focus, .form-select:focus {
         background-color: #000;
         border-color: #e10600;
@@ -139,3 +143,66 @@
         border-radius: 50%;
     }
 </style>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@@emailjs/browser@3/dist/email.min.js"></script>
+
+<script type="text/javascript">
+    (function() {
+        // Твоят Public Key
+        emailjs.init("gmtEXQ9LVkgWAUxxA");
+    })();
+
+    document.getElementById('contactForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const originalBtnText = btn.innerHTML;
+
+        btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>SENDING...';
+        btn.disabled = true;
+
+        // Параметри според твоя шаблон template_sidu4z8
+        const templateParams = {
+            username: "@User.Identity?.Name",     // Използва името от Identity
+            email: document.getElementById('replyTo').value,
+            title: document.getElementById('msgSubject').value,
+            message: document.getElementById('msgBody').value,
+            time: new Date().toLocaleString('bg-BG')
+        };
+
+        // Изпращане чрез твоя Service ID и Template ID
+        emailjs.send("service_yxpydzl", "template_sidu4z8", templateParams)
+            .then(function() {
+                // Красиво известие при успех
+                Swal.fire({
+                    title: 'MESSAGE SENT!',
+                    text: 'Your inquiry has been delivered to our support team.',
+                    icon: 'success',
+                    background: '#15151e',
+                    color: '#fff',
+                    confirmButtonColor: '#e10600',
+                    confirmButtonText: 'COPY THAT',
+                    iconColor: '#e10600'
+                });
+
+                document.getElementById('contactForm').reset();
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            }, function(error) {
+                // Красиво известие при грешка
+                Swal.fire({
+                    title: 'ENGINE FAILURE!',
+                    text: 'We could not send your message. Please check the pits (console).',
+                    icon: 'error',
+                    background: '#15151e',
+                    color: '#fff',
+                    confirmButtonColor: '#e10600',
+                    confirmButtonText: 'TRY AGAIN'
+                });
+
+                console.error('FAILED...', error);
+                btn.innerHTML = originalBtnText;
+                btn.disabled = false;
+            });
+    });
+</script>

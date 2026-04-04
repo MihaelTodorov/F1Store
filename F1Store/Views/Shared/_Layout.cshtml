@@ -90,7 +90,6 @@
             margin-top: auto;
         }
 
-        /* Специален стил за бутона Register */
         .nav-register-btn {
             background-color: var(--f1-red) !important;
             color: white !important;
@@ -102,6 +101,14 @@
                 background-color: white !important;
                 color: var(--f1-red) !important;
             }
+
+        /* CUSTOM TOAST STYLE */
+        .f1-toast {
+            background-color: #1e1e2d !important;
+            border-radius: 0 !important;
+            border-left: 5px solid var(--f1-red) !important;
+            color: white !important;
+        }
     </style>
 </head>
 <body>
@@ -176,6 +183,17 @@
         @RenderBody()
     </main>
 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+        <div id="f1Toast" class="toast f1-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body f1-font">
+                    <span id="toastMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
     <footer class="text-center">
         <div class="container">
             <p class="text-secondary mb-1" style="font-size: 0.7rem;">&copy; 2026 F1 STORE. NOT OFFICIAL.</p>
@@ -186,6 +204,26 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var toastEl = document.getElementById('f1Toast');
+                var msg = "@(TempData["SuccessMessage"] ?? TempData["ErrorMessage"])";
+                var isError = @(TempData["ErrorMessage"] != null ? "true" : "false");
+
+                document.getElementById('toastMessage').innerText = msg;
+
+                if (isError) {
+                    toastEl.style.borderLeftColor = "orange"; // Или друг цвят за грешка
+                }
+
+                var toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                toast.show();
+            });
+        </script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 

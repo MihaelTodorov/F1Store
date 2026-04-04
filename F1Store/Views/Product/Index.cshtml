@@ -3,171 +3,284 @@
     ViewData["Title"] = "F1 Store - Products";
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="f1-font text-white m-0" style="border-left: 5px solid var(--f1-red); padding-left: 15px;">Available Gear</h1>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="f1-font text-white m-0 text-uppercase" style="border-left: 5px solid var(--f1-red); padding-left: 15px;">
+            Available Gear
+        </h1>
 
         @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
         {
-            <a asp-action="Create" class="btn btn-danger f1-font px-4 rounded-0">
-                <i class="bi bi-plus-lg"></i> Add New Product
+            <a asp-action="Create" class="btn btn-danger f1-font px-4 rounded-0 shadow-lg">
+                <i class="bi bi-plus-lg me-2"></i> ADD NEW PRODUCT
             </a>
         }
     </div>
 
-    <div class="card mb-4" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0;">
-        <div class="card-body">
-            <form asp-controller="Product" asp-action="Index" method="get" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="small text-secondary f1-font">Team</label>
-                    <input type="text" name="SearchStringTeamName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none" placeholder="e.g. Red Bull" />
+    <div class="card mb-5 border-0 shadow-lg" style="background: rgba(21, 21, 30, 0.9); backdrop-filter: blur(10px); overflow: visible; z-index: 100;">
+        <div class="card-body p-4" style="overflow: visible;">
+            <form asp-controller="Product" asp-action="Index" method="get" class="row g-3 align-items-start">
+
+                <div class="col-md-5">
+                    <label class="small text-secondary f1-font mb-2 uppercase">Filter by Team(s)</label>
+                    <select id="teamFilter" name="SearchTeams" multiple class="invisible-filter">
+                        <option value="Alpine">Alpine</option>
+                        <option value="Aston Martin">Aston Martin</option>
+                        <option value="Audi">Audi</option>
+                        <option value="Cadillac">Cadillac</option>
+                        <option value="Ferrari">Ferrari</option>
+                        <option value="Haas">Haas</option>
+                        <option value="McLaren">McLaren</option>
+                        <option value="Mercedes">Mercedes</option>
+                        <option value="Racing Bulls">Racing Bulls</option>
+                        <option value="Red Bull">Red Bull</option>
+                        <option value="Williams">Williams</option>
+                    </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="small text-secondary f1-font">Category</label>
-                    <input type="text" name="SearchStringCategoryName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none" placeholder="e.g. Helmets" />
+
+                <div class="col-md-5">
+                    <label class="small text-secondary f1-font mb-2 uppercase">Filter by Category</label>
+                    <select id="categoryFilter" name="SearchCategories" multiple class="invisible-filter">
+                        <option value="Accessories">Accessories</option>
+                        <option value="Auto Accessories">Auto Accessories</option>
+                        <option value="Backpacks & Bags">Backpacks & Bags</option>
+                        <option value="Collectibles & Memorabilia">Collectibles & Memorabilia</option>
+                        <option value="Face Coverings">Face Coverings</option>
+                        <option value="Footwear">Footwear</option>
+                        <option value="Headwear">Headwear</option>
+                        <option value="Home & Office">Home & Office</option>
+                        <option value="Hoodies & Sweatshirts">Hoodies & Sweatshirts</option>
+                        <option value="Jackets">Jackets</option>
+                        <option value="Jerseys">Jerseys</option>
+                        <option value="Pajamas & Underwear">Pajamas & Underwear</option>
+                        <option value="Pants">Pants</option>
+                        <option value="Polos">Polos</option>
+                        <option value="Shirts & Sweaters">Shirts & Sweaters</option>
+                        <option value="Shorts">Shorts</option>
+                        <option value="Swim & Beach">Swim & Beach</option>
+                        <option value="T-Shirts">T-Shirts</option>
+                    </select>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-outline-danger w-100 f1-font rounded-0">
-                        <i class="bi bi-filter"></i> Apply Filter
+
+                <div class="col-md-2" style="margin-top: 32px;">
+                    <button type="submit" class="btn btn-danger w-100 f1-font py-2 rounded-0 shadow-sm" style="height: 44px;">
+                        <i class="bi bi-funnel-fill me-2"></i> APPLY
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover text-white align-middle" style="background: rgba(0,0,0,0.2);">
-            <thead class="f1-font text-secondary small" style="border-bottom: 2px solid var(--f1-red);">
-                <tr>
-                    <th class="py-3">Product</th>
-                    <th>Team</th>
-                    <th>Category</th>
-                    <th>Preview</th>
-                    <th>Stock</th>
-                    <th>Price</th>
-                    <th class="text-end px-4">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <td class="fw-bold text-uppercase">@item.ProductName</td>
-                        <td><span class="badge bg-secondary rounded-0 px-2" style="font-size: 0.7rem;">@item.TeamName</span></td>
-                        <td class="text-secondary small">@item.CategoryName</td>
-                        <td>
-                            <div style="background: white; padding: 4px; display: inline-block; border-radius: 2px;">
-                                <img src="@item.Picture" alt="Product" width="60" style="object-fit: contain;" />
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 bg-dark text-white border-secondary rounded-0 product-card shadow-lg position-relative overflow-hidden">
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+                            <form asp-controller="Favorites" asp-action="@(item.IsFavorite ? "Remove" : "Add")" method="post" class="favorite-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.Id" />
+                                <button type="submit"
+                                        class="btn rounded-circle p-2 fav-btn shadow @(item.IsFavorite ? "btn-danger" : "btn-light")"
+                                        style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi fs-5 @(item.IsFavorite ? "bi-heart-fill text-white" : "bi-heart text-danger")"></i>
+                                </button>
+                            </form>
+                        </div>
+                    }
+
+                    <div class="bg-white p-4 text-center d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <img src="@item.Picture" alt="@item.ProductName" class="img-fluid" style="max-height: 100%; object-fit: contain;" />
+                    </div>
+
+                    <div class="card-body d-flex flex-column p-4" style="background: linear-gradient(180deg, #1e1e28 0%, #15151e 100%);">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-secondary rounded-0 f1-font uppercase">@item.TeamName</span>
+                            <small class="text-secondary f1-font uppercase text-end" style="max-width: 50%;">@item.CategoryName</small>
+                        </div>
+
+                        <h5 class="card-title fw-bold text-uppercase mt-2 flex-grow-1">@item.ProductName</h5>
+
+                        <div class="mt-3 border-top border-secondary pt-3">
+                            <div class="d-flex justify-content-between align-items-end mb-3">
+                                <div>
+                                    @if (item.Discount > 0)
+                                    {
+                                        var discountedPrice = item.Price - (item.Price * item.Discount / 100);
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="text-secondary text-decoration-line-through f1-font" style="font-size: 0.85rem;">@item.Price.ToString("F2") лв.</span>
+                                            <span class="text-danger fs-4 fw-bold f1-font">@discountedPrice.ToString("F2") лв.</span>
+                                        </div>
+                                        <small class="text-danger fw-bold f1-font border border-danger px-1 py-1">-@item.Discount% OFF</small>
+                                    }
+                                    else
+                                    {
+                                        <div class="f1-font fs-4 fw-bold text-white mb-1">@item.Price.ToString("F2") лв.</div>
+                                    }
+                                </div>
+                                <div class="text-end">
+                                    <span class="@(item.Quantity > 0 ? "text-success" : "text-danger") small f1-font">
+                                        <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> @(item.Quantity > 0 ? "IN STOCK" : "OUT OF STOCK")
+                                    </span>
+                                </div>
                             </div>
-                        </td>
-                        <td>
-                            @if (item.Quantity > 0)
-                            {
-                                <span class="text-success small">● @item.Quantity Units</span>
-                            }
-                            else
-                            {
-                                <span class="text-danger small fw-bold">OUT OF STOCK</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="f1-font fw-bold">@item.Price.ToString("F2") лв.</div>
-                            @if (item.Discount > 0)
-                            {
-                                <small class="text-danger fw-bold">-@item.Discount% OFF</small>
-                            }
-                        </td>
-                        <td class="text-end px-4">
-                            <div class="btn-group align-items-center">
 
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    <form asp-controller="Favorites" asp-action="@(item.IsFavorite ? "Remove" : "Add")" method="post" class="d-inline me-1">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="productId" value="@item.Id" />
-                                        <button type="submit"
-                                                class="btn btn-sm rounded-0 border-opacity-25 fav-btn @(item.IsFavorite ? "btn-danger" : "btn-outline-danger")"
-                                                title="@(item.IsFavorite ? "Remove from Paddock" : "Add to Paddock")">
-                                            <i class="bi @(item.IsFavorite ? "bi-heart-fill" : "bi-heart")"></i>
-                                        </button>
-                                    </form>
-                                }
-
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light rounded-0 border-opacity-25" title="Details">
-                                    <i class="bi bi-eye"></i>
-                                </a>
+                            <div class="d-flex gap-2 mt-3">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-light rounded-0 flex-grow-0"><i class="bi bi-eye"></i></a>
 
                                 @if (User.Identity.IsAuthenticated && item.Quantity > 0)
                                 {
-                                    @* БУТОН ЗА КОЛИЧКА *@
-                                    <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline ms-1">
+                                    <form asp-controller="Cart" asp-action="Add" method="post" class="flex-grow-0">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="productId" value="@item.Id" />
                                         <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-0 px-2 f1-font" style="font-size: 0.7rem;" title="Add to Cart">
-                                            <i class="bi bi-cart-plus"></i>
-                                        </button>
+                                        <button type="submit" class="btn btn-outline-danger rounded-0"><i class="bi bi-cart-plus"></i></button>
                                     </form>
 
-                                    @* БУТОН BUY NOW В СПИСЪКА С ПРОДУКТИ *@
-                                    <form asp-controller="Cart" asp-action="DirectCheckout" method="post">
+                                    <form asp-controller="Cart" asp-action="DirectCheckout" method="post" class="flex-grow-1">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="productId" value="@item.Id" />
-                                        <button type="submit" class="btn btn-danger">BUY NOW</button>
+                                        <button type="submit" class="btn btn-danger w-100 rounded-0 f1-font">BUY NOW</button>
                                     </form>
                                 }
-
-                                @if (User.Identity.IsAuthenticated && User.IsInRole("Administrator"))
-                                {
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning rounded-0 ms-1 shadow-none">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-dark rounded-0 ms-1 shadow-none border border-secondary">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                }
                             </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>
 
 <style>
-    .fav-btn {
-        transition: 0.3s all ease;
-        min-width: 34px;
+    :root {
+        --f1-red: #e10600;
     }
 
-    .btn-outline-danger.fav-btn:hover {
-        background-color: #e10600 !important;
-        color: white !important;
-        border-color: #e10600 !important;
-        transform: scale(1.1);
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
     }
 
-    .btn-danger.fav-btn {
-        background-color: #e10600;
-        border-color: #e10600;
+    .uppercase {
+        text-transform: uppercase;
+    }
+
+    /* Предотвратява показването на базовия селект преди JS да зареди */
+    .invisible-filter {
+        opacity: 0;
+        position: absolute;
+        height: 0;
+        width: 0;
+        pointer-events: none;
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2) !important;
+            border-color: var(--f1-red) !important;
+        }
+
+    /* Choices.js Custom UI */
+    .choices {
+        z-index: 1050 !important;
+        margin-bottom: 0;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .choices__inner {
+        background-color: #000 !important;
+        border: 1px solid #444 !important;
+        border-radius: 0 !important;
+        min-height: 44px;
+        padding: 5px 10px !important;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .choices__list--multiple .choices__item {
+        background-color: var(--f1-red) !important;
+        border: 1px solid var(--f1-red) !important;
+        border-radius: 20px !important;
+        padding: 4px 12px !important;
+        font-size: 12px;
+        margin: 2px;
+    }
+
+    .choices__list--dropdown {
+        background-color: #15151e !important;
+        border: 1px solid var(--f1-red) !important;
         color: white;
     }
 
-        .btn-danger.fav-btn:hover {
-            background-color: #b30500 !important;
-            transform: scale(1.1);
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background-color: var(--f1-red) !important;
         }
 
-    /* Стилизация за BUY бутона */
-    .btn-danger {
-        background-color: #e10600;
-        border: none;
+    /* ФИНАЛНАТА МАГИЯ: Скрива "Select..." текста веднага щом има избран чип */
+    .choices.has-items .choices__input--cloned {
+        display: none !important;
+    }
+
+    /* Оправя цвета на самия курсор за писане (ако решиш да търсиш) */
+    .choices__input--cloned {
+        background-color: transparent !important;
+        color: white !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 14px !important;
     }
 </style>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const choicesOptions = {
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: 'Select...',
+                searchEnabled: true,
+                itemSelectText: '',
+                shouldSort: false,
+                searchPlaceholderValue: 'Type to filter...'
+            };
+
+            new Choices('#teamFilter', choicesOptions);
+            new Choices('#categoryFilter', choicesOptions);
+
+            // AJAX Favorites toggle logic
+            const favForms = document.querySelectorAll('.favorite-form');
+            favForms.forEach(form => {
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const btn = this.querySelector('button');
+                    const icon = btn.querySelector('i');
+                    const url = this.action;
+                    const isCurrentlyFavorite = icon.classList.contains('bi-heart-fill');
+
+                    if (isCurrentlyFavorite) {
+                        icon.classList.replace('bi-heart-fill', 'bi-heart');
+                        icon.classList.replace('text-white', 'text-danger');
+                        btn.classList.replace('btn-danger', 'btn-light');
+                        this.action = this.action.replace('Remove', 'Add');
+                    } else {
+                        icon.classList.replace('bi-heart', 'bi-heart-fill');
+                        icon.classList.replace('text-danger', 'text-white');
+                        btn.classList.replace('btn-light', 'btn-danger');
+                        this.action = this.action.replace('Add', 'Remove');
+                    }
+                    await fetch(url, { method: 'POST', body: new FormData(this) });
+                });
+            });
+        });
+    </script>
 }
