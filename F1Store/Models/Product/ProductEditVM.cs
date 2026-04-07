@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 using F1Store.Models.Team;
 using F1Store.Models.Category;
 
@@ -25,10 +24,23 @@ namespace F1Store.Models.Product
         public int CategoryId { get; set; }
         public virtual List<CategoryPairVM> Categories { get; set; } = new List<CategoryPairVM>();
 
-        [Display(Name = "Picture")]
+        [Required]
+        [Display(Name = "Main Picture URL")]
         public string Picture { get; set; } = null!;
 
-        [Display(Name = "Discriprion")]
+        [Display(Name = "Picture 2 URL")]
+        public string? Picture2 { get; set; }
+
+        [Display(Name = "Picture 3 URL")]
+        public string? Picture3 { get; set; }
+
+        [Display(Name = "Picture 4 URL")]
+        public string? Picture4 { get; set; }
+
+        [Display(Name = "Picture 5 URL")]
+        public string? Picture5 { get; set; }
+
+        [Display(Name = "Description")]
         public string Description { get; set; } = null!;
 
         [Range(0, 5000)]
@@ -38,7 +50,7 @@ namespace F1Store.Models.Product
         [Display(Name = "Price")]
         public decimal Price { get; set; }
 
-        [Display(Name = "Discount")]
+        [Display(Name = "Discount %")]
         public decimal Discount { get; set; }
     }
 }

@@ -1,102 +1,409 @@
 ﻿@model F1Store.Models.Product.ProductDetailsVM
+
 @{
     ViewData["Title"] = Model.ProductName + " - Details";
+    var discountedPrice = Model.Price - (Model.Price * (decimal)Model.Discount / 100);
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
 <style>
-    .details-container {
-        background: #15151e;
+    body {
+        background-color: #0b0b10;
         color: white;
-        padding: 40px;
-        border-radius: 8px;
+        font-family: 'Titillium Web', sans-serif;
+    }
+
+    .details-card {
+        background: #15151e;
+        border-radius: 4px;
         border-top: 4px solid #e10600;
+        padding: 30px;
+        margin-top: 30px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        margin-top: 50px;
     }
 
-    .product-img {
-        border: 1px solid #333;
+    /* Галерия */
+    .thumb-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 80px;
+    }
+
+    .thumb-item {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border: 2px solid #2d2d37;
+        cursor: pointer;
+        opacity: 0.6;
         transition: 0.3s;
-        max-width: 100%;
-        height: auto;
     }
 
-        .product-img:hover {
+        .thumb-item.active, .thumb-item:hover {
             border-color: #e10600;
+            opacity: 1;
         }
 
-    .price-tag {
-        font-size: 2rem;
-        font-weight: 700;
+    .main-img-container {
+        background: #000;
+        border: 1px solid #2d2d37;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .main-img {
+        width: 100%; /* Променено от max-width: 90% */
+        height: 100%; /* Променено от max-height: 90% */
+        object-fit: cover; /* Променено от contain - това ще запълни цялото поле */
+        transition: transform 0.4s ease;
+        image-rendering: -webkit-optimize-contrast; /* Подобрява рязкостта на изображението */
+    }
+
+    /* Цени - под снимката */
+    .price-box {
+        background: rgba(255,255,255,0.02);
+        padding: 20px;
+        border-bottom: 2px solid #e10600;
+        margin-top: 15px;
+        border-radius: 2px;
+    }
+
+    .current-price {
+        font-size: 2.8rem;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -1px;
+    }
+
+    .price-discounted {
+        color: #e10600;
+    }
+
+    .price-normal {
         color: #fff;
     }
 
-    .btn-buy-now {
-        background-color: #e10600;
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        font-weight: bold;
-        transition: 0.3s;
+    .old-price {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
     }
 
-        .btn-buy-now:hover {
-            background-color: white;
-            color: #e10600;
+    .discount-badge {
+        background: #e10600;
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        margin-left: 10px;
+        border-radius: 2px;
+    }
+
+    /* Инфо секция - подравнена вляво */
+    .top-info-section {
+        text-align: left; /* Текстът вече е от ляво на дясно */
+        margin-bottom: 25px;
+    }
+
+    .product-title {
+        font-family: 'F1', 'Titillium Web', sans-serif;
+        font-weight: 900;
+        font-size: 2rem;
+        line-height: 1.1;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        margin: 10px 0;
+    }
+
+    .product-description {
+        font-size: 1rem;
+        color: #ccc;
+        line-height: 1.5;
+    }
+
+    .team-category {
+        font-size: 0.85rem;
+        color: #e10600;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+    }
+
+    /* Stock */
+    .stock-indicator {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .stock-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #28a745;
+        border-radius: 50%;
+        margin-right: 8px;
+        box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+    }
+
+    /* Бутони */
+    .btn-f1 {
+        text-transform: uppercase;
+        font-weight: 800;
+        border-radius: 2px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-add-cart {
+        border: 1px solid #fff;
+        color: #fff;
+        background: transparent;
+        flex: 2; /* Удължен бутон (заема повече място) */
+    }
+
+        .btn-add-cart:hover {
+            background: #fff;
+            color: #000;
         }
+
+    .btn-buy-now {
+        background: #e10600;
+        color: #fff;
+        border: none;
+        width: 100%;
+    }
+
+    .btn-fav {
+        border: 1px solid #2d2d37;
+        color: #fff;
+        background: transparent;
+    }
+
+    .qty-group {
+        display: flex;
+        background: #0b0b10;
+        border: 1px solid #2d2d37;
+        height: 50px;
+        flex: 0.8; /* Намален размер на селектора за количество */
+    }
+
+    .qty-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        width: 35px;
+        cursor: pointer;
+    }
+
+    .qty-val {
+        width: 100%;
+        text-align: center;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        padding: 0;
+        line-height: 50px;
+        height: 50px;
+        outline: none;
+    }
+
+        .qty-val::-webkit-outer-spin-button,
+        .qty-val::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .qty-val[type=number] {
+            -moz-appearance: textfield;
+        }
+
+    .back-to-store-link {
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+        .back-to-store-link:hover {
+            color: #fff;
+        }
+
+    .divider {
+        height: 1px;
+        background: #2d2d37;
+        margin: 20px 0;
+    }
 </style>
 
-<div class="container">
-    <div class="details-container">
+<div class="container mb-5">
+    @Html.AntiForgeryToken()
+    <div class="details-card">
         <div class="row">
-            <div class="col-md-5 mb-4">
-                <img src="@Model.Picture" class="product-img rounded" alt="@Model.ProductName" />
+            <div class="col-lg-7">
+                <div class="d-flex gap-3">
+                    <div class="thumb-list">
+                        <img src="@Model.Picture" class="thumb-item active" onclick="updateMainImg('@Model.Picture', this)">
+                        @foreach (var img in (new[] { Model.Picture2, Model.Picture3, Model.Picture4, Model.Picture5 }).Where(i => !string.IsNullOrEmpty(i)))
+                        {
+                            <img src="@img" class="thumb-item" onclick="updateMainImg('@img', this)">
+                        }
+                    </div>
+                    <div class="main-img-container flex-grow-1">
+                        <img id="mainImageDisplay" src="@Model.Picture" class="main-img">
+                    </div>
+                </div>
+
+                <div class="price-box d-flex justify-content-between align-items-end">
+                    <div>
+                        @if (Model.Discount > 0)
+                        {
+                            <div class="old-price">€@Model.Price.ToString("F2")</div>
+                            <div class="d-flex align-items-center">
+                                <span class="current-price price-discounted">€@discountedPrice.ToString("F2")</span>
+                                <span class="discount-badge">-@Model.Discount.ToString("0.##")% OFF</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="current-price price-normal mt-2">€@Model.Price.ToString("F2")</div>
+                        }
+                    </div>
+                    <div class="pb-2">
+                        @if (Model.Quantity > 0)
+                        {
+                            <div class="stock-indicator m-0">
+                                <div class="stock-dot"></div>
+                                In Stock (@Model.Quantity)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="stock-indicator m-0" style="color: #dc3545;">
+                                <div class="stock-dot" style="background-color: #dc3545;"></div>
+                                Out of Stock
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-7">
-                <h5 class="text-danger f1-font mb-1">@Model.TeamName</h5>
-                <h1 class="f1-font mb-3">@Model.ProductName</h1>
-                <p class="text-secondary small">CATEGORY: @Model.CategoryName</p>
+            <div class="col-lg-5 ps-lg-5 d-flex flex-column justify-content-between">
 
-                <hr class="border-secondary" />
-
-                <div class="my-4">
-                    <span class="price-tag">@Model.Price.ToString("F2") лв.</span>
-                    @if (Model.Discount > 0)
-                    {
-                        <span class="badge bg-danger ms-2">-@Model.Discount%</span>
-                    }
+                <div class="top-info-section">
+                    <div class="team-category">@Model.TeamName / @Model.CategoryName</div>
+                    <h1 class="product-title">@Model.ProductName</h1>
+                    <p class="product-description">@Model.Description</p>
                 </div>
 
-                <p class="lead" style="font-size: 1.1rem; line-height: 1.6;">@Model.Description</p>
-
-                <div class="mt-4 d-flex gap-3">
+                <div class="d-grid gap-3">
                     @if (Model.Quantity > 0)
                     {
-                        @* Форма за добавяне в количката *@
-                        <form asp-controller="Cart" asp-action="Add" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="productId" value="@Model.Id" />
-                            <input type="hidden" name="quantity" value="1" />
-                            <button type="submit" class="btn btn-outline-light f1-font px-4 py-2">Add to Cart</button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <div class="qty-group">
+                                <button type="button" class="qty-btn" onclick="adjustQty(-1)">-</button>
+                                <input type="number" id="qtyNumber" value="1" min="1" max="@Model.Quantity" class="qty-val" readonly>
+                                <button type="button" class="qty-btn" onclick="adjustQty(1)">+</button>
+                            </div>
+                            <button class="btn btn-f1 btn-add-cart cart-ajax-btn" data-id="@Model.Id">
+                                <i class="bi bi-cart-plus me-2 fs-5"></i> ADD TO CART
+                            </button>
+                        </div>
 
-                        <form asp-controller="Cart" asp-action="DirectCheckout" method="post">
-                            @Html.AntiForgeryToken()
+                        <button class="btn btn-f1 btn-fav fav-ajax-btn w-100" data-id="@Model.Id" data-is-fav="false">
+                            <i class="bi bi-heart me-2 text-white"></i> FAVORITE
+                        </button>
+
+                        <form asp-controller="Cart" asp-action="DirectCheckout" method="post" class="m-0">
                             <input type="hidden" name="productId" value="@Model.Id" />
-                            <button type="submit" class="btn btn-buy-now f1-font px-4">BUY IT NOW</button>
+                            <button type="submit" class="btn btn-f1 btn-buy-now">
+                                <i class="bi bi-lightning-charge-fill me-2"></i> BUY IT NOW
+                            </button>
                         </form>
                     }
-                    else
-                    {
-                        <button class="btn btn-secondary f1-font disabled">OUT OF STOCK</button>
-                    }
-                </div>
 
-                <div class="mt-5">
-                    <a asp-action="Index" class="text-danger fw-bold text-decoration-none small">← BACK TO STORE</a>
+                    <div class="divider"></div>
+
+                    <div class="text-center">
+                        <a asp-action="Index" class="back-to-store-link">Back to Store</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        function updateMainImg(url, el) {
+            $('#mainImageDisplay').fadeOut(100, function() {
+                $(this).attr('src', url).fadeIn(100);
+            });
+            $('.thumb-item').removeClass('active');
+            $(el).addClass('active');
+        }
+
+        function adjustQty(amt) {
+            let input = $('#qtyNumber');
+            let val = parseInt(input.val()) + amt;
+            if (val >= 1 && val <= @Model.Quantity) input.val(val);
+        }
+
+        $(document).ready(function() {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            toastr.options = { "positionClass": "toast-bottom-right", "progressBar": true, "timeOut": "3000" };
+
+            $('.fav-ajax-btn').on('click', function() {
+                const btn = $(this);
+                const icon = btn.find('i');
+                const productId = btn.data('id');
+                let isFav = btn.attr('data-is-fav') === "true";
+                $.post(isFav ? '/Favorites/Remove' : '/Favorites/Add',
+                    { productId: productId, __RequestVerificationToken: token },
+                    function(res) {
+                        if(res.success) {
+                            if(!isFav) {
+                                icon.removeClass('bi-heart text-white').addClass('bi-heart-fill text-danger');
+                                btn.attr('data-is-fav', "true");
+                                toastr.success("Added to favorites");
+                            } else {
+                                icon.removeClass('bi-heart-fill text-danger').addClass('bi-heart text-white');
+                                btn.attr('data-is-fav', "false");
+                                toastr.info("Removed from favorites");
+                            }
+                        }
+                    }
+                );
+            });
+
+            $('.cart-ajax-btn').on('click', function() {
+                const btn = $(this);
+                const productId = btn.data('id');
+                const qty = $('#qtyNumber').val();
+                $.post('/Cart/AddAjax',
+                    { productId: productId, quantity: qty, __RequestVerificationToken: token },
+                    function(res) {
+                        if (res.success) {
+                            toastr.success("Item added to cart!");
+                            $('#cart-count').text(res.count).hide().fadeIn(200);
+                            if(res.count > 0) { $('#cart-count').css('display', 'flex'); }
+                        }
+                    }
+                );
+            });
+        });
+    </script>
+}

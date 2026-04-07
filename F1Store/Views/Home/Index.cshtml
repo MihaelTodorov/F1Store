@@ -4,6 +4,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
 
+@* --- HERO CAROUSEL --- *@
 <div id="f1HeroCarousel" class="carousel slide carousel-fade mb-5 shadow-lg" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="false">
     <div class="carousel-inner custom-f1-clip">
         <div class="carousel-item active">
@@ -16,7 +17,7 @@
                                 <h1 class="display-1 f1-font fw-900 text-white mb-0 tracking-tighter">THE NEW</h1>
                                 <h1 class="display-1 f1-font fw-900 text-danger mb-4 tracking-tighter">GENERATION</h1>
                                 <p class="lead text-white mb-5 hero-text-shadow max-w-400">
-                                    The grid is set. Audi and Cadillac join the fight. Explore the official merchandise of the 2026 season.
+                                    The grid is set. Audi and Cadillac join the fight. Explore official gear.
                                 </p>
                                 <a asp-controller="Product" asp-action="Index" class="btn btn-danger btn-lg f1-font rounded-0 px-5 py-3 shadow-red">EXPLORE ALL GEAR</a>
                             </div>
@@ -32,174 +33,41 @@
     <div class="section-head text-center mb-5">
         <h2 class="f1-font text-white display-4 uppercase mb-2">The <span class="text-danger">2026</span> Grid</h2>
         <div class="red-divider mx-auto"></div>
-        <p class="text-secondary mt-3">Select a team to view their official collection</p>
     </div>
 
-    <div class="row g-4 mb-5">
-        @* Red Bull *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card red-bull-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://images.seeklogo.com/logo-png/40/2/red-bull-racing-f1-logo-png_seeklogo-406796.png" alt="Red Bull">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Red Bull Racing</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Red Bull Racing" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="row g-3 g-md-4 mb-5">
+        @{
+            var teams = new[] {
+                new { Id = "red-bull", Name = "Red Bull", Img = "https://images.seeklogo.com/logo-png/40/2/red-bull-racing-f1-logo-png_seeklogo-406796.png" },
+                new { Id = "ferrari", Name = "Ferrari", Img = "https://vytvorsipotisk.cz/tshirtecommerce/generated-designs/t5vpqjeszfxm2r8li6nubdhyaco4970wkg13.png" },
+                new { Id = "mercedes", Name = "Mercedes", Img = "https://www.formula1points.com/images/constructors/mercedes.webp" },
+                new { Id = "mclaren", Name = "McLaren", Img = "https://upload.wikimedia.org/wikipedia/commons/2/20/McLaren_Racing_logo.png" },
+                new { Id = "aston-martin", Name = "Aston Martin", Img = "https://upload.wikimedia.org/wikipedia/fr/f/fe/Logo-AMR-Aston-Martin-racing.png" },
+                new { Id = "alpine", Name = "Alpine", Img = "https://upload.wikimedia.org/wikipedia/commons/3/32/Alpine_logo.png" },
+                new { Id = "audi", Name = "Audi", Img = "https://upload.wikimedia.org/wikipedia/commons/0/03/Audif1.com_logo17_%28cropped%29.svg" },
+                new { Id = "cadillac", Name = "Cadillac", Img = "https://upload.wikimedia.org/wikipedia/commons/d/d8/Cadillac_Formula_1_Team_logo.png" },
+                new { Id = "williams", Name = "Williams", Img = "https://upload.wikimedia.org/wikipedia/commons/8/8b/Williams_F1_logo_2026_%28Corrigindo%29.png" },
+                new { Id = "rb", Name = "Racing Bulls", Img = "https://r2.thesportsdb.com/images/media/team/logo/f8tmwb1740775833.png" },
+                new { Id = "haas", Name = "Haas", Img = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/MoneyGram_Haas_F1_Team_Logo.svg/960px-MoneyGram_Haas_F1_Team_Logo.svg.png" }
+                };
+        }
 
-        @* Ferrari *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card ferrari-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://vytvorsipotisk.cz/tshirtecommerce/generated-designs/t5vpqjeszfxm2r8li6nubdhyaco4970wkg13.png" alt="Ferrari">
+        @foreach (var team in teams)
+        {
+            <div class="col-6 col-md-4 col-xl-3">
+                <a asp-controller="Product" asp-action="Index" asp-route-team="@team.Name" class="f1-card @team.Id">
+                    <div class="f1-card-inner">
+                        <div class="logo-container">
+                            <img src="@team.Img" alt="@team.Name" class="team-logo">
+                        </div>
+                        <div class="text-container">
+                            <h5 class="f1-font">@team.Name</h5>
+                            <span class="shop-link text-danger f1-font">SHOP COLLECTION</span>
+                        </div>
                     </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Scuderia Ferrari</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Scuderia Ferrari" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
+                </a>
             </div>
-        </div>
-
-        @* Mercedes *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card mercedes-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://www.formula1points.com/images/constructors/mercedes.webp" alt="Mercedes">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Mercedes-AMG</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Mercedes-AMG" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* McLaren *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card mclaren-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/20/McLaren_Racing_logo.png" alt="McLaren">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">McLaren Racing</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="McLaren Racing" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Aston Martin *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card aston-martin-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/fr/f/fe/Logo-AMR-Aston-Martin-racing.png" alt="Aston Martin">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Aston Martin</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Aston Martin" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Alpine *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card alpine-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/32/Alpine_logo.png" alt="Alpine">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Alpine F1 Team</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Alpine F1 Team" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Audi *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card audi-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Audif1.com_logo17_%28cropped%29.svg" alt="Audi" style="max-height: 50px;">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font text-white">Audi F1 Team</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Audi F1 Team" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Cadillac *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card cadillac-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Cadillac_Formula_1_Team_logo.png" alt="Cadillac" style="max-height: 60px;">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Cadillac Racing</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Cadillac Racing" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Williams *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card williams-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Williams_F1_logo_2026_%28Corrigindo%29.png" alt="Williams">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Williams Racing</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Williams Racing" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Racing Bulls *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card racing-bulls-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://r2.thesportsdb.com/images/media/team/logo/f8tmwb1740775833.png" alt="RB">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Racing Bulls</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Racing Bulls" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        @* Haas *@
-        <div class="col-xl-3 col-lg-4 col-sm-6">
-            <div class="team-card haas-theme">
-                <div class="team-card-inner">
-                    <div class="team-logo-wrap">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/MoneyGram_Haas_F1_Team_Logo.svg/960px-MoneyGram_Haas_F1_Team_Logo.svg.png" alt="Haas">
-                    </div>
-                    <div class="team-info">
-                        <h5 class="f1-font">Haas F1 Team</h5>
-                        <a asp-controller="Product" asp-action="Index" asp-route-team="Haas F1 Team" class="btn-shop-team">SHOP COLLECTION <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </div>
 
@@ -207,7 +75,6 @@
     :root {
         --f1-red: #e10600;
         --f1-black: #15151e;
-        --f1-dark-grey: #1f1f27;
     }
 
     body {
@@ -219,13 +86,13 @@
     .f1-font {
         font-family: 'Orbitron', sans-serif;
         text-transform: uppercase;
-        letter-spacing: 1px;
     }
 
     .red-divider {
-        width: 80px;
-        height: 4px;
-        background-color: var(--f1-red);
+        width: 60px;
+        height: 3px;
+        background: var(--f1-red);
+        margin-top: 15px;
     }
 
     /* Hero Styling */
@@ -235,176 +102,332 @@
 
     .hero-slide-bg {
         height: 75vh;
-        min-height: 550px;
+        min-height: 500px;
         background-size: cover;
         background-position: center;
     }
 
     .hero-overlay {
         height: 100%;
-        background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 40%, transparent 100%);
+        background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 100%);
     }
 
-    /* Team Cards Design */
-    .team-card {
-        padding: 1px;
-        background: rgba(255, 255, 255, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
+    /* Team Cards Base */
+    .f1-card {
+        text-decoration: none !important;
+        display: block;
         height: 100%;
-        border-radius: 4px;
+        background: #15151e;
         position: relative;
         overflow: hidden;
+        border-bottom: 4px solid #333;
+        transition: all 0.3s ease;
+        border-radius: 6px;
+        min-height: 280px; /* Още по-високи карти за масивния вид */
     }
 
-    .team-card-inner {
-        background: var(--f1-black);
-        padding: 2.5rem 1.5rem;
-        height: 100%;
+    .f1-card-inner {
+        padding: 3rem 1.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        border-bottom: 5px solid #333;
-        transition: background 0.3s ease;
+        justify-content: space-between; /* Разпределя пространството равномерно */
+        position: relative;
+        z-index: 3;
+        height: 100%;
     }
 
-    .team-logo-wrap {
-        height: 100px;
+    /* Контейнерът, който оправя подравняването */
+    .logo-container {
+        height: 120px; /* Твърда височина - всички лога ще се центрират тук */
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
-        .team-logo-wrap img {
-            max-width: 140px;
-            max-height: 100px;
-            filter: grayscale(1) brightness(2);
-            transition: 0.4s ease;
-        }
+    .team-logo {
+        max-width: 200px; /* МНОГО по-големи лога (от 160px на 200px) */
+        max-height: 110px;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+    }
 
-    .team-info {
+    .text-container {
         text-align: center;
+        width: 100%;
     }
 
-        .team-info h5 {
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            color: #ddd;
-        }
-
-    .btn-shop-team {
-        color: var(--f1-red);
-        text-decoration: none;
-        font-size: 0.75rem;
+    .f1-card-inner h5 {
+        font-size: 1.15rem; /* По-голям шрифт за имената (от 0.95 на 1.15) */
         font-weight: 700;
-        letter-spacing: 2px;
-        transition: 0.3s;
-        border-bottom: 1px solid transparent;
-        padding-bottom: 4px;
+        color: white;
+        margin: 0 0 10px 0;
+        letter-spacing: 1px;
+        white-space: nowrap; /* Гарантира 1 ред */
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* Hover Effects */
-    .team-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    .shop-link {
+        display: block;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        opacity: 0;
+        transition: all 0.3s ease;
+        transform: translateY(10px);
     }
 
-        .team-card:hover .team-logo-wrap img {
-            filter: grayscale(0) brightness(1);
-            transform: scale(1.1);
+    /* Rising Glow Layer */
+    .f1-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        z-index: 2;
+        transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* --- DESKTOP --- */
+    @@media (min-width: 992px) {
+        .team-logo {
+            filter: grayscale(1) brightness(0.7);
         }
 
-    /* Team Colors */
-    .red-bull-theme:hover .team-card-inner {
-        border-color: #0600ef;
-        background: linear-gradient(180deg, #15151e 0%, #000b2e 100%);
-    }
-
-    .ferrari-theme:hover .team-card-inner {
-        border-color: #ef1a2d;
-        background: linear-gradient(180deg, #15151e 0%, #2e0000 100%);
-    }
-
-    .mercedes-theme:hover .team-card-inner {
-        border-color: #00a19c;
-        background: linear-gradient(180deg, #15151e 0%, #001f1e 100%);
-    }
-
-    .mclaren-theme:hover .team-card-inner {
-        border-color: #ff8700;
-        background: linear-gradient(180deg, #15151e 0%, #2e1800 100%);
-    }
-
-    .aston-martin-theme:hover .team-card-inner {
-        border-color: #006a4e;
-        background: linear-gradient(180deg, #15151e 0%, #001f17 100%);
-    }
-
-    .alpine-theme:hover .team-card-inner {
-        border-color: #0090ff;
-        background: linear-gradient(180deg, #15151e 0%, #00102e 100%);
-    }
-
-    .audi-theme:hover .team-card-inner {
-        border-color: #f50537;
-        background: linear-gradient(180deg, #15151e 0%, #1a1a1a 100%);
-    }
-
-    .cadillac-theme:hover .team-card-inner {
-        border-color: #ffc20e;
-        background: linear-gradient(180deg, #15151e 0%, #211d00 100%);
-    }
-
-    .williams-theme:hover .team-card-inner {
-        border-color: #005aff;
-        background: linear-gradient(180deg, #15151e 0%, #000c2e 100%);
-    }
-
-    .racing-bulls-theme:hover .team-card-inner {
-        border-color: #6692ff;
-        background: linear-gradient(180deg, #15151e 0%, #001242 100%);
-    }
-
-    .haas-theme:hover .team-card-inner {
-        border-color: #e6002b;
-        background: linear-gradient(180deg, #15151e 0%, #1f1f1f 100%);
-    }
-
-    /* Animations */
-    .animate-slide-in {
-        animation: f1FadeLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @@keyframes f1FadeLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
+        .f1-card h5 {
+            color: #888;
+            transition: color 0.3s;
         }
 
-        to {
-            opacity: 1;
-            transform: translateX(0);
+        .f1-card:hover {
+            transform: translateY(-5px);
+        }
+
+            .f1-card:hover::after {
+                height: 100%;
+            }
+
+            .f1-card:hover .team-logo {
+                filter: grayscale(0) brightness(1.2);
+                transform: scale(1.1);
+            }
+
+            .f1-card:hover h5 {
+                color: white;
+            }
+
+            .f1-card:hover .shop-link {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        /* Rising Glow Colors */
+        .red-bull:hover::after {
+            background: linear-gradient(0deg, rgba(6,0,239,0.2) 0%, transparent 100%);
+        }
+
+        .red-bull:hover {
+            border-bottom-color: #0600ef;
+        }
+
+        .ferrari:hover::after {
+            background: linear-gradient(0deg, rgba(239,26,45,0.2) 0%, transparent 100%);
+        }
+
+        .ferrari:hover {
+            border-bottom-color: #ef1a2d;
+        }
+
+        .mercedes:hover::after {
+            background: linear-gradient(0deg, rgba(0,161,156,0.2) 0%, transparent 100%);
+        }
+
+        .mercedes:hover {
+            border-bottom-color: #00a19c;
+        }
+
+        .mclaren:hover::after {
+            background: linear-gradient(0deg, rgba(255,135,0,0.2) 0%, transparent 100%);
+        }
+
+        .mclaren:hover {
+            border-bottom-color: #ff8700;
+        }
+
+        .aston-martin:hover::after {
+            background: linear-gradient(0deg, rgba(0,106,78,0.2) 0%, transparent 100%);
+        }
+
+        .aston-martin:hover {
+            border-bottom-color: #006a4e;
+        }
+
+        .alpine:hover::after {
+            background: linear-gradient(0deg, rgba(0,144,255,0.2) 0%, transparent 100%);
+        }
+
+        .alpine:hover {
+            border-bottom-color: #0090ff;
+        }
+
+        .audi:hover::after {
+            background: linear-gradient(0deg, rgba(245,5,55,0.2) 0%, transparent 100%);
+        }
+
+        .audi:hover {
+            border-bottom-color: #f50537;
+        }
+
+        .cadillac:hover::after {
+            background: linear-gradient(0deg, rgba(255,194,14,0.2) 0%, transparent 100%);
+        }
+
+        .cadillac:hover {
+            border-bottom-color: #ffc20e;
+        }
+
+        .williams:hover::after {
+            background: linear-gradient(0deg, rgba(0,90,255,0.2) 0%, transparent 100%);
+        }
+
+        .williams:hover {
+            border-bottom-color: #005aff;
+        }
+
+        .rb:hover::after {
+            background: linear-gradient(0deg, rgba(102,146,255,0.2) 0%, transparent 100%);
+        }
+
+        .rb:hover {
+            border-bottom-color: #6692ff;
+        }
+
+        .haas:hover::after {
+            background: linear-gradient(0deg, rgba(230,0,43,0.2) 0%, transparent 100%);
+        }
+
+        .haas:hover {
+            border-bottom-color: #e6002b;
         }
     }
 
-    @@media (max-width: 992px) {
+    /* --- MOBILE --- */
+    @@media (max-width: 991px) {
         .custom-f1-clip {
             clip-path: none;
         }
 
         .hero-slide-bg {
-            height: 60vh;
+            height: 50vh;
         }
 
-        .hero-overlay {
-            background: rgba(0,0,0,0.8);
-            text-align: center;
+        .f1-card::after {
+            height: 100%;
+            opacity: 0.2;
         }
 
-        .slide-content {
-            margin: 0 auto !important;
+        .shop-link {
+            opacity: 1;
+            transform: translateY(0);
         }
+
+        .team-logo {
+            max-width: 140px;
+        }
+        /* Малко по-малки за мобилни, за да не излизат */
+        .f1-card-inner h5 {
+            font-size: 0.9rem;
+        }
+
+        .red-bull {
+            border-bottom-color: #0600ef;
+        }
+
+            .red-bull::after {
+                background: linear-gradient(0deg, rgba(6,0,239,0.3) 0%, transparent 100%);
+            }
+
+        .ferrari {
+            border-bottom-color: #ef1a2d;
+        }
+
+            .ferrari::after {
+                background: linear-gradient(0deg, rgba(239,26,45,0.3) 0%, transparent 100%);
+            }
+
+        .mercedes {
+            border-bottom-color: #00a19c;
+        }
+
+            .mercedes::after {
+                background: linear-gradient(0deg, rgba(0,161,156,0.3) 0%, transparent 100%);
+            }
+
+        .mclaren {
+            border-bottom-color: #ff8700;
+        }
+
+            .mclaren::after {
+                background: linear-gradient(0deg, rgba(255,135,0,0.3) 0%, transparent 100%);
+            }
+
+        .aston-martin {
+            border-bottom-color: #006a4e;
+        }
+
+            .aston-martin::after {
+                background: linear-gradient(0deg, rgba(0,106,78,0.3) 0%, transparent 100%);
+            }
+
+        .alpine {
+            border-bottom-color: #0090ff;
+        }
+
+            .alpine::after {
+                background: linear-gradient(0deg, rgba(0,144,255,0.3) 0%, transparent 100%);
+            }
+
+        .audi {
+            border-bottom-color: #f50537;
+        }
+
+            .audi::after {
+                background: linear-gradient(0deg, rgba(245,5,55,0.3) 0%, transparent 100%);
+            }
+
+        .cadillac {
+            border-bottom-color: #ffc20e;
+        }
+
+            .cadillac::after {
+                background: linear-gradient(0deg, rgba(255,194,14,0.3) 0%, transparent 100%);
+            }
+
+        .williams {
+            border-bottom-color: #005aff;
+        }
+
+            .williams::after {
+                background: linear-gradient(0deg, rgba(0,90,255,0.3) 0%, transparent 100%);
+            }
+
+        .rb {
+            border-bottom-color: #6692ff;
+        }
+
+            .rb::after {
+                background: linear-gradient(0deg, rgba(102,146,255,0.3) 0%, transparent 100%);
+            }
+
+        .haas {
+            border-bottom-color: #e6002b;
+        }
+
+            .haas::after {
+                background: linear-gradient(0deg, rgba(230,0,43,0.3) 0%, transparent 100%);
+            }
     }
 </style>

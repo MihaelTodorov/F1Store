@@ -50,7 +50,8 @@
         <div class="col-md-6">
             <div class="f1-card">
                 <h1 class="f1-font text-center mb-4">@ViewData["Title"]</h1>
-                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                @* Добавен autocomplete="off" на ниво форма *@
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" autocomplete="off">
                     <h5 class="f1-font text-secondary text-center mb-4" style="font-size: 0.9rem;">Join the Grid - Create Account</h5>
                     <hr class="border-secondary" />
 
@@ -59,14 +60,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input asp-for="Input.FirstName" class="form-control" placeholder="John" />
+                                <input asp-for="Input.FirstName" class="form-control" placeholder="Lando" />
                                 <label asp-for="Input.FirstName"></label>
                                 <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input asp-for="Input.LastName" class="form-control" placeholder="Doe" />
+                                <input asp-for="Input.LastName" class="form-control" placeholder="Norris" />
                                 <label asp-for="Input.LastName"></label>
                                 <span asp-validation-for="Input.LastName" class="text-danger small"></span>
                             </div>
@@ -74,7 +75,8 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.UserName" class="form-control" placeholder="f1_fan" />
+                        @* Добавен autocomplete="off" за UserName *@
+                        <input asp-for="Input.UserName" class="form-control" placeholder="MadMax" />
                         <label asp-for="Input.UserName"></label>
                         <span asp-validation-for="Input.UserName" class="text-danger small"></span>
                     </div>
@@ -100,14 +102,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input asp-for="Input.Password" class="form-control" placeholder="Password" />
+                                <input asp-for="Input.Password" class="form-control" placeholder="Password" autocomplete="new-password" />
                                 <label asp-for="Input.Password"></label>
                                 <span asp-validation-for="Input.Password" class="text-danger small"></span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating mb-3">
-                                <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm" />
+                                <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" autocomplete="new-password" />
                                 <label asp-for="Input.ConfirmPassword"></label>
                                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
                             </div>

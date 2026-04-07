@@ -18,10 +18,14 @@ namespace F1Store.Models.Product
         [Display(Name = "Category")]
         public string CategoryName { get; set; } = null!;
 
-        [Display(Name = "Picture")]
+        [Display(Name = "Main Picture")]
         public string Picture { get; set; } = null!;
+        public string? Picture2 { get; set; }
+        public string? Picture3 { get; set; }
+        public string? Picture4 { get; set; }
+        public string? Picture5 { get; set; }
 
-        [Display(Name = "Discriprion")]
+        [Display(Name = "Description")]
         public string Description { get; set; } = null!;
 
         [Display(Name = "Quantity")]
@@ -30,7 +34,7 @@ namespace F1Store.Models.Product
         [Display(Name = "Price")]
         public decimal Price { get; set; }
 
-        [Display(Name = "Discount")]
+        [Display(Name = "Discount %")]
         public decimal Discount { get; set; }
     }
 }

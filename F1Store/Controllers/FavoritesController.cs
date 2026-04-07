@@ -16,21 +16,19 @@ namespace F1Store.Controllers
             _favoritesService = favoritesService;
         }
 
+        // Страницата "Моите любими"
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Вземаме любимите от базата чрез сервиза
             var favorites = await _favoritesService.GetUserFavoritesAsync(userId!);
 
-            // Създаваме новия VM
             var viewModel = new FavoriteVM
             {
                 Items = favorites.Select(f => new FavoriteItemVM
                 {
                     ProductId = f.ProductId,
-                    ProductName = f.Product.ProductName, // Корекция: ProductName вместо Name
-                    Picture = f.Product.Picture,         // Корекция: Picture вместо ImageUrl
+                    ProductName = f.Product.ProductName,
+                    Picture = f.Product.Picture,
                     Price = f.Product.Price
                 }).ToList()
             };
@@ -39,29 +37,30 @@ namespace F1Store.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(int productId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Взема ID-то на текущия юзър
-
-            if (userId == null)
-            {
-                return Challenge(); // Пренасочва към Login, ако сесията е изтекла
-            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
 
             await _favoritesService.AddToFavoritesAsync(userId, productId);
-            return RedirectToAction("Index", "Product");
+            return Json(new { success = true });
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
+            if (userId == null) return Unauthorized();
+
+            await _favoritesService.RemoveFromFavoritesAsync(userId, productId);
+
+            // АКО е AJAX (от началната страница) -> върни JSON
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                await _favoritesService.RemoveFromFavoritesAsync(userId, productId);
+                return Json(new { success = true });
             }
+
+            // АКО е обикновено натискане (от страницата Favorites) -> презареди страницата
             return RedirectToAction(nameof(Index));
         }
     }

@@ -1,9 +1,143 @@
 ﻿@{
-    ViewData["Title"] = "Denied";
+    ViewData["Title"] = "Access Denied";
 }
 
-<h1>You can not delete this user!</h1>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 
-<div>
-    <a asp-controller="Client" asp-action="Index">Back to list of clients</a>
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="denied-card text-center shadow-lg">
+        @* Икона за забрана в стила на флаг на стюардите *@
+        <div class="warning-hex mx-auto mb-4">
+            <i class="fas fa-user-slash"></i>
+        </div>
+
+        <h1 class="f1-font fw-900 text-white mb-3">ACTION <span class="text-danger">DENIED</span></h1>
+
+        <div class="status-badge mb-4">
+            <span class="pulse-dot"></span>
+            ADMINISTRATION PROTECTION ACTIVE
+        </div>
+
+        <p class="text-secondary mb-5 px-md-5">
+            You cannot delete this user. This account is protected by the <br>
+            <strong>Race Control Safety Protocol</strong> to prevent data loss.
+        </p>
+
+        <div class="action-zone p-4 bg-dark-soft">
+            <a asp-controller="Client" asp-action="Index" class="btn-f1-back">
+                <i class="fas fa-chevron-left me-2"></i> RETURN TO PADDOCK
+            </a>
+        </div>
+    </div>
 </div>
+
+<style>
+    :root {
+        --f1-red: #e10600;
+        --dark-soft: #15151e;
+        --dark-card: #0c0c12;
+    }
+
+    body {
+        background-color: #0c0c12;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* Card Styling */
+    .denied-card {
+        background: var(--dark-soft);
+        border: 2px solid #2a2a35;
+        border-top: 5px solid var(--f1-red);
+        padding: 4rem 2rem;
+        max-width: 600px;
+        width: 100%;
+        position: relative;
+        border-radius: 4px;
+    }
+
+    /* Warning Icon Hexagon */
+    .warning-hex {
+        width: 100px;
+        height: 100px;
+        background: var(--f1-red);
+        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        box-shadow: 0 0 30px rgba(225, 6, 0, 0.4);
+    }
+
+    /* Status Badge */
+    .status-badge {
+        background: #1a1a24;
+        border: 1px solid #333;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-family: 'Orbitron', sans-serif;
+        color: #888;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--f1-red);
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.5);
+            opacity: 0.4;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Back Button */
+    .bg-dark-soft {
+        background: #111;
+        border-radius: 4px;
+    }
+
+    .btn-f1-back {
+        text-decoration: none !important;
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.85rem;
+        border: 1px solid #444;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+        .btn-f1-back:hover {
+            background: white;
+            color: black;
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+    /* Font Awesome */
+    @@import url('

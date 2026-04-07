@@ -1,63 +1,173 @@
 ﻿@model IEnumerable<F1Store.Models.Client.ClientIndexVM>
 
-@{
-    ViewData["Title"] = "Index";
-}
+<div class="container-fluid py-4 px-md-5 animate-fade-in">
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-danger border-2">
+        <div>
+            <h1 class="f1-font fw-900 text-white mb-0" style="font-size: 2.5rem; letter-spacing: -2px;">
+                REGISTERED <span class="text-danger">CLIENTS</span>
+            </h1>
+            <p class="text-secondary fw-bold small mb-0" style="letter-spacing: 1px;">
+                <i class="fas fa-shield-alt text-danger me-1"></i> ACCESS LEVEL: ADMINISTRATOR
+            </p>
+        </div>
+        <div class="text-end">
+            <div class="d-flex align-items-center justify-content-end">
+                <span class="pulse-dot-green me-2"></span>
+                <span class="f1-font text-white small" style="font-size: 0.65rem;">LIVE TELEMETRY</span>
+            </div>
+            <div class="text-secondary mt-1" style="font-size: 0.6rem; font-family: monospace;">SRV_STATUS: OPTIMAL</div>
+        </div>
+    </div>
 
-<h1>Clients</h1>
+    <div class="f1-carbon-card shadow-2xl">
+        <div class="table-responsive">
+            <table class="f1-ultimate-table mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">HANDLE</th>
+                        <th>IDENTITY</th>
+                        <th>BASE LOCATION</th>
+                        <th>COMMS LINE</th>
+                        <th>SYSTEM EMAIL</th>
+                        <th class="text-center pe-4">RACE CONTROL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <span class="text-danger fw-bold f1-font" style="font-size: 0.8rem;">@@@item.UserName</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="driver-number-box me-3">@item.FirstName[0]@item.LastName[0]</div>
+                                    <div>
+                                        <div class="text-white fw-bold mb-0">@item.FirstName @item.LastName</div>
+                                        <div class="text-danger fw-bold" style="font-size: 0.6rem; letter-spacing: 1px;">OFFICIAL MEMBER</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-white-50 small">@item.Address</td>
+                            <td>
+                                @* ФИКС ЗА ТЕЛЕФОНА: Ако е празен, показва "NO COMMS" *@
+                                <span class="text-white fw-bold" style="font-family: 'Orbitron'; font-size: 0.8rem;">
+                                    <i class="fas fa-phone-alt text-danger me-2" style="font-size: 0.7rem;"></i>
+                                    @(string.IsNullOrWhiteSpace(item.PhoneNumber) ? "NO COMMS" : item.PhoneNumber)
+                                </span>
+                            </td>
+                            <td>
+                                <span style="color: #00d2be; font-family: monospace; font-size: 0.9rem;">@item.Email</span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="f1-dq-neon-btn">
+                                    <i class="fas fa-ban me-1"></i> DISQUALIFY
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-			<th>
-				@Html.DisplayNameFor(model => model.PhoneNumber)
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhoneNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    <a asp-action="Delete"
-                       asp-route-id="@item.Id"
-                       class="btn btn-danger">
-                        Delete
-                    </a>
-                </td>
-            </tr>
+<style>
+    /* Пълна тъмна тема без сиви петна */
+    .f1-carbon-card {
+        background: #0a0a0f !important;
+        border: 1px solid #1f1f27;
+        border-radius: 4px;
+    }
+
+    .f1-ultimate-table {
+        width: 100%;
+        background: transparent !important;
+    }
+
+        .f1-ultimate-table thead th {
+            background: #050507 !important;
+            color: #444 !important;
+            padding: 18px 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #e10600;
         }
-    </tbody>
-</table>
+
+        .f1-ultimate-table tbody tr {
+            border-bottom: 1px solid #16161d;
+            transition: 0.2s;
+        }
+
+            .f1-ultimate-table tbody tr:hover {
+                background: rgba(225, 6, 0, 0.05) !important;
+            }
+
+        .f1-ultimate-table td {
+            padding: 22px 15px;
+            vertical-align: middle;
+            color: white !important;
+        }
+
+    /* Driver Badge - Red Slanted Design */
+    .driver-number-box {
+        background: #e10600;
+        color: white;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 900;
+        clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    }
+
+    /* NEON DISQUALIFY BUTTON */
+    .f1-dq-neon-btn {
+        display: inline-block;
+        padding: 8px 16px;
+        background: transparent;
+        border: 2px solid #333;
+        color: #555 !important;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.65rem;
+        text-decoration: none !important;
+        transition: all 0.3s ease;
+    }
+
+        .f1-dq-neon-btn:hover {
+            border-color: #e10600;
+            color: #fff !important;
+            background: #e10600;
+            box-shadow: 0 0 20px rgba(225, 6, 0, 0.6);
+            transform: scale(1.05) skewX(-5deg);
+        }
+
+    .pulse-dot-green {
+        width: 10px;
+        height: 10px;
+        background: #00d2be;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #00d2be;
+        animation: pulse-f1 1.5s infinite;
+    }
+
+    @@keyframes pulse-f1 {
+        0% {
+            transform: scale(0.9);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.2);
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: scale(0.9);
+            opacity: 1;
+        }
+    }
+</style>

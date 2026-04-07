@@ -1,8 +1,60 @@
-﻿﻿@{
+﻿@{
     ViewData["Title"] = "Success";
 }
 
-<h1>Product removed successfully</h1>
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="p-5 bg-dark border-top border-success shadow-lg rounded-0">
+                @* --- Анимирана икона за успех --- *@
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+
+                <h2 class="f1-font text-white mb-3 text-uppercase">Action Completed</h2>
+                <h4 class="text-secondary mb-4" style="font-weight: 300;">Product has been removed from the grid.</h4>
+
+                <hr class="border-secondary my-4">
+
+                <div class="d-grid gap-2">
+                    <a asp-action="Index" class="btn btn-success rounded-0 f1-font py-3 shadow-sm">
+                        <i class="bi bi-house-door me-2"></i>RETURN TO INVENTORY
+                    </a>
+                    <p class="small text-muted mt-3 uppercase f1-font" style="font-size: 0.7rem; letter-spacing: 2px;">
+                        Status: Confirmed / Database Updated
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Плавна поява на страницата */
+    .container {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn-success {
+        background-color: #198754;
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-success:hover {
+            background-color: #157347;
+            transform: scale(1.02);
+        }
+</style>

@@ -1,80 +1,227 @@
 ﻿@model F1Store.Models.Product.ProductCreateVM
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Product - F1 Admin";
 }
 
-<h1>Create</h1>
-
-<h4>ProductCreateVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ProductName" class="control-label"></label>
-                <input asp-for="ProductName" class="form-control" />
-                <span asp-validation-for="ProductName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TeamId" class="control-label"></label>
-                @*<input asp-for="TeamId" class="form-control" />*@
-                <select asp-for="TeamId" class="form-control text-center">
-                    @foreach (var team in Model.Teams)
-                    {
-                        <option value=" @team.Id">@team.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="TeamId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                @*<input asp-for="CategoryId" class="form-control" />*@
-                <select asp-for="CategoryId" class="form-control text-center">
-                    @foreach (var category in Model.Categories)
-                    {
-                        <option value="@category.Id">@category.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Picture" class="control-label"></label>
-                <input asp-for="Picture" class="form-control" />
-                <span asp-validation-for="Picture" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Discount" class="control-label"></label>
-                <input asp-for="Discount" class="form-control" />
-                <span asp-validation-for="Discount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container py-5 mt-4">
+    @* --- HEADER --- *@
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="f1-font text-white m-0 text-uppercase" style="border-left: 5px solid #e10600; padding-left: 15px;">
+                Create New <span class="text-danger">Gear</span>
+            </h1>
+            <p class="text-secondary small mb-0 mt-1 uppercase">Add official merchandise to the catalog</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-0 f1-font px-4">
+            <i class="bi bi-arrow-left me-2"></i>BACK TO LIST
+        </a>
     </div>
+
+    <form asp-action="Create" method="post" class="row g-4">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-0 border-0 bg-danger text-white small" role="alert"></div>
+
+        @* --- LEFT COLUMN: CORE DATA --- *@
+        <div class="col-lg-7">
+            <div class="card bg-dark text-white border-secondary rounded-0 shadow-lg mb-4 hover-border-red">
+                <div class="card-header border-secondary bg-black py-3">
+                    <h5 class="f1-font m-0 text-uppercase small text-danger"><i class="bi bi-pencil-square me-2"></i>Product Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label asp-for="ProductName" class="form-label f1-font small text-secondary uppercase">Product Name</label>
+                        <input asp-for="ProductName" class="form-control f1-input" placeholder="e.g. Oracle Red Bull Racing Team Cap" />
+                        <span asp-validation-for="ProductName" class="text-danger x-small"></span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="TeamId" class="form-label f1-font small text-secondary uppercase">Team</label>
+                            @* Фиксиран Select *@
+                            <select asp-for="TeamId" class="form-select f1-input f1-select">
+                                <option value="" selected disabled>Select Team...</option>
+                                @foreach (var team in Model.Teams)
+                                {
+                                    <option value="@team.Id">@team.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TeamId" class="text-danger x-small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="CategoryId" class="form-label f1-font small text-secondary uppercase">Category</label>
+                            @* Фиксиран Select *@
+                            <select asp-for="CategoryId" class="form-select f1-input f1-select">
+                                <option value="" selected disabled>Select Category...</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger x-small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label asp-for="Description" class="form-label f1-font small text-secondary uppercase">Detailed Description</label>
+                        <textarea asp-for="Description" class="form-control f1-input" rows="6" placeholder="Describe the material, fit, and official branding details..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger x-small"></span>
+                    </div>
+                </div>
+            </div>
+
+            @* Pricing Section *@
+            <div class="card bg-dark text-white border-secondary rounded-0 shadow-lg hover-border-red">
+                <div class="card-header border-secondary bg-black py-3">
+                    <h5 class="f1-font m-0 text-uppercase small text-danger"><i class="bi bi-currency-dollar me-2"></i>Pricing & Stock</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Price" class="form-label f1-font small text-secondary uppercase">Base Price</label>
+                            <div class="input-group">
+                                <input asp-for="Price" class="form-control f1-input" step="0.01" />
+                                <span class="input-group-text bg-black border-secondary text-secondary">лв.</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger x-small"></span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Discount" class="form-label f1-font small text-secondary uppercase">Discount</label>
+                            <div class="input-group">
+                                <input asp-for="Discount" class="form-control f1-input" min="0" max="100" />
+                                <span class="input-group-text bg-black border-secondary text-secondary">%</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Quantity" class="form-label f1-font small text-secondary uppercase">Initial Stock</label>
+                            <input asp-for="Quantity" class="form-control f1-input" placeholder="0" />
+                            <span asp-validation-for="Quantity" class="text-danger x-small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* --- RIGHT COLUMN: MEDIA ASSETS --- *@
+        <div class="col-lg-5">
+            <div class="card bg-dark text-white border-secondary rounded-0 shadow-lg sticky-top" style="top: 20px; z-index: 100;">
+                <div class="card-header border-secondary bg-black py-3">
+                    <h5 class="f1-font m-0 text-uppercase small text-danger"><i class="bi bi-images me-2"></i>Media Gallery</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4 text-center border border-secondary p-3 bg-black" style="min-height: 280px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        <img id="preview-main" src="https://via.placeholder.com/400x400/15151e/888888?text=NO+IMAGE+SELECTED" class="img-fluid" style="max-height: 250px; object-fit: contain;" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Picture" class="form-label f1-font small text-danger uppercase fw-bold">Main Image URL</label>
+                        <input asp-for="Picture" class="form-control f1-input border-danger img-input shadow-sm" data-preview="preview-main" placeholder="https://..." />
+                        <span asp-validation-for="Picture" class="text-danger x-small"></span>
+                    </div>
+
+                    <hr class="border-secondary my-4" />
+
+                    <label class="form-label f1-font small text-secondary uppercase mb-3">Additional Images (Optional)</label>
+                    <div class="row g-3">
+                        @foreach (var i in new[] { 2, 3, 4, 5 })
+                        {
+                            var propName = "Picture" + i;
+                            <div class="col-6">
+                                <input name="@propName" id="@propName" class="form-control form-control-sm f1-input img-input"
+                                       data-preview="preview-@i" placeholder="URL @i" />
+                                <div class="preview-box mt-2 text-center bg-black border border-secondary" style="height: 60px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="preview-@i" src="" class="img-fluid h-100 d-none" style="object-fit: contain;" />
+                                    <i class="bi bi-image text-secondary" id="icon-@i"></i>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mt-5 d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg rounded-0 f1-font py-3 shadow-red">
+                            <i class="bi bi-plus-lg me-2"></i>PUBLISH PRODUCT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    /* Базови полета */
+    .f1-input {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #333 !important;
+        border-radius: 0 !important;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+        .f1-input:focus {
+            border-color: #e10600 !important;
+            box-shadow: 0 0 0 0.25rem rgba(225, 6, 0, 0.15) !important;
+            background-color: #050505 !important;
+        }
+
+    /* Специално за падащите менюта (Select) */
+    .f1-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 8 8 8-8'/%3e%3c/svg%3e") !important;
+        background-position: right 0.75rem center !important;
+        background-size: 16px 12px !important;
+        background-repeat: no-repeat !important;
+    }
+
+        /* Оправя цветовете на опциите вътре в менюто */
+        .f1-select option {
+            background-color: #15151e !important;
+            color: white !important;
+        }
+
+    .hover-border-red:hover {
+        border-color: #444 !important;
+    }
+
+    .shadow-red {
+        box-shadow: 0 4px 15px rgba(225, 6, 0, 0.3);
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+    }
+</style>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.querySelectorAll('.img-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const previewId = this.getAttribute('data-preview');
+                const img = document.getElementById(previewId);
+                const iconId = previewId.replace('preview-', 'icon-');
+                const icon = document.getElementById(iconId);
+
+                if (this.value && this.value.trim() !== '') {
+                    img.src = this.value;
+                    img.classList.remove('d-none');
+                    if (icon) icon.classList.add('d-none');
+                } else {
+                    if (previewId === 'preview-main') {
+                        img.src = "https://via.placeholder.com/400x400/15151e/888888?text=NO+IMAGE+SELECTED";
+                    } else {
+                        img.classList.add('d-none');
+                        if (icon) icon.classList.remove('d-none');
+                    }
+                }
+            });
+        });
+    </script>
 }

@@ -1,54 +1,190 @@
 ﻿@model F1Store.Models.Client.ClientDeleteVM
+
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Confirm Deletion";
 }
 
-<h1>Delete</h1>
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>ClientDeleteVM</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" class="btn btn-warning">Back to List</a>
-    </form>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="delete-header text-center mb-4">
+                <div class="warning-ring mx-auto mb-3">
+                    <i class="fas fa-exclamation-triangle pulse-warning"></i>
+                </div>
+                <h2 class="f1-font text-white mb-2">Confirm <span class="text-danger">Removal</span></h2>
+                <p class="text-secondary fw-bold">Are you sure you want to eject this member from the database?</p>
+            </div>
+
+            <div class="card bg-dark-soft border-0 shadow-lg overflow-hidden mb-4">
+                <div class="card-header bg-black py-3 border-bottom border-danger">
+                    <h5 class="f1-font text-white-50 mb-0 small">Technical Profile: @Model.UserName</h5>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="dl-container">
+                        <div class="dl-row">
+                            <div class="dl-label">@Html.DisplayNameFor(model => model.UserName)</div>
+                            <div class="dl-value text-danger fw-bold">@@@Model.UserName</div>
+                        </div>
+                        <div class="dl-row">
+                            <div class="dl-label">Full Identity</div>
+                            <div class="dl-value text-white">@Model.FirstName @Model.LastName</div>
+                        </div>
+                        <div class="dl-row">
+                            <div class="dl-label">@Html.DisplayNameFor(model => model.Address)</div>
+                            <div class="dl-value text-secondary small">@Model.Address</div>
+                        </div>
+                        <div class="dl-row">
+                            <div class="dl-label">@Html.DisplayNameFor(model => model.PhoneNumber)</div>
+                            <div class="dl-value f1-font small">@Model.PhoneNumber</div>
+                        </div>
+                        <div class="dl-row no-border">
+                            <div class="dl-label">@Html.DisplayNameFor(model => model.Email)</div>
+                            <div class="dl-value">
+                                <span class="badge bg-dark border border-secondary text-white-50">@Model.Email</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-zone text-center p-4">
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
+                        <a asp-action="Index" class="btn-f1-cancel">
+                            <i class="fas fa-times me-2"></i> ABORT ACTION
+                        </a>
+                        <button type="submit" class="btn-f1-confirm-delete">
+                            <i class="fas fa-user-minus me-2"></i> CONFIRM DELETION
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
 </div>
+
+<style>
+    :root {
+        --f1-red: #e10600;
+        --dark-soft: #15151e;
+        --dark-row: #1c1c27;
+    }
+
+    body {
+        background-color: #0c0c12;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Warning Section */
+    .warning-ring {
+        width: 80px;
+        height: 80px;
+        border: 2px solid var(--f1-red);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--f1-red);
+    }
+
+    .pulse-warning {
+        animation: warningPulse 1.5s infinite;
+    }
+
+    @@keyframes warningPulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 0.7;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* DL Table-like Container */
+    .bg-dark-soft {
+        background: var(--dark-soft);
+        border: 1px solid #2a2a35 !important;
+    }
+
+    .dl-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dl-row {
+        display: flex;
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #2a2a35;
+        align-items: center;
+    }
+
+        .dl-row:nth-child(even) {
+            background: var(--dark-row);
+        }
+
+        .dl-row.no-border {
+            border-bottom: none;
+        }
+
+    .dl-label {
+        flex: 0 0 35%;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.7rem;
+        color: #888;
+        text-transform: uppercase;
+    }
+
+    .dl-value {
+        flex: 1;
+        font-size: 1rem;
+    }
+
+    /* Buttons Style */
+    .btn-f1-cancel {
+        text-decoration: none !important;
+        background: #333;
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        padding: 12px 30px;
+        transition: all 0.3s;
+        border: none;
+    }
+
+        .btn-f1-cancel:hover {
+            background: #555;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-f1-confirm-delete {
+        background: var(--f1-red);
+        color: white;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.8rem;
+        padding: 12px 30px;
+        border: none;
+        transition: all 0.3s;

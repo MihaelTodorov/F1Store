@@ -8,14 +8,18 @@
 }
 
 <div class="pf-cart-page container py-5">
+    @* HEAD СЕКЦИЯ С ГОЛЯМА ИКОНА НАД ТЕКСТА *@
     <div class="pf-cart-page-head mb-5 text-center">
-        <h1 class="f1-font text-danger display-4 mb-2">
-            <i class="bi bi-cart3 me-3"></i>SHOPPING CART
+        <div class="cart-icon-container mb-3">
+            <i class="bi bi-cart3 text-danger header-cart-icon"></i>
+        </div>
+        <h1 class="f1-font text-danger display-5 mb-2 fw-black" style="letter-spacing: 4px;">
+            SHOPPING CART
         </h1>
-        <p class="text-secondary uppercase">@items.Count ITEM(S) IN YOUR PADDOCK</p>
+        <p class="text-secondary f1-font small">@items.Count ITEM(S) IN YOUR PADDOCK</p>
 
         <div class="mt-4">
-            <a asp-controller="Product" asp-action="Index" class="btn btn-outline-light f1-font btn-sm px-4">
+            <a asp-controller="Product" asp-action="Index" class="btn btn-outline-light f1-font btn-sm px-4 rounded-0">
                 <i class="bi bi-arrow-left me-2"></i>CONTINUE SHOPPING
             </a>
         </div>
@@ -23,10 +27,11 @@
 
     @if (!items.Any())
     {
-        <div class="text-center py-5 border border-secondary rounded bg-dark bg-opacity-50">
-            <div class="display-1 text-secondary mb-4"><i class="bi bi-cart-x"></i></div>
-            <h2 class="f1-font">YOUR CART IS EMPTY</h2>
-            <a asp-controller="Product" asp-action="Index" class="btn btn-danger f1-font px-5 py-3 mt-3">
+        <div class="text-center py-5 border border-secondary rounded-0 bg-dark bg-opacity-50">
+            <div class="display-1 text-secondary mb-4 opacity-25"><i class="bi bi-cart-x"></i></div>
+            <h2 class="f1-font text-white">YOUR CART IS EMPTY</h2>
+            <p class="text-muted mb-4">Looks like you haven't joined the race yet.</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-danger f1-font px-5 py-3 mt-2">
                 BROWSE PRODUCTS
             </a>
         </div>
@@ -34,56 +39,54 @@
     else
     {
         <div class="row g-4">
+            @* ЛЯВА КОЛОНА: СПИСЪК С ПРОДУКТИ *@
             <div class="col-12 col-xl-8">
-                <div class="card bg-dark border-secondary rounded-0">
-                    <div class="card-header bg-secondary bg-opacity-25 border-secondary py-3">
-                        <span class="f1-font small fw-bold">SELECTED ITEMS</span>
+                <div class="card bg-dark border-secondary rounded-0 shadow">
+                    <div class="card-header bg-secondary bg-opacity-10 border-secondary py-3">
+                        <span class="f1-font small fw-bold text-white-50">SELECTED ITEMS</span>
                     </div>
                     <div class="card-body p-0">
                         @foreach (var item in items)
                         {
                             <div class="d-flex align-items-center p-3 border-bottom border-secondary gap-3 @(item.IsOutOfStock ? "opacity-50" : "")">
-                                <div class="cart-img-wrap" style="width: 100px;">
-                                    <img src="@item.Picture" class="img-fluid rounded" alt="@item.ProductName" />
+                                <div class="cart-img-wrap border border-secondary" style="width: 100px; height: 100px; overflow: hidden;">
+                                    <img src="@item.Picture" class="img-fluid w-100 h-100 object-fit-cover" alt="@item.ProductName" />
                                 </div>
 
                                 <div class="flex-grow-1">
-                                    <h5 class="f1-font mb-1" style="font-size: 1rem;">@item.ProductName</h5>
+                                    <h5 class="f1-font mb-1 text-white" style="font-size: 0.95rem;">@item.ProductName</h5>
                                     <div class="small text-muted mb-2">UNIT: @Eur(item.FinalUnitPrice)</div>
 
                                     @if (!item.IsOutOfStock)
                                     {
                                         <div class="d-flex align-items-center gap-2">
-                                            @* Форма за НАМАЛЯВАНЕ на количеството *@
                                             <form asp-action="UpdateQuantity" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cartItemId" value="@item.CartItemId" />
                                                 <input type="hidden" name="delta" value="-1" />
-                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 btn-sm" @(item.Quantity <= 1 ? "disabled" : "")>-</button>
+                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 py-0 btn-sm rounded-0" @(item.Quantity <= 1 ? "disabled" : "")>-</button>
                                             </form>
 
-                                            <span class="f1-font text-white px-2">@item.Quantity</span>
+                                            <span class="f1-font text-white px-2 small">@item.Quantity</span>
 
-                                            @* Форма за УВЕЛИЧАВАНЕ на количеството *@
                                             <form asp-action="UpdateQuantity" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="cartItemId" value="@item.CartItemId" />
                                                 <input type="hidden" name="delta" value="1" />
-                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 btn-sm" @(item.Quantity >= item.AvailableQuantity ? "disabled" : "")>+</button>
+                                                <button type="submit" class="btn btn-outline-secondary text-white px-2 py-0 btn-sm rounded-0" @(item.Quantity >= item.AvailableQuantity ? "disabled" : "")>+</button>
                                             </form>
 
-                                            <small class="text-muted opacity-50 ms-2" style="font-size: 0.7rem;">AVAIL: @item.AvailableQuantity</small>
+                                            <small class="text-muted opacity-50 ms-2" style="font-size: 0.65rem;">STOCK: @item.AvailableQuantity</small>
                                         </div>
                                     }
                                 </div>
 
                                 <div class="text-end px-3">
-                                    <div class="f1-font text-white">@Eur(item.Subtotal)</div>
-                                    @* Работещият бутон за премахване *@
+                                    <div class="f1-font text-white fw-bold">@Eur(item.Subtotal)</div>
                                     <form asp-action="Remove" method="post" class="mt-2">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="cartItemId" value="@item.CartItemId" />
-                                        <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none">REMOVE</button>
+                                        <button type="submit" class="btn btn-link text-danger p-0 small text-decoration-none f1-font" style="font-size: 0.7rem;">REMOVE</button>
                                     </form>
                                 </div>
                             </div>
@@ -91,36 +94,41 @@
                     </div>
                 </div>
 
-                <div class="mt-4 text-end">
-                    @* Поправеният бутон за изчистване на всичко *@
+                <div class="mt-4 text-start">
                     <form asp-action="ClearEntireCart" method="post">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-outline-danger f1-font">
+                        <button type="submit" class="btn btn-sm btn-outline-danger f1-font rounded-0 opacity-75 hover-opacity-100">
                             <i class="bi bi-trash3 me-2"></i>CLEAR ENTIRE CART
                         </button>
                     </form>
                 </div>
             </div>
 
+            @* ДЯСНА КОЛОНА: SUMMARY *@
             <div class="col-12 col-xl-4">
-                <div class="card bg-dark border-danger rounded-0 shadow-lg">
+                <div class="card bg-dark border-danger rounded-0 shadow-lg position-sticky" style="top: 100px;">
                     <div class="card-body p-4">
                         <h4 class="f1-font text-white mb-4 border-bottom border-secondary pb-2">ORDER SUMMARY</h4>
-                        <div class="d-flex justify-content-between mb-3 text-muted">
+                        <div class="d-flex justify-content-between mb-3 text-muted small">
                             <span>SUBTOTAL</span>
                             <span>@Eur(total)</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-4 border-top border-secondary pt-3 text-white">
                             <span class="f1-font fs-5">TOTAL</span>
-                            <span class="f1-font fs-4 text-danger">@Eur(total)</span>
+                            <span class="f1-font fs-3 text-danger fw-bold">@Eur(total)</span>
                         </div>
 
                         <form asp-action="Checkout" method="post">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger w-100 f1-font py-3 fs-5" @(!items.Any() ? "disabled" : "")>
+                            <button type="submit" class="btn btn-danger w-100 f1-font py-3 fs-5 rounded-0 shadow-sm" @(!items.Any() ? "disabled" : "")>
                                 <i class="bi bi-bag-check me-2"></i>CHECKOUT
                             </button>
                         </form>
+
+                        <div class="mt-3 text-center opacity-50">
+                            <i class="bi bi-shield-check text-success me-1"></i>
+                            <span class="small text-muted f1-font" style="font-size: 0.6rem;">SECURE CHECKOUT</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,22 +137,100 @@
 </div>
 
 <style>
+
+    /* Скриване на системния скролбар за целия документ */
+    html, body {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+
+        body::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+    /* Оправяне на Hover ефекта за бутона Clear Cart */
+    .hover-opacity-100:hover {
+        opacity: 1 !important;
+    }
+
+    /* Стилизиране на бутоните за количество */
+    .btn-outline-secondary {
+        border-color: rgba(255,255,255,0.2) !important;
+        min-width: 30px;
+        height: 30px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-cart-icon {
+        font-size: 4.5rem !important; /* Достатъчно голяма, но не огромна */
+        filter: drop-shadow(0 0 15px rgba(225, 6, 0, 0.4));
+        display: inline-block;
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .fw-black {
+        font-weight: 900;
+    }
+
     .f1-font {
         font-family: 'Orbitron', sans-serif;
         letter-spacing: 1px;
     }
 
     .card {
-        background-color: rgba(21, 21, 30, 0.9) !important;
+        background-color: #1e1e2d !important;
+        border-width: 1px;
     }
 
+    /* Анимация за иконата */
+    @@keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Бутони и контроли */
     .btn-danger {
-        background-color: #e10600;
-        border: none;
-        border-radius: 0;
+        background-color: #e10600 !important;
+        border: none !important;
+        transition: all 0.3s ease;
     }
 
-    .btn-outline-light {
-        border-radius: 0;
+        .btn-danger:hover {
+            background-color: #ff0800 !important;
+            transform: scale(1.02);
+        }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--f1-red) !important;
+        border-color: var(--f1-red) !important;
+    }
+
+    .cart-img-wrap img {
+        transition: transform 0.3s ease;
+    }
+
+    .cart-img-wrap:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Responsive корекции */
+    @@media (max-width: 768px) {
+        .header-cart-icon {
+            font-size: 3.5rem !important;
+        }
+
+        .display-5 {
+            font-size: 1.8rem;
+        }
     }
 </style>

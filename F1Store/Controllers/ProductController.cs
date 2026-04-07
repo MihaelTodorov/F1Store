@@ -31,99 +31,86 @@ namespace F1Store.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<ActionResult> Index(List<string> SearchTeams, List<string> SearchCategories, string team)
+        public async Task<ActionResult> Index(string searchTerm, List<string> searchTeams, List<string> searchCategories, string team)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var allProducts = _productService.GetProducts(null, null);
 
-            // Превръщаме в IQueryable за по-лесно филтриране
-            var filteredQuery = allProducts.AsQueryable();
+            var allProducts = _productService.GetProducts().AsQueryable();
 
-            // 1. Събираме всички търсени отбори в един списък
-            var teamFilters = new List<string>();
-            if (SearchTeams != null) teamFilters.AddRange(SearchTeams);
-            if (!string.IsNullOrEmpty(team)) teamFilters.Add(team);
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                allProducts = allProducts.Where(p => p.ProductName.ToLower().Contains(searchTerm));
+            }
 
-            // 2. Филтрираме по отбор (Гъвкаво търсене)
+            var teamFilters = searchTeams ?? new List<string>();
+            if (!string.IsNullOrEmpty(team) && !teamFilters.Contains(team))
+            {
+                teamFilters.Add(team);
+            }
+
             if (teamFilters.Any())
             {
-                filteredQuery = filteredQuery.Where(p =>
-                    teamFilters.Any(filter =>
-                        filter.Contains(p.Team.TeamName) || p.Team.TeamName.Contains(filter)
-                    ));
+                allProducts = allProducts.Where(p => p.Team != null && teamFilters.Contains(p.Team.TeamName));
             }
 
-            // 3. Филтрираме по категория
-            if (SearchCategories != null && SearchCategories.Any())
+            if (searchCategories != null && searchCategories.Any())
             {
-                filteredQuery = filteredQuery.Where(p => SearchCategories.Contains(p.Category.CategoryName));
+                allProducts = allProducts.Where(p => p.Category != null && searchCategories.Contains(p.Category.CategoryName));
             }
 
-            // 4. Мапване към ViewModel
-            var products = filteredQuery.Select(product => new ProductIndexVM
-            {
-                Id = product.Id,
-                ProductName = product.ProductName,
-                TeamId = product.TeamId,
-                TeamName = product.Team.TeamName,
-                CategoryId = product.CategoryId,
-                CategoryName = product.Category.CategoryName,
-                Picture = product.Picture,
-                Description = product.Description,
-                Quantity = product.Quantity,
-                Price = product.Price,
-                Discount = product.Discount,
-                IsFavorite = userId != null && _favoritesService.IsFavoriteAsync(userId, product.Id).Result
-            }).ToList();
+            var productsList = allProducts.ToList();
+            var viewModels = new List<ProductIndexVM>();
 
-            return View(products);
+            foreach (var product in productsList)
+            {
+                viewModels.Add(new ProductIndexVM
+                {
+                    Id = product.Id,
+                    ProductName = product.ProductName,
+                    TeamName = product.Team?.TeamName ?? "F1 Team", 
+                    Picture = product.Picture,
+                    Price = product.Price,
+                    Quantity = product.Quantity,
+                    Discount = product.Discount,
+                    IsFavorite = userId != null ? await _favoritesService.IsFavoriteAsync(userId, product.Id) : false
+                });
+            }
+
+            return View(viewModels);
         }
 
         [AllowAnonymous]
         public ActionResult Details(int id)
         {
-            Product item = _productService.GetProductById(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
+            var item = _productService.GetProductById(id);
+            if (item == null) return NotFound();
 
-            ProductDetailsVM product = new ProductDetailsVM()
+            var model = new ProductDetailsVM()
             {
                 Id = item.Id,
                 ProductName = item.ProductName,
-                TeamId = item.TeamId,
-                TeamName = item.Team.TeamName,
-                CategoryId = item.CategoryId,
-                CategoryName = item.Category.CategoryName,
+                TeamName = item.Team?.TeamName ?? "Unknown",
+                CategoryName = item.Category?.CategoryName ?? "Unknown",
                 Picture = item.Picture,
+                Picture2 = item.Picture2,
+                Picture3 = item.Picture3,
+                Picture4 = item.Picture4,
+                Picture5 = item.Picture5,
                 Description = item.Description,
-                Quantity = item.Quantity,
                 Price = item.Price,
+                Quantity = item.Quantity,
                 Discount = item.Discount
             };
 
-            return View(product);
+            return View(model);
         }
+
 
         public ActionResult Create()
         {
             var product = new ProductCreateVM();
-
-            product.Teams = _teamService.GetTeams()
-                .Select(x => new TeamPairVM()
-                {
-                    Id = x.Id,
-                    Name = x.TeamName
-                }).ToList();
-
-            product.Categories = _categoryService.GetCategories()
-                .Select(x => new CategoryPairVM()
-                {
-                    Id = x.Id,
-                    Name = x.CategoryName
-                }).ToList();
-
+            LoadDropdowns(product);
             return View(product);
         }
 
@@ -133,24 +120,22 @@ namespace F1Store.Controllers
         {
             if (ModelState.IsValid)
             {
-                var createdId = _productService.Create(product.ProductName, product.TeamId,
-                    product.CategoryId, product.Picture, product.Description,
-                    product.Quantity, product.Price, product.Discount);
-                if (createdId)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                var created = _productService.Create(
+                    product.ProductName, product.TeamId, product.CategoryId,
+                    product.Picture, product.Picture2, product.Picture3, product.Picture4, product.Picture5,
+                    product.Description, product.Quantity, product.Price, product.Discount);
+
+                if (created) return RedirectToAction(nameof(Index));
             }
-            return View();
+
+            LoadDropdowns(product);
+            return View(product);
         }
 
         public ActionResult Edit(int id)
         {
             Product product = _productService.GetProductById(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            if (product == null) return NotFound();
 
             ProductEditVM updatedProduct = new ProductEditVM()
             {
@@ -159,16 +144,17 @@ namespace F1Store.Controllers
                 TeamId = product.TeamId,
                 CategoryId = product.CategoryId,
                 Picture = product.Picture,
+                Picture2 = product.Picture2,
+                Picture3 = product.Picture3,
+                Picture4 = product.Picture4,
+                Picture5 = product.Picture5,
                 Description = product.Description,
                 Quantity = product.Quantity,
                 Price = product.Price,
                 Discount = product.Discount
             };
-            updatedProduct.Teams = _teamService.GetTeams()
-                    .Select(b => new TeamPairVM { Id = b.Id, Name = b.TeamName }).ToList();
-            updatedProduct.Categories = _categoryService.GetCategories()
-                    .Select(c => new CategoryPairVM { Id = c.Id, Name = c.CategoryName }).ToList();
 
+            LoadDropdowns(updatedProduct);
             return View(updatedProduct);
         }
 
@@ -178,60 +164,49 @@ namespace F1Store.Controllers
         {
             if (ModelState.IsValid)
             {
-                var updated = _productService.Update(id, product.ProductName, product.TeamId,
-                    product.CategoryId, product.Picture, product.Description, product.Quantity, product.Price, product.Discount);
-                if (updated)
-                {
-                    return RedirectToAction("Index");
-                }
+                var updated = _productService.Update(
+                    id, product.ProductName, product.TeamId, product.CategoryId,
+                    product.Picture, product.Picture2, product.Picture3, product.Picture4, product.Picture5,
+                    product.Description, product.Quantity, product.Price, product.Discount);
+
+                if (updated) return RedirectToAction("Index");
             }
+
+            LoadDropdowns(product);
             return View(product);
         }
 
         public ActionResult Delete(int id)
         {
             Product item = _productService.GetProductById(id);
-            if (item == null)
-            {
-                return NotFound();
-            }
+            if (item == null) return NotFound();
 
-            ProductDeleteVM product = new ProductDeleteVM()
+            return View(new ProductDeleteVM()
             {
                 Id = item.Id,
                 ProductName = item.ProductName,
-                TeamId = item.TeamId,
                 TeamName = item.Team.TeamName,
-                CategoryId = item.CategoryId,
                 CategoryName = item.Category.CategoryName,
                 Picture = item.Picture,
-                Description = item.Description,
-                Quantity = item.Quantity,
-                Price = item.Price,
-                Discount = item.Discount
-            };
-            return View(product);
+                Price = item.Price
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {
-            var deleted = _productService.RemoveById(id);
-
-            if (deleted)
-            {
-                return this.RedirectToAction("Success");
-            }
-            else
-            {
-                return View();
-            }
+            if (_productService.RemoveById(id)) return RedirectToAction("Success");
+            return View();
         }
 
-        public IActionResult Success()
+        public IActionResult Success() => View("ProductSuccess");
+
+        // Помощен метод за зареждане на Dropdowns (за да не повтаряме код)
+        private void LoadDropdowns(dynamic vm)
         {
-            return View();
+            vm.Teams = _teamService.GetTeams().Select(x => new TeamPairVM { Id = x.Id, Name = x.TeamName }).ToList();
+            vm.Categories = _categoryService.GetCategories().Select(x => new CategoryPairVM { Id = x.Id, Name = x.CategoryName }).ToList();
         }
     }
 }

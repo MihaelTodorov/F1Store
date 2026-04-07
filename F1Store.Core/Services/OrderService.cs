@@ -1,11 +1,13 @@
 ﻿using F1Store.Core.Contracts;
-using F1Store.Infrastructure.Data.Domain;
 using F1Store.Infrastructure.Data;
+using F1Store.Infrastructure.Data.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace F1Store.Core.Services
 {
@@ -228,6 +230,14 @@ namespace F1Store.Core.Services
             var saved = _context.SaveChanges() > 0;
 
             return (saved, saved ? groupId : null, issues);
+        }
+
+        public Order GetOrderDetails(int id)
+        {
+            return _context.Orders
+                .Include(o => o.Product) // Зарежда продукта, за да вземем ProductName
+                .Include(o => o.User)    // Зарежда потребителя за Identity секцията
+                .FirstOrDefault(o => o.Id == id);
         }
     }
 }

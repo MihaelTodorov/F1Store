@@ -233,6 +233,18 @@ namespace F1Store.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Picture2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture4")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture5")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 

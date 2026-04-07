@@ -4,33 +4,211 @@
     ViewData["Title"] = "Statistics";
 }
 
-<h4 class="text-center">Statistics</h4>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-<div class="text-center">
-    <div class="col-xl-8 mx-auto">
-        <div class="card-group pb-0">
-            <div class="card-columns text-center">
-                <!-- Място за допълнителни карти или визуализации -->
+<div class="container py-5">
+    <div class="section-head text-center mb-5">
+        <h2 class="f1-font text-white display-4 uppercase mb-2">Race <span class="text-danger">Control</span> Stats</h2>
+        <p class="text-secondary f1-font">Live Database Overview</p>
+        <div class="red-divider mx-auto"></div>
+    </div>
+
+    @* --- STATS CARDS GRID --- *@
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">@Html.DisplayNameFor(model => model.CountClients)</p>
+                    <h3 class="stat-value">@Html.DisplayFor(model => model.CountClients)</h3>
+                </div>
+                <div class="stat-progress" style="background: var(--f1-red); width: 100%;"></div>
             </div>
         </div>
 
-        <table class="table table-striped" style="width:100%">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(model => model.CountClients)</th>
-                    <th>@Html.DisplayNameFor(model => model.CountProducts)</th>
-                    <th>@Html.DisplayNameFor(model => model.CountOrders)</th>
-                    <th>@Html.DisplayNameFor(model => model.SumOrders)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>@Html.DisplayFor(model => model.CountClients)</td>
-                    <td>@Html.DisplayFor(model => model.CountProducts)</td>
-                    <td>@Html.DisplayFor(model => model.CountOrders)</td>
-                    <td>@Html.DisplayFor(model => model.SumOrders)</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-box"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">@Html.DisplayNameFor(model => model.CountProducts)</p>
+                    <h3 class="stat-value">@Html.DisplayFor(model => model.CountProducts)</h3>
+                </div>
+                <div class="stat-progress" style="background: #ffffff; width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label">@Html.DisplayNameFor(model => model.CountOrders)</p>
+                    <h3 class="stat-value">@Html.DisplayFor(model => model.CountOrders)</h3>
+                </div>
+                <div class="stat-progress" style="background: #00d2be; width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card highlight">
+                <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="stat-content">
+                    <p class="stat-label text-white-50">@Html.DisplayNameFor(model => model.SumOrders)</p>
+                    @* ТУК Е ПРОМЯНАТА: Форматиране до .00 *@
+                    <h3 class="stat-value text-danger">$@Model.SumOrders.ToString("F2")</h3>
+                </div>
+                <div class="stat-progress" style="background: var(--f1-red); width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    @* --- RAW DATA TABLE --- *@
+    <div class="card bg-dark-soft border-0 shadow-lg overflow-hidden">
+        <div class="card-header bg-dark border-bottom border-secondary py-3">
+            <h5 class="f1-font mb-0 text-white-50"><i class="fas fa-list-ul me-2"></i>Detailed Breakdown</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 custom-f1-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Metric</th>
+                        <th class="text-end pe-4">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ps-4 text-secondary">Total Active Clients</td>
+                        <td class="text-end pe-4 fw-bold text-white">@Model.CountClients</td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4 text-secondary">Inventory Count</td>
+                        <td class="text-end pe-4 fw-bold text-white">@Model.CountProducts</td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4 text-secondary">Successful Orders</td>
+                        <td class="text-end pe-4 fw-bold text-white">@Model.CountOrders</td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4 text-secondary fw-bold text-danger">Total Revenue Generated</td>
+                        @* ТУК Е ПРОМЯНАТА: Форматиране до .00 в таблицата *@
+                        <td class="text-end pe-4 fw-bold text-danger">$@Model.SumOrders.ToString("F2")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --f1-red: #e10600;
+        --f1-black: #15151e;
+        --dark-soft: #1f1f27;
+    }
+
+    body {
+        background-color: #0c0c12;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .red-divider {
+        width: 60px;
+        height: 3px;
+        background: var(--f1-red);
+        margin-top: 15px;
+    }
+
+    .bg-dark-soft {
+        background-color: var(--dark-soft);
+    }
+
+    /* Stat Cards Styling */
+    .stat-card {
+        background: #15151e;
+        padding: 2rem;
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease, background 0.3s ease;
+        border: 1px solid #2a2a35;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: #1c1c27;
+        }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.15;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: white;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .stat-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        opacity: 0.6;
+    }
+
+    .stat-card.highlight {
+        border-left: 4px solid var(--f1-red);
+    }
+
+    /* Table Styling */
+    .custom-f1-table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .custom-f1-table thead th {
+            background: #111;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            padding: 1.2rem;
+            border-bottom: 2px solid #333;
+        }
+
+        .custom-f1-table tbody td {
+            padding: 1.2rem;
+            border-bottom: 1px solid #2a2a35;
+            vertical-align: middle;
+        }
+
+        .custom-f1-table tbody tr:hover {
+            background-color: rgba(225, 6, 0, 0.05);
+        }
+
+    /* Font Awesome Fix */
+    @@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+</style>

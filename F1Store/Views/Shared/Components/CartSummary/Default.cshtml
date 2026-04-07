@@ -9,9 +9,9 @@
         <i class="bi bi-cart3"></i>
     </span>
 
-    @if (Model > 0)
-
-    {
-        <span class="pf-nav-count-badge">@Model</span>
-    }
+    <span id="cart-count"
+          class="pf-nav-count-badge"
+          style="@(Model > 0 ? "" : "display: none;")">
+        @Model
+    </span>
 </a>

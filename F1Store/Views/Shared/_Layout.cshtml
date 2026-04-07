@@ -12,7 +12,19 @@
         :root {
             --f1-red: #e10600;
             --f1-black: #15151e;
+            --f1-dark-grey: #1e1e2d;
         }
+
+        /* ПРЕМАХВАНЕ НА СКРОЛБАР */
+        html, body {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+            html::-webkit-scrollbar,
+            body::-webkit-scrollbar {
+                display: none !important;
+            }
 
         body {
             font-family: 'Rajdhani', sans-serif;
@@ -50,18 +62,6 @@
             margin-left: 10px;
         }
 
-        .cart-link {
-            color: white !important;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-        }
-
-            .cart-link:hover {
-                color: var(--f1-red) !important;
-            }
-
         /* OFFCANVAS MENU */
         .offcanvas {
             background: var(--f1-black);
@@ -90,24 +90,46 @@
             margin-top: auto;
         }
 
-        .nav-register-btn {
-            background-color: var(--f1-red) !important;
-            color: white !important;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-            .nav-register-btn:hover {
-                background-color: white !important;
-                color: var(--f1-red) !important;
-            }
-
         /* CUSTOM TOAST STYLE */
         .f1-toast {
             background-color: #1e1e2d !important;
             border-radius: 0 !important;
             border-left: 5px solid var(--f1-red) !important;
             color: white !important;
+        }
+
+        /* CART ICON STYLES */
+        .pf-nav-mini-icon-link {
+            text-decoration: none !important;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .bi-cart3 {
+            color: var(--f1-red) !important;
+            font-size: 1.3rem;
+            transition: 0.3s;
+        }
+
+        .pf-nav-mini-icon-link:hover .bi-cart3 {
+            color: white !important;
+        }
+
+        .pf-nav-count-badge {
+            background-color: var(--f1-red) !important;
+            color: white !important;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 50%;
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            border: 1px solid var(--f1-black);
+            min-width: 18px;
+            text-align: center;
         }
     </style>
 </head>
@@ -122,37 +144,7 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    @if (User.Identity?.IsAuthenticated ?? false)
-                    {
-                        <div class="cart-link">
-                            @await Component.InvokeAsync("CartSummary")
-                        </div>
-
-                        <div class="dropdown ms-2">
-                            <a class="nav-link dropdown-toggle f1-font small text-white" href="#" data-bs-toggle="dropdown">
-                                @User.Identity.Name
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark border-danger rounded-0 shadow-lg">
-                                <li><a class="dropdown-item small" asp-area="Identity" asp-page="/Account/Manage/Index">PROFILE</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                                        <button type="submit" class="dropdown-item text-danger fw-bold small">LOGOUT</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex gap-2">
-                            <a class="nav-link f1-font small nav-register-btn border border-danger px-3 py-1"
-                               asp-area="Identity" asp-page="/Account/Login">LOGIN</a>
-
-                            <a class="nav-link f1-font small nav-register-btn border border-danger px-3 py-1"
-                               asp-area="Identity" asp-page="/Account/Register">REGISTER</a>
-                        </div>
-                    }
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -205,22 +197,24 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
+    <script>
+        function showF1Toast(message, isError = false) {
+            var toastEl = document.getElementById('f1Toast');
+            var toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = message;
+
+            toastEl.style.borderLeftColor = isError ? "orange" : "#e10600";
+
+            var toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+        }
+    </script>
+
     @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
     {
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                var toastEl = document.getElementById('f1Toast');
-                var msg = "@(TempData["SuccessMessage"] ?? TempData["ErrorMessage"])";
-                var isError = @(TempData["ErrorMessage"] != null ? "true" : "false");
-
-                document.getElementById('toastMessage').innerText = msg;
-
-                if (isError) {
-                    toastEl.style.borderLeftColor = "orange"; // Или друг цвят за грешка
-                }
-
-                var toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-                toast.show();
+                showF1Toast("@(TempData["SuccessMessage"] ?? TempData["ErrorMessage"])", @(TempData["ErrorMessage"] != null ? "true" : "false"));
             });
         </script>
     }

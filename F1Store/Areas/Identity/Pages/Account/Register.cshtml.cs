@@ -104,7 +104,8 @@ namespace F1Store.Areas.Identity.Pages.Account
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    Address = Input.Address
+                    Address = Input.Address,
+                    PhoneNumber = Input.PhoneNumber
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

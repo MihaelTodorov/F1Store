@@ -4,6 +4,7 @@ using F1Store.Infrastructure.Data;
 using F1Store.Models.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -33,8 +34,7 @@ namespace F1Store.Controllers
         public IActionResult Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId))
-                return Challenge();
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
 
             var items = _cartService.GetCart(userId)
                 .Select(ci => new CartItemVM
@@ -55,91 +55,79 @@ namespace F1Store.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Add(int productId, int quantity = 1)
+        public IActionResult AddAjax(int productId, int quantity = 1)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Challenge(); // Пренасочва към Login, точно като във Favorites
-            }
+                return Unauthorized(new { message = "Моля, влезте в профила си." });
 
             if (quantity < 1) quantity = 1;
 
             var product = _context.Products.FirstOrDefault(p => p.Id == productId);
             if (product == null)
-            {
-                TempData["ErrorMessage"] = "Product not found.";
-                return RedirectToAction("Index", "Product");
-            }
+                return NotFound(new { message = "Продуктът не е намерен." });
 
             var alreadyInCart = _context.CartItems
                 .Where(ci => ci.UserId == userId && ci.ProductId == productId)
-                .Select(ci => ci.Quantity)
-                .FirstOrDefault();
+                .Sum(ci => ci.Quantity);
 
             if (product.Quantity <= 0)
-            {
-                TempData["ErrorMessage"] = "This product is out of stock.";
-                return RedirectToAction("Index", "Product");
-            }
+                return BadRequest(new { message = "Продуктът е изчерпан." });
 
             if (alreadyInCart + quantity > product.Quantity)
-            {
-                TempData["ErrorMessage"] = $"You already have {alreadyInCart} in your cart. Only {product.Quantity} total are available.";
-                return RedirectToAction("Index", "Product");
-            }
+                return BadRequest(new { message = $"Налични са само {product.Quantity} бройки." });
 
             var ok = _cartService.Add(productId, userId, quantity);
-            if (!ok)
+
+            if (ok)
             {
-                TempData["ErrorMessage"] = "Could not add item (stock changed).";
-                return RedirectToAction("Index", "Product");
+                // ВАЖНО: Тук сумираме всички Quantity, вместо просто да броим редовете
+                var totalItemsCount = _cartService.GetCart(userId).Sum(ci => ci.Quantity);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "BOX BOX! Добавено в количката.",
+                    count = totalItemsCount // Вече ще връща реалната бройка (напр. 9)
+                });
             }
 
-            TempData["SuccessMessage"] = "Added to cart.";
+            return BadRequest(new { message = "Грешка при добавяне." });
+        }
 
-            // Връщаме към списъка с продукти, точно както направихме с Favorites
+
+        // Стандартен Add (за всеки случай, ако някъде не ползваш Ajax)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Add(int productId, int quantity = 1)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
+
+            var ok = _cartService.Add(productId, userId, quantity);
+            if (!ok) TempData["ErrorMessage"] = "Грешка при добавяне.";
+            else TempData["SuccessMessage"] = "Добавено!";
+
             return RedirectToAction("Index", "Product");
         }
 
-        // Добавете тези private полета най-отгоре в класа, ако ги няма:
-        // private readonly IProductService _productService;
-        // private readonly IOrderService _orderService;
-
         [HttpPost]
+        [ActionName("DirectCheckout")]
         [ValidateAntiForgeryToken]
-        public IActionResult DirectCheckout(int productId)
+        public IActionResult Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Challenge();
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
 
-            // 1. Вземаме продукта (Ползваме точното име от твоя IProductService)
-            var product = _productService.GetProductById(productId);
+            var ok = _orderService.CreateFromCart(userId);
+            if (!ok) return RedirectToAction(nameof(Index));
 
-            if (product == null || product.Quantity <= 0)
-            {
-                TempData["ErrorMessage"] = "Product is out of stock.";
-                return RedirectToAction("Index", "Product");
-            }
+            var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
+            if (groupId == null) return RedirectToAction(nameof(Index));
 
-            // 2. СЪЩЕСТВЕНО: Използваме метода Create, който НЕ пипа количката
-            // Този метод в твоя OrderService добавя само този продукт в таблица Orders
-            var success = _orderService.Create(productId, userId, 1);
-
-            if (!success)
-            {
-                TempData["ErrorMessage"] = "Could not process order.";
-                return RedirectToAction("Index", "Product");
-            }
-
-            // 3. Вземаме GroupId на новата поръчка, за да я платим
-            var orderGroupId = _orderService.GetLatestOrderGroupIdByUser(userId);
-
-            // 4. Отиваме към плащане
-            return RedirectToAction("Payment", new { orderGroupId = orderGroupId });
+            return RedirectToAction("Payment", new { orderGroupId = groupId });
         }
 
-        // 2. Страница за въвеждане на данни за карта
         [HttpGet]
         public IActionResult Payment(Guid orderGroupId)
         {
@@ -151,46 +139,18 @@ namespace F1Store.Controllers
 
             var vm = new CartCheckoutSuccessVM
             {
-                OrderGroupId = orderGroupId.ToString().ToUpper(), // Конвертиране към string за VM
+                OrderGroupId = orderGroupId.ToString().ToUpper(),
                 TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m)))
             };
 
             return View(vm);
         }
 
-        // 3. Обработка на плащането и пренасочване към финала
-        [HttpPost]
-        public IActionResult ProcessPayment(Guid orderGroupId)
-        {
-            // Тук плащането се счита за успешно и отиваме към Success екшъна
-            return RedirectToAction("Success", new { orderGroupId = orderGroupId });
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Checkout()
+        public async Task<IActionResult> ProcessPayment(string orderGroupId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
-
-            var cart = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
-            if (!cart.Any()) return RedirectToAction(nameof(Index));
-
-            foreach (var ci in cart)
-            {
-                var product = _context.Products.FirstOrDefault(p => p.Id == ci.ProductId);
-                if (product == null || product.Quantity <= 0) _context.CartItems.Remove(ci);
-                else if (ci.Quantity > product.Quantity) ci.Quantity = product.Quantity;
-            }
-            _context.SaveChanges();
-
-            var ok = _orderService.CreateFromCart(userId);
-            if (!ok) return RedirectToAction(nameof(Index));
-
-            var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
-
-            // Пренасочване към Payment вместо директно към Success
-            return RedirectToAction("Payment", new { orderGroupId = groupId });
+            return RedirectToAction("Success", new { orderGroupId = orderGroupId });
         }
 
         [HttpGet]
@@ -219,71 +179,7 @@ namespace F1Store.Controllers
                 }).ToList()
             };
 
-            // ВАЖНО: Изрично зареждаме преименуваното View
             return View("CartSuccess", vm);
-        }
-
-        // --- Ajax методи и Helper-и ---
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddAjax(int productId, int quantity = 1)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId))
-                return Unauthorized(new { message = "Unauthorized." });
-
-            var product = _context.Products.FirstOrDefault(p => p.Id == productId);
-            if (product == null) return NotFound(new { message = "Product not found." });
-
-            var alreadyInCart = _context.CartItems
-                .Where(ci => ci.UserId == userId && ci.ProductId == productId)
-                .Select(ci => ci.Quantity)
-                .FirstOrDefault();
-
-            if (product.Quantity <= 0 || (alreadyInCart + quantity > product.Quantity))
-                return BadRequest(new { message = "Insufficient stock." });
-
-            var ok = _cartService.Add(productId, userId, quantity);
-            return ok ? Ok(new { message = "Added to cart." }) : BadRequest();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult UpdateQuantityAjax(int cartItemId, int quantity)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
-
-            if (quantity < 1) quantity = 1;
-
-            var item = _context.CartItems.FirstOrDefault(x => x.Id == cartItemId && x.UserId == userId);
-            if (item == null) return BadRequest();
-
-            var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
-            if (product == null) return BadRequest();
-
-            if (quantity > product.Quantity)
-            {
-                if (product.Quantity <= 0)
-                {
-                    _cartService.Remove(cartItemId, userId);
-                    return Ok(new { removed = true, total = _cartService.GetTotal(userId) });
-                }
-                quantity = product.Quantity;
-            }
-
-            _cartService.UpdateQuantity(cartItemId, userId, quantity);
-            var updated = _cartService.GetCart(userId).FirstOrDefault(x => x.Id == cartItemId);
-
-            decimal finalPrice = updated.Price * (1 - updated.Discount / 100m);
-            return Ok(new
-            {
-                quantity = updated.Quantity,
-                subtotal = updated.Quantity * finalPrice,
-                total = _cartService.GetTotal(userId),
-                available = product.Quantity
-            });
         }
 
         [HttpPost]
@@ -295,43 +191,45 @@ namespace F1Store.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private IActionResult RedirectToSafe(string? returnUrl)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ClearEntireCart()
         {
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                return Redirect(returnUrl);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _cartService.Clear(userId);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateQuantity(int cartItemId, int delta)
+        public async Task<IActionResult> UpdateQuantity(int cartItemId, int delta)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
 
-            // 1. Вземаме количката, за да намерим текущото количество на елемента
-            var cart = _cartService.GetCart(userId);
-            var item = cart.FirstOrDefault(x => x.Id == cartItemId);
+            var item = _context.CartItems
+                .Include(ci => ci.Product)
+                .FirstOrDefault(ci => ci.Id == cartItemId && ci.UserId == userId);
 
-            if (item != null)
+            if (item == null) return NotFound();
+
+            int newQuantity = item.Quantity + delta;
+
+            if (newQuantity < 1)
             {
-                // 2. Изчисляваме новото количество
-                int newQuantity = item.Quantity + delta;
-
-                // 3. Викаме твоя сървис (той вече има проверка за наличност и мин. количество)
-                _cartService.UpdateQuantity(cartItemId, userId, newQuantity);
+                _context.CartItems.Remove(item);
+            }
+            else if (newQuantity > item.Product.Quantity)
+            {
+                TempData["ErrorMessage"] = "Няма достатъчна наличност!";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                item.Quantity = newQuantity;
             }
 
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ClearEntireCart() // Кръстих го така, за да е ясно
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Викаме твоя сървис метод Clear
-            _cartService.Clear(userId);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

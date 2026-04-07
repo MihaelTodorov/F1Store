@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace F1Store.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260331210718_InitialMigration")]
+    [Migration("20260405133632_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -234,6 +234,18 @@ namespace F1Store.Infrastructure.Migrations
 
                     b.Property<string>("Picture")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture4")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture5")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")

@@ -1,0 +1,92 @@
+﻿@model F1Store.Infrastructure.Data.Domain.Order
+
+@{
+    ViewData["Title"] = "Order Telemetry";
+}
+
+<div class="container py-4">
+    <div class="f1-card bg-dark border-secondary">
+        <div class="d-flex justify-content-between p-3 bg-black border-bottom border-danger border-3">
+            <div>
+                <h2 class="f1-font text-white mb-0">INVESTIGATION_LOG <span class="text-danger">#@Model.Id</span></h2>
+                <small class="text-secondary">SOURCE: @Model.OrderGroupId</small>
+            </div>
+            <div class="text-end">
+                <span class="text-success blink">●</span> <span class="f1-font text-white-50 small">ACTIVE_DATA_STREAM</span>
+            </div>
+        </div>
+
+        <div class="row g-0">
+            <div class="col-md-5 p-4 bg-white d-flex align-items-center justify-content-center border-end border-dark">
+                <img src="@Model.Product.Picture" class="img-fluid shadow" style="max-height: 320px;" alt="Asset">
+            </div>
+
+            <div class="col-md-7 p-4 bg-dark">
+                <div class="row gy-4">
+                    <div class="col-12 border-start border-danger border-3 ps-3">
+                        <label class="text-secondary f1-font x-small d-block">ASSET_NAME</label>
+                        <h3 class="text-white fw-bolder">@Model.Product.ProductName.ToUpper()</h3> @* Използваме ProductName *@
+                    </div>
+
+                    <div class="col-6">
+                        <div class="p-2 border border-secondary">
+                            <label class="text-secondary f1-font x-small d-block">OPERATOR</label>
+                            <span class="text-white fw-bold">@Model.User.UserName.ToUpper()</span>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="p-2 border border-secondary">
+                            <label class="text-secondary f1-font x-small d-block">TIMESTAMP</label>
+                            <span class="text-danger fw-bold">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="text-center p-3 bg-black border border-secondary">
+                            <label class="text-danger f1-font d-block x-small">QUANTITY</label>
+                            <span class="display-6 fw-bold text-white">@Model.Quantity.ToString("D2")</span>
+                        </div>
+                    </div>
+
+                    <div class="col-8">
+                        <div class="p-3 bg-black border border-danger">
+                            <label class="text-secondary f1-font d-block x-small">GROSS_VALUE</label>
+                            <span class="display-5 fw-bold text-danger">$@((Model.Price * Model.Quantity).ToString("F2"))</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-0 f1-font flex-grow-1">BACK_TO_GRID</a>
+                    <button onclick="window.print()" class="btn btn-danger rounded-0 f1-font flex-grow-1">PRINT_REPORT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .f1-font {
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .x-small {
+        font-size: 0.6rem;
+    }
+
+    .bg-black {
+        background-color: #000;
+    }
+
+    .blink {
+        animation: blinker 1s linear infinite;
+    }
+
+    @@keyframes blinker {
+        50% {
+            opacity: 0;
+        }
+    }
+</style>

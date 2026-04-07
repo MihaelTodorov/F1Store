@@ -28,5 +28,7 @@ namespace F1Store.Core.Contracts
 
         (bool Success, Guid? OrderGroupId, List<(int ProductId, string ProductName, int Requested, int Available, string Action)> Issues)
         TryCheckoutFromCart(string userId);
+
+        Order GetOrderDetails(int id);
     }
 }

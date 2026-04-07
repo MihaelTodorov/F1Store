@@ -28,6 +28,14 @@ namespace F1Store.Infrastructure.Data.Domain
 
         public string Picture { get; set; } = null!;
 
+        public string? Picture2 { get; set; }
+
+        public string? Picture3 { get; set; }
+
+        public string? Picture4 { get; set; }
+
+        public string? Picture5 { get; set; }
+
         [MaxLength(200)]
         public string Description { get; set; } = null!;
 
