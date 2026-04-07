@@ -13,7 +13,6 @@
     </div>
 
     <div class="row justify-content-center">
-        @* Лява колона: Форма за плащане *@
         <div class="col-md-5 p-4 mb-4" style="background: #15151e; border-top: 4px solid #e10600; border-radius: 4px;">
             <h4 class="f1-font mb-4" style="font-size: 1.1rem;">PAYMENT DETAILS</h4>
 
@@ -23,8 +22,7 @@
 
                 <div class="mb-3">
                     <label class="small text-secondary text-uppercase fw-bold mb-1">Cardholder Name</label>
-                    @* Автоматични главни букви и само латиница *@
-                    <input type="text" id="cardName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
+                    <input type="text" name="cardName" id="cardName" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
                            placeholder="NAME ON CARD" required
                            oninput="this.value = this.value.toUpperCase().replace(/[^A-Z\s]/g, '')"
                            style="border-color: #38383f !important;" />
@@ -32,7 +30,7 @@
 
                 <div class="mb-3">
                     <label class="small text-secondary text-uppercase fw-bold mb-1">Card Number</label>
-                    <input type="text" maxlength="19" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
+                    <input type="text" name="cardNumber" maxlength="19" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
                            placeholder="0000 0000 0000 0000" required
                            oninput="this.value = this.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim()"
                            style="border-color: #38383f !important;" />
@@ -41,14 +39,14 @@
                 <div class="row mb-4">
                     <div class="col-6">
                         <label class="small text-secondary text-uppercase fw-bold mb-1">Expiry Date</label>
-                        <input type="text" id="expiryDate" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
+                        <input type="text" id="expiryDate" name="expiryDate" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
                                placeholder="MM/YY" maxlength="5" required
                                style="border-color: #38383f !important;" />
                         <small id="dateError" class="text-danger" style="font-size: 0.75rem;"></small>
                     </div>
                     <div class="col-6">
                         <label class="small text-secondary text-uppercase fw-bold mb-1">CVV</label>
-                        <input type="password" maxlength="3" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
+                        <input type="password" name="cvv" maxlength="3" class="form-control bg-dark text-white border-secondary rounded-0 shadow-none"
                                placeholder="123" required
                                oninput="this.value = this.value.replace(/\D/g, '')"
                                style="border-color: #38383f !important;" />
@@ -59,17 +57,13 @@
                     CONFIRM & PAY @Eur(Model.TotalAmount)
                 </button>
 
-                <div class="text-center mt-4 d-flex align-items-center justify-content-center gap-3"">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/1200px-Visa_2021.svg.png" height="16" class="me-3" alt="Visa Card Logo">
-
+                <div class="text-center mt-4 d-flex align-items-center justify-content-center gap-3">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1200px-PayPal.svg.png" height="18" class="opacity-50">
-
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" height="20" class="opacity-50">
                 </div>
             </form>
         </div>
 
-        @* Дясна колона: Резюме на поръчката *@
         <div class="col-md-3 ms-md-4 p-4" style="background: #1f1f27; border-radius: 4px; height: fit-content;">
             <h4 class="f1-font mb-3" style="font-size: 1rem;">ORDER SUMMARY</h4>
             <div class="d-flex justify-content-between mb-2">
@@ -94,7 +88,6 @@
         const dateInput = document.getElementById('expiryDate').value;
         const dateError = document.getElementById('dateError');
 
-        // Проверка на формата MM/YY
         const parts = dateInput.split('/');
         if(parts.length !== 2 || parts[0].length !== 2 || parts[1].length !== 2) {
             dateError.innerText = "Use MM/YY format";
@@ -116,11 +109,9 @@
                 dateError.innerText = "";
             }
         }
-
         if(!isValid) e.preventDefault();
     };
 
-    // Автоматично добавяне на наклонена черта в датата
     document.getElementById('expiryDate').addEventListener('input', function (e) {
         this.value = this.value.replace(/[^0-9/]/g, '');
         if (this.value.length === 2 && !this.value.includes('/') && e.inputType !== 'deleteContentBackward') {

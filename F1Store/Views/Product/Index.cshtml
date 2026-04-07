@@ -128,11 +128,11 @@
                                         else if (item.Discount > 0)
                                         {
                                             <small class="text-secondary text-decoration-line-through d-block" style="font-size: 0.75rem;">@item.Price.ToString("F2") лв.</small>
-                                            <span class="text-danger fw-bold fs-4 f1-font">@discountedPrice.ToString("F2") лв.</span>
+                                            <span class="text-danger fw-bold fs-4 f1-font">€@discountedPrice.ToString("F2")</span>
                                         }
                                         else
                                         {
-                                            <span class="text-white fw-bold fs-4 f1-font">@item.Price.ToString("F2") лв.</span>
+                                            <span class="text-white fw-bold fs-4 f1-font">€@item.Price.ToString("F2")</span>
                                         }
                                     </div>
 

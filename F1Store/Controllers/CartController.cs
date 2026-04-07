@@ -112,9 +112,24 @@ namespace F1Store.Controllers
         }
 
         [HttpPost]
-        [ActionName("DirectCheckout")]
         [ValidateAntiForgeryToken]
         public IActionResult Checkout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
+
+            var ok = _orderService.CreateFromCart(userId);
+            if (!ok) return RedirectToAction(nameof(Index));
+
+            var groupId = _orderService.GetLatestOrderGroupIdByUser(userId);
+            if (groupId == null) return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Payment", new { orderGroupId = groupId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DirectCheckout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrWhiteSpace(userId)) return Challenge();
@@ -150,6 +165,23 @@ namespace F1Store.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessPayment(string orderGroupId)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var orders = _context.Orders
+                .Include(o => o.Product)
+                .Where(o => o.OrderGroupId == Guid.Parse(orderGroupId) && o.UserId == userId)
+                .ToList();
+
+            foreach (var order in orders)
+            {
+                order.Product.Quantity -= order.Quantity;
+            }
+
+            var cartItems = _context.CartItems.Where(ci => ci.UserId == userId);
+            _context.CartItems.RemoveRange(cartItems);
+
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("Success", new { orderGroupId = orderGroupId });
         }
 
