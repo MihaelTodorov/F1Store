@@ -80,8 +80,8 @@
                         <div class="col-md-4 mb-3">
                             <label asp-for="Price" class="form-label f1-font small text-secondary uppercase">Base Price</label>
                             <div class="input-group">
+                                <span class="input-group-text bg-black border-secondary text-secondary">€</span>
                                 <input asp-for="Price" class="form-control f1-input" step="0.01" />
-                                <span class="input-group-text bg-black border-secondary text-secondary">лв.</span>
                             </div>
                             <span asp-validation-for="Price" class="text-danger x-small"></span>
                         </div>

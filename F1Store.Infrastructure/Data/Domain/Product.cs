@@ -25,7 +25,6 @@ namespace F1Store.Infrastructure.Data.Domain
 
         public virtual Category Category { get; set; } = null!;
 
-
         public string Picture { get; set; } = null!;
 
         public string? Picture2 { get; set; }
