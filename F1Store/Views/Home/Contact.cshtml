@@ -148,7 +148,6 @@
 
 <script type="text/javascript">
     (function() {
-        // Твоят Public Key
         emailjs.init("gmtEXQ9LVkgWAUxxA");
     })();
 
@@ -161,19 +160,16 @@
         btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>SENDING...';
         btn.disabled = true;
 
-        // Параметри според твоя шаблон template_sidu4z8
         const templateParams = {
-            username: "@User.Identity?.Name",     // Използва името от Identity
+            username: "@User.Identity?.Name",
             email: document.getElementById('replyTo').value,
             title: document.getElementById('msgSubject').value,
             message: document.getElementById('msgBody').value,
             time: new Date().toLocaleString('bg-BG')
         };
 
-        // Изпращане чрез твоя Service ID и Template ID
         emailjs.send("service_yxpydzl", "template_sidu4z8", templateParams)
             .then(function() {
-                // Красиво известие при успех
                 Swal.fire({
                     title: 'MESSAGE SENT!',
                     text: 'Your inquiry has been delivered to our support team.',
@@ -189,7 +185,6 @@
                 btn.innerHTML = originalBtnText;
                 btn.disabled = false;
             }, function(error) {
-                // Красиво известие при грешка
                 Swal.fire({
                     title: 'ENGINE FAILURE!',
                     text: 'We could not send your message. Please check the pits (console).',

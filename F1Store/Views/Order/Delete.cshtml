@@ -1,0 +1,70 @@
+﻿@model F1Store.Models.Order.OrderDeleteVM
+
+@{
+    ViewData["Title"] = "CONFIRM TERMINATION";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="card bg-dark text-white shadow-lg border-0" style="max-width: 800px; background-color: #15151e !important; border-radius: 0;">
+
+        <div class="text-center pt-5">
+            <div>
+                <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3rem;"></i>
+            </div>
+            <h1 class="f1-font fw-bold" style="letter-spacing: 2px;">CONFIRM <span class="text-danger">REMOVAL</span></h1>
+            <p class="text-secondary">Are you sure you want to eject this order from the system?</p>
+        </div>
+
+        <div class="card-body px-5">
+            <div class="border border-secondary p-4 mb-4" style="background-color: #1f1f27;">
+                <h6 class="text-secondary f1-font mb-4" style="font-size: 0.8rem;">TECHNICAL DATA: ORDER_ID_#@Model.Id</h6>
+
+                <div class="row mb-3 border-bottom border-secondary pb-2">
+                    <div class="col-4 text-secondary text-uppercase small">User</div>
+                    <div class="col-8 fw-bold text-danger f1-font">@Model.User</div>
+                </div>
+
+                <div class="row mb-3 border-bottom border-secondary pb-2">
+                    <div class="col-4 text-secondary text-uppercase small">Product</div>
+                    <div class="col-8">@Model.Product</div>
+                </div>
+
+                <div class="row mb-3 border-bottom border-secondary pb-2">
+                    <div class="col-4 text-secondary text-uppercase small">Quantity</div>
+                    <div class="col-8">@Model.Quantity Units</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-4 text-secondary text-uppercase small">Total Refund</div>
+                    <div class="col-8 text-white fw-bold">@Model.TotalPrice.ToString("C2")</div>
+                </div>
+            </div>
+
+            <p class="text-center text-secondary small mb-4">
+                <i class="bi bi-info-circle me-1"></i>
+                Proceeding will permanently delete this record and return the items to the inventory.
+            </p>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-flex gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary rounded-0 f1-font flex-grow-1 py-3" style="background-color: #38383f; border: none;">
+                        ABORT ACTION
+                    </a>
+                    <button type="submit" class="btn btn-danger rounded-0 f1-font flex-grow-1 py-3 fw-bold">
+                        CONFIRM DELETION
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-danger" style="height: 5px;"></div>
+    </div>
+</div>
+
+<style>
+    .f1-font {
+        font-family: 'Titillium Web', sans-serif; /* Или твоя специфичен F1 шрифт */
+        text-transform: uppercase;
+    }
+</style>

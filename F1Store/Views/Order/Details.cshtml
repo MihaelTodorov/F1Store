@@ -59,7 +59,17 @@
 
                 <div class="mt-5 d-flex gap-2">
                     <a asp-action="Index" class="btn btn-outline-secondary rounded-0 f1-font flex-grow-1">BACK_TO_GRID</a>
-                    <button onclick="window.print()" class="btn btn-danger rounded-0 f1-font flex-grow-1">PRINT_REPORT</button>
+
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <button onclick="window.print()" class="btn btn-dark rounded-0 f1-font flex-grow-1">
+                            <i class="bi bi-printer me-2"></i>PRINT_REPORT
+                        </button>
+
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger rounded-0 f1-font flex-grow-1">
+                            <i class="bi bi-trash me-2"></i>DELETE_ORDER
+                        </a>
+                    }
                 </div>
             </div>
         </div>

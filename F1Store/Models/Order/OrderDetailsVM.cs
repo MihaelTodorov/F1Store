@@ -3,7 +3,7 @@
     public class OrderDetailsVM
     {
         public int Id { get; set; }
-        public string OrderDate { get; set; } = null!;
+        public DateTime OrderDate { get; set; }
         public string User { get; set; } = null!;
         public string UserId { get; set; } = null!;
         public string Product { get; set; } = null!;

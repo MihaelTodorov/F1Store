@@ -86,7 +86,7 @@ namespace F1Store.Controllers
                 .Select(x => new OrderIndexVM
                 {
                     Id = x.Id,
-                    OrderDate = x.OrderDate.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture),
+                    OrderDate = x.OrderDate,
                     UserId = x.UserId,
                     User = x.User.UserName,
                     ProductId = x.ProductId,
@@ -108,7 +108,7 @@ namespace F1Store.Controllers
             var orders = rawOrders.Select(x => new OrderIndexVM
             {
                 Id = x.Id,
-                OrderDate = x.OrderDate.ToString("dd-MM-yyyy HH:mm", CultureInfo.InvariantCulture),
+                OrderDate = x.OrderDate,
                 UserId = x.UserId,
                 User = x.User?.UserName ?? "Unknown User",
                 ProductId = x.ProductId,
@@ -132,7 +132,7 @@ namespace F1Store.Controllers
             OrderDeleteVM vm = new OrderDeleteVM()
             {
                 Id = order.Id,
-                OrderDate = order.OrderDate.ToString("dd-MM-yyyy HH:mm"),
+                OrderDate = order.OrderDate,
                 User = order.User.UserName,
                 Product = order.Product.ProductName,
                 Picture = order.Product.Picture,
@@ -153,6 +153,8 @@ namespace F1Store.Controllers
             if (order == null) return NotFound();
 
             var product = _productService.GetProductById(order.ProductId);
+
+            // Възстановяване на наличността в склада
             if (product != null)
             {
                 product.Quantity += order.Quantity;
@@ -173,8 +175,11 @@ namespace F1Store.Controllers
                     product.Discount);
             }
 
+            // Изтриване на поръчката
             _orderService.Delete(order.Id);
-            return RedirectToAction(nameof(Index));
+
+            // Показване на изгледа за успешен "Eject" на поръчката
+            return View("OrderDeleteSuccess");
         }
 
         public IActionResult Details(int id)

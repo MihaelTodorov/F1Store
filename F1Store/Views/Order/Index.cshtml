@@ -29,8 +29,9 @@
                     {
                         <tr class="f1-bulk-row">
                             <td class="ps-4 py-3 timestamp-cell">
-                                <div class="text-danger fw-bold">[@Convert.ToDateTime(item.OrderDate).ToString("HH:mm:ss")]</div>
-                                <div class="text-white-50 small">@Convert.ToDateTime(item.OrderDate).ToString("dd.MM.yy")</div>
+                                @* Директно форматираме датата, без конвертиране *@
+                                <div class="text-danger fw-bold">[@item.OrderDate.ToString("HH:mm:ss")]</div>
+                                <div class="text-white-50 small">@item.OrderDate.ToString("dd.MM.yy")</div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">

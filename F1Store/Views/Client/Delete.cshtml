@@ -52,15 +52,15 @@
             </div>
 
             <div class="form-zone text-center p-4">
-                <form asp-action="Delete">
-                    <input type="hidden" asp-for="Id" />
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
 
-                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-center">
-                        <a asp-action="Index" class="btn-f1-cancel">
-                            <i class="fas fa-times me-2"></i> ABORT ACTION
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a asp-action="Index" class="btn btn-secondary rounded-0 f1-font px-4 py-3">
+                            ABORT ACTION
                         </a>
-                        <button type="submit" class="btn-f1-confirm-delete">
-                            <i class="fas fa-user-minus me-2"></i> CONFIRM DELETION
+                        <button type="submit" class="btn btn-danger rounded-0 f1-font px-4 py-3 fw-bold">
+                            CONFIRM DELETION
                         </button>
                     </div>
                 </form>
