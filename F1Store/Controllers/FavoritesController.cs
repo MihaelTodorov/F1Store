@@ -3,6 +3,7 @@ using F1Store.Models.Favorite;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Linq;
 
 namespace F1Store.Controllers
 {
@@ -16,11 +17,10 @@ namespace F1Store.Controllers
             _favoritesService = favoritesService;
         }
 
-        // Страницата "Моите любими"
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var favorites = await _favoritesService.GetUserFavoritesAsync(userId!);
+            var favorites = _favoritesService.GetUserFavorites(userId!);
 
             var viewModel = new FavoriteVM
             {
@@ -37,30 +37,28 @@ namespace F1Store.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(int productId)
+        public IActionResult Add(int productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            await _favoritesService.AddToFavoritesAsync(userId, productId);
+            _favoritesService.AddToFavorites(userId, productId);
             return Json(new { success = true });
         }
 
         [HttpPost]
-        public async Task<IActionResult> Remove(int productId)
+        public IActionResult Remove(int productId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            await _favoritesService.RemoveFromFavoritesAsync(userId, productId);
+            _favoritesService.RemoveFromFavorites(userId, productId);
 
-            // АКО е AJAX (от началната страница) -> върни JSON
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return Json(new { success = true });
             }
 
-            // АКО е обикновено натискане (от страницата Favorites) -> презареди страницата
             return RedirectToAction(nameof(Index));
         }
     }

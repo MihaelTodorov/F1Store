@@ -73,7 +73,7 @@ namespace F1Store.Controllers
                     Price = product.Price,
                     Quantity = product.Quantity,
                     Discount = product.Discount,
-                    IsFavorite = userId != null ? await _favoritesService.IsFavoriteAsync(userId, product.Id) : false
+                    IsFavorite = userId != null ? _favoritesService.IsFavorite(userId, product.Id) : false
                 });
             }
 

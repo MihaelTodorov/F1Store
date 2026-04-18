@@ -1,9 +1,4 @@
 ﻿using F1Store.Infrastructure.Data.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace F1Store.Core.Contracts
 {
@@ -15,5 +10,6 @@ namespace F1Store.Core.Contracts
         bool Remove(int cartItemId, string userId);
         bool Clear(string userId);
         decimal GetTotal(string userId);
+        int GetCartCount(string userId);
     }
 }

@@ -1,7 +1,6 @@
 using F1Store.Core.Contacts;
 using F1Store.Core.Contracts;
 using F1Store.Core.Services;
-using F1Store.Core.Services.F1Store.Services;
 using F1Store.Infrastructure.Data;
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Infrastructure.Data.Infrastructure;

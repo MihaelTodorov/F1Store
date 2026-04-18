@@ -166,5 +166,28 @@ namespace F1Store.Core.Services
         public List<Order> GetOrdersByGroupId(Guid orderGroupId, string userId) => _context.Orders.Where(x => x.OrderGroupId == orderGroupId && x.UserId == userId).OrderBy(x => x.Id).ToList();
         public bool UserHasOrders(string userId) => _context.Orders.Any(o => o.UserId == userId);
         public Order GetOrderDetails(int id) => _context.Orders.Include(o => o.Product).Include(o => o.User).FirstOrDefault(o => o.Id == id);
+
+        public bool FinalizePayment(Guid orderGroupId, string userId)
+        {
+            var orders = _context.Orders
+                .Include(o => o.Product)
+                .Where(o => o.OrderGroupId == orderGroupId && o.UserId == userId)
+                .ToList();
+
+            if (!orders.Any()) return false;
+
+            foreach (var order in orders)
+            {
+                if (order.Product != null)
+                {
+                    order.Product.Quantity -= order.Quantity;
+                }
+            }
+
+            var cartItems = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
+            _context.CartItems.RemoveRange(cartItems);
+
+            return _context.SaveChanges() > 0;
+        }
     }
 }

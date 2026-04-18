@@ -11,56 +11,53 @@ using Microsoft.EntityFrameworkCore;
 
 namespace F1Store.Core.Services
 {
-    namespace F1Store.Services
+    public class FavoritesService : IFavoritesService
     {
-        public class FavoritesService : IFavoritesService
+        private readonly ApplicationDbContext _context;
+
+        public FavoritesService(ApplicationDbContext context)
         {
-            private readonly ApplicationDbContext _context;
+            _context = context;
+        }
 
-            public FavoritesService(ApplicationDbContext context)
-            {
-                _context = context;
-            }
+        public IEnumerable<Favorite> GetUserFavorites(string userId)
+        {
+            return _context.Favorites
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Product)
+                .ToList(); // Синхронно извличане
+        }
 
-            public async Task<IEnumerable<Favorite>> GetUserFavoritesAsync(string userId)
+        public void AddToFavorites(string userId, int productId)
+        {
+            if (!IsFavorite(userId, productId))
             {
-                return await _context.Favorites
-                    .Where(f => f.UserId == userId)
-                    .Include(f => f.Product)
-                    .ToListAsync();
-            }
-
-            public async Task AddToFavoritesAsync(string userId, int productId)
-            {
-                if (!await IsFavoriteAsync(userId, productId))
+                var favorite = new Favorite
                 {
-                    var favorite = new Favorite
-                    {
-                        UserId = userId,
-                        ProductId = productId
-                    };
-                    _context.Favorites.Add(favorite);
-                    await _context.SaveChangesAsync();
-                }
+                    UserId = userId,
+                    ProductId = productId
+                };
+                _context.Favorites.Add(favorite);
+                _context.SaveChanges(); // Синхронно записване
             }
+        }
 
-            public async Task RemoveFromFavoritesAsync(string userId, int productId)
+        public void RemoveFromFavorites(string userId, int productId)
+        {
+            var favorite = _context.Favorites
+                .FirstOrDefault(f => f.UserId == userId && f.ProductId == productId);
+
+            if (favorite != null)
             {
-                var favorite = await _context.Favorites
-                    .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
-
-                if (favorite != null)
-                {
-                    _context.Favorites.Remove(favorite);
-                    await _context.SaveChangesAsync();
-                }
+                _context.Favorites.Remove(favorite);
+                _context.SaveChanges();
             }
+        }
 
-            public async Task<bool> IsFavoriteAsync(string userId, int productId)
-            {
-                return await _context.Favorites
-                    .AnyAsync(f => f.UserId == userId && f.ProductId == productId);
-            }
+        public bool IsFavorite(string userId, int productId)
+        {
+            return _context.Favorites
+                .Any(f => f.UserId == userId && f.ProductId == productId);
         }
     }
 }

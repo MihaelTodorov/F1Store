@@ -30,5 +30,7 @@ namespace F1Store.Core.Contracts
         TryCheckoutFromCart(string userId);
 
         Order GetOrderDetails(int id);
+
+        bool FinalizePayment(Guid orderGroupId, string userId);
     }
 }

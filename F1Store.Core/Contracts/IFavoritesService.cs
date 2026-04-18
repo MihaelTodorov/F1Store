@@ -9,9 +9,9 @@ namespace F1Store.Core.Contracts
 {
     public interface IFavoritesService
     {
-        Task<IEnumerable<Favorite>> GetUserFavoritesAsync(string userId);
-        Task AddToFavoritesAsync(string userId, int productId);
-        Task RemoveFromFavoritesAsync(string userId, int productId);
-        Task<bool> IsFavoriteAsync(string userId, int productId);
+        IEnumerable<Favorite> GetUserFavorites(string userId);
+        void AddToFavorites(string userId, int productId);
+        void RemoveFromFavorites(string userId, int productId);
+        bool IsFavorite(string userId, int productId);
     }
 }

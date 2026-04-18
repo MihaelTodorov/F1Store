@@ -21,5 +21,8 @@ namespace F1Store.Infrastructure.Data.Domain
         [Required]
         [MaxLength(50)]
         public string Address { get; set; } = null!;
+
+        public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+        public virtual ICollection<Favorite> Favorites { get; set; } = new HashSet<Favorite>();
     }
 }

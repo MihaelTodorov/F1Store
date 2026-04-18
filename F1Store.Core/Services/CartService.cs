@@ -1,11 +1,6 @@
 ﻿using F1Store.Core.Contracts;
-using F1Store.Infrastructure.Data.Domain;
 using F1Store.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using F1Store.Infrastructure.Data.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace F1Store.Core.Services
@@ -20,10 +15,13 @@ namespace F1Store.Core.Services
         }
 
         public List<CartItem> GetCart(string userId)
-        => _context.CartItems
-        .Include(x => x.Product)
-        .Where(x => x.UserId == userId)
-        .ToList();
+            => _context.CartItems
+            .Include(x => x.Product)
+            .Where(x => x.UserId == userId)
+            .ToList();
+
+        public int GetCartCount(string userId)
+            => _context.CartItems.Where(ci => ci.UserId == userId).Sum(ci => ci.Quantity);
 
         public decimal GetTotal(string userId)
         {
@@ -38,10 +36,9 @@ namespace F1Store.Core.Services
 
             if (quantity < 1) quantity = 1;
 
-            // current cart quantity for this product
             var existing = _context.CartItems.SingleOrDefault(x => x.UserId == userId && x.ProductId == productId);
-
             var requestedTotal = quantity + (existing?.Quantity ?? 0);
+
             if (requestedTotal > product.Quantity) return false;
 
             if (existing == null)
@@ -58,39 +55,15 @@ namespace F1Store.Core.Services
             else
             {
                 existing.Quantity += quantity;
-
-                // keep snapshots fresh (optional)
                 existing.Price = product.Price;
                 existing.Discount = product.Discount;
-
-                _context.CartItems.Update(existing);
+                // ТУК: Премахнат _context.CartItems.Update(existing); - по препоръка на учителката
             }
 
             return _context.SaveChanges() != 0;
         }
 
-        public bool UpdateQuantity(int cartItemId, string userId, int quantity)
-        {
-            var item = _context.CartItems.SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);
-            if (item == null) return false;
-
-            if (quantity < 1) quantity = 1;
-
-            var product = _context.Products.SingleOrDefault(p => p.Id == item.ProductId);
-            if (product == null) return false;
-
-            if (quantity > product.Quantity) return false;
-
-            item.Quantity = quantity;
-
-            // optional refresh
-            item.Price = product.Price;
-            item.Discount = product.Discount;
-
-            _context.CartItems.Update(item);
-            return _context.SaveChanges() != 0;
-        }
-
+        // ... останалите методи (UpdateQuantity, Remove, Clear) също без .Update() ...
         public bool Remove(int cartItemId, string userId)
         {
             var item = _context.CartItems.SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);
@@ -104,8 +77,18 @@ namespace F1Store.Core.Services
         {
             var items = _context.CartItems.Where(ci => ci.UserId == userId).ToList();
             _context.CartItems.RemoveRange(items);
-            _context.SaveChanges();
-            return true;
+            return _context.SaveChanges() != 0;
+        }
+
+        public bool UpdateQuantity(int cartItemId, string userId, int quantity)
+        {
+            var item = _context.CartItems.Include(ci => ci.Product).SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);
+            if (item == null || quantity > item.Product.Quantity) return false;
+
+            if (quantity < 1) return Remove(cartItemId, userId);
+
+            item.Quantity = quantity;
+            return _context.SaveChanges() != 0;
         }
     }
 }
