@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Infrastructure.Data;
 using F1Store.Core.Contracts;
@@ -25,7 +24,7 @@ namespace F1Store.Core.Services
             return _context.Favorites
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Product)
-                .ToList(); // Синхронно извличане
+                .ToList(); 
         }
 
         public void AddToFavorites(string userId, int productId)
@@ -38,7 +37,7 @@ namespace F1Store.Core.Services
                     ProductId = productId
                 };
                 _context.Favorites.Add(favorite);
-                _context.SaveChanges(); // Синхронно записване
+                _context.SaveChanges(); 
             }
         }
 

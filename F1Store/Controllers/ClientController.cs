@@ -51,8 +51,6 @@ namespace F1Store.Controllers
 
             return this.View(users);
         }
-
-        // GET: Client/Delete/id
         [Authorize(Roles = "Administrator")]
         public ActionResult Delete(string id)
         {
@@ -77,7 +75,6 @@ namespace F1Store.Controllers
             return View(userToDelete);
         }
 
-        // POST: Client/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
@@ -90,22 +87,16 @@ namespace F1Store.Controllers
             {
                 return NotFound();
             }
-
-            // 1. ПРОВЕРКА ЗА ПОРЪЧКИ
             bool hasOrders = _context.Orders.Any(o => o.UserId == id);
 
             if (hasOrders)
             {
-                // Показваме специалния изглед за забрана, който създадохме
                 return View("DeleteDenied");
             }
-
-            // 2. АКО НЯМА ПОРЪЧКИ - ТРИЕМ
             IdentityResult result = await _userManager.DeleteAsync(user);
 
             if (result.Succeeded)
             {
-                // Пренасочваме към Success изгледа в същата папка
                 return RedirectToAction(nameof(Success));
             }
 
@@ -124,7 +115,6 @@ namespace F1Store.Controllers
             return View();
         }
 
-        // Празни методи за детайли, създаване и редакция (могат да се развият по-късно)
         public ActionResult Details(int id) => View();
         public ActionResult Create() => View();
         public ActionResult Edit(int id) => View();

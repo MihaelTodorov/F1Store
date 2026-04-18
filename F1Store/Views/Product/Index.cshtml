@@ -178,7 +178,7 @@
 </div>
 
 <style>
-    /* 1. Скриваме оригиналните селекти и Choices контейнера, докато не зареди */
+    
     .filter-select {
         display: none !important;
     }
@@ -188,7 +188,7 @@
         transition: opacity 0.2s ease;
     }
 
-    /* 2. ПЪЛНО премахване на скролбара от дропдаун менютата */
+    
     .choices__list--dropdown,
     .choices__list--dropdown .choices__list {
         scrollbar-width: none !important;
@@ -321,7 +321,6 @@
             const teamChoices = new Choices('#teamFilter', choicesOptions);
             const categoryChoices = new Choices('#categoryFilter', choicesOptions);
 
-            // Показваме филтрите веднага след инициализация, за да няма премигване
             $('.choices').css('opacity', '1');
 
             const urlParams = new URLSearchParams(window.location.search);

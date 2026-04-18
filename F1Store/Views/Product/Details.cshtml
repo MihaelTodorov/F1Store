@@ -23,7 +23,7 @@
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
-    /* Галерия */
+    
     .thumb-list {
         display: flex;
         flex-direction: column;
@@ -65,7 +65,7 @@
         image-rendering: -webkit-optimize-contrast;
     }
 
-    /* Цени */
+    
     .price-box {
         background: rgba(255,255,255,0.02);
         padding: 20px;
@@ -105,7 +105,7 @@
         border-radius: 2px;
     }
 
-    /* Инфо секция - ЦЕНТРИРАНА */
+    
     .top-info-section {
         text-align: center;
         margin-bottom: 25px;
@@ -133,7 +133,7 @@
         letter-spacing: 1.5px;
     }
 
-    /* Бутони и Quantity */
+    
     .btn-f1 {
         text-transform: uppercase;
         font-weight: 800;
@@ -286,7 +286,7 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-        // Конфигуриране на toastr за долу-дясно
+        
         toastr.options = { "positionClass": "toast-bottom-right" };
 
         function updateMainImg(url, el) {
@@ -316,11 +316,11 @@
                 syncQty(parseInt($(this).val()));
             });
 
-            // ADD TO CART Логика с твоя дизайн на кода
+            
             $('.cart-ajax-btn').on('click', function() {
                 const btn = $(this);
                 const productId = btn.data('id');
-                const qty = $('#qtyNumber').val(); // добавяме и бройката
+                const qty = $('#qtyNumber').val(); 
 
                 $.post('/Cart/AddAjax', { productId: productId, quantity: qty, __RequestVerificationToken: token }, function(res) {
                     if (res.success) {
@@ -330,7 +330,7 @@
                 });
             });
 
-            // BUY IT NOW Логика
+            
             $('#buyNowForm').on('submit', function(e) {
                 e.preventDefault();
                 const form = this;

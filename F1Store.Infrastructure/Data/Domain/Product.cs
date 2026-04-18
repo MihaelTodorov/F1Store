@@ -35,7 +35,7 @@ namespace F1Store.Infrastructure.Data.Domain
 
         public string? Picture5 { get; set; }
 
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string Description { get; set; } = null!;
 
         [Range(0, 5000)]

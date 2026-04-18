@@ -78,7 +78,7 @@ namespace F1Store.Core.Services
                 _context.Orders.Add(order);
             }
 
-            // ПРЕМАХНАТО: _context.CartItems.RemoveRange(cartItems);
+            
 
             return _context.SaveChanges() != 0;
         }
@@ -140,7 +140,7 @@ namespace F1Store.Core.Services
                 _context.Orders.Add(order);
             }
 
-            // ПРЕМАХНАТО: _context.CartItems.RemoveRange(cartItems);
+            
 
             var saved = _context.SaveChanges() > 0;
 

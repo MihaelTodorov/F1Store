@@ -1,4 +1,5 @@
-﻿using F1Store.Core.Contracts;
+﻿using System;
+using F1Store.Core.Contracts;
 using F1Store.Infrastructure.Data.Domain;
 using F1Store.Models.Order;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace F1Store.Controllers
             _orderService = orderService;
         }
 
-        // GET: Order/Create/5
+        
         public ActionResult Create(int id)
         {
             Product product = _productService.GetProductById(id);
@@ -41,7 +42,7 @@ namespace F1Store.Controllers
             return View(order);
         }
 
-        // POST: Order/Create
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(OrderCreateVM bindingModel)
@@ -68,7 +69,7 @@ namespace F1Store.Controllers
             return View(bindingModel);
         }
 
-        // GET: Order/Success
+        
         public ActionResult Success(int productId, int qty)
         {
             return View();
@@ -154,7 +155,7 @@ namespace F1Store.Controllers
 
             var product = _productService.GetProductById(order.ProductId);
 
-            // Възстановяване на наличността в склада
+            
             if (product != null)
             {
                 product.Quantity += order.Quantity;
@@ -175,10 +176,10 @@ namespace F1Store.Controllers
                     product.Discount);
             }
 
-            // Изтриване на поръчката
+            
             _orderService.Delete(order.Id);
 
-            // Показване на изгледа за успешен "Eject" на поръчката
+            
             return View("OrderDeleteSuccess");
         }
 

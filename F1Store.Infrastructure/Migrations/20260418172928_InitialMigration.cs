@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace F1Store.Infrastructure.Migrations
 {
-    /// <inheritdoc />
-    public partial class InitialMigrations : Migration
+    
+    public partial class InitialMigration : Migration
     {
-        /// <inheritdoc />
+        
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -199,7 +199,7 @@ namespace F1Store.Infrastructure.Migrations
                     Picture3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Picture4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Picture5 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
@@ -380,7 +380,7 @@ namespace F1Store.Infrastructure.Migrations
                 column: "TeamId");
         }
 
-        /// <inheritdoc />
+        
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

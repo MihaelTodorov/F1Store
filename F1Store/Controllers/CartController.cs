@@ -2,6 +2,7 @@
 using F1Store.Models.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace F1Store.Controllers
@@ -72,10 +73,6 @@ namespace F1Store.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // ВАЖНО: Тук трябва да извикаш метод от OrderService, 
-            // който да намали наличностите и да изчисти количката.
-            // НЕ ползвай _context директно тук!
-
             var ok = _orderService.FinalizePayment(Guid.Parse(orderGroupId), userId!);
 
             return RedirectToAction("Success", new { orderGroupId = orderGroupId });
@@ -113,6 +110,69 @@ namespace F1Store.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _cartService.Clear(userId!);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Checkout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Challenge();
+
+            var result = _orderService.TryCheckoutFromCart(userId);
+
+            if (!result.Success || result.OrderGroupId == null)
+            {
+                TempData["Error"] = "Има проблем с наличността на някои продукти.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var model = new F1Store.Models.Cart.CartCheckoutSuccessVM
+            {
+                OrderGroupId = result.OrderGroupId.ToString(),
+                TotalAmount = _cartService.GetTotal(userId)
+            };
+
+            return View("Payment", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DirectCheckout(int productId, int quantity = 1)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId)) return Unauthorized();
+
+            _cartService.Add(productId, userId, quantity);
+
+            return RedirectToAction(nameof(Checkout));
+        }
+
+        [HttpGet]
+        public IActionResult Success(Guid orderGroupId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orders = _orderService.GetOrdersByGroupId(orderGroupId, userId);
+
+            if (orders == null || !orders.Any())
+                return RedirectToAction(nameof(Index));
+
+            var first = orders.First();
+            var vm = new CartCheckoutSuccessVM
+            {
+                OrderGroupId = orderGroupId.ToString().ToUpper(),
+                OrderDate = first.OrderDate.ToString("dd MMM yyyy, HH:mm", CultureInfo.InvariantCulture),
+                TotalAmount = orders.Sum(o => o.Quantity * (o.Price * (1 - o.Discount / 100m))),
+                Items = orders.Select(o => new CartCheckoutSuccessItemVM
+                {
+                    ProductId = o.ProductId,
+                    ProductName = o.Product.ProductName,
+                    Picture = o.Product.Picture,
+                    Quantity = o.Quantity,
+                    UnitPrice = o.Price,
+                    Discount = o.Discount
+                }).ToList()
+            };
+
+            return View("CartSuccess", vm);
         }
     }
 }

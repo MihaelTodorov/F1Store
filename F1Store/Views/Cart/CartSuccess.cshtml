@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Order completed";
 
-    // Помощна функция за форматиране на валута
+    
     string Eur(decimal x) => $"{x:0.00} €";
 }
 
@@ -373,7 +373,6 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@@emailjs/browser@3/dist/email.min.js"></script>
 <script type="text/javascript">
     (function() {
-        // Инициализация - двойно @@, за да не го мисли Razor за C# променлива
         emailjs.init("gmtEXQ9LVkgWAUxxA");
     })();
 
@@ -384,10 +383,10 @@
             <text>productsSummary += "🏎️ @item.ProductName (x@item.Quantity) - @Eur(item.Subtotal)\\n";</text>
     }
 
-        // Данни за КЛИЕНТА
+        
         const clientParams = {
             user_name: "@User.Identity?.Name",
-            // ПРЕМАХВАМЕ текста "user_email: " от стойността!
+            
             user_email: "@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value",
             order_id: "@Model.OrderGroupId",
             products_summary: productsSummary,
@@ -395,9 +394,9 @@
             message: "Thank you for your order at F1 Store!"
         };
 
-       // Данни за АДМИНА (Теб)
+       
         const adminParams = {
-            // ТУК Е КЛЮЧЪТ: Слагаме твоя имейл в полето, което шаблонът чете
+            
             user_email: "m.todorov2905@gmail.com",
             user_name: "ADMIN NOTIFICATION",
             order_id: "@Model.OrderGroupId",
@@ -406,7 +405,7 @@
             message: "Клиентът @User.Identity?.Name току-що направи поръчка."
         };
 
-        // 1. Изпращане до КЛИЕНТА (ползва template_127whdh)
+        
         emailjs.send("service_yxpydzl", "template_127whdh", clientParams)
             .then(function() {
                 console.log('Client notified!');
@@ -414,7 +413,7 @@
                 console.error('Client email failed:', error);
             });
 
-        // Изпращане до АДМИНА
+        
         emailjs.send("service_yxpydzl", "template_127whdh", adminParams)
             .then(function() {
                 console.log('Admin notified successfully!');

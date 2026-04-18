@@ -202,7 +202,7 @@ namespace F1Store.Controllers
 
         public IActionResult Success() => View("ProductSuccess");
 
-        // Помощен метод за зареждане на Dropdowns (за да не повтаряме код)
+        
         private void LoadDropdowns(dynamic vm)
         {
             vm.Teams = _teamService.GetTeams().Select(x => new TeamPairVM { Id = x.Id, Name = x.TeamName }).ToList();

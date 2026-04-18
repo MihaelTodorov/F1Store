@@ -7,7 +7,7 @@ namespace F1Store.Controllers
 {
     public class StatisticController : Controller
     {
-        // GET: StatisticController
+        
         private readonly IStatisticsService statisticsService;
 
         public StatisticController(IStatisticsService statisticsService)
@@ -27,19 +27,19 @@ namespace F1Store.Controllers
             return View(statistics);
         }
 
-        // GET: StatisticController/Details/5
+        
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: StatisticController/Create
+        
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: StatisticController/Create
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
@@ -54,13 +54,13 @@ namespace F1Store.Controllers
             }
         }
 
-        // GET: StatisticController/Edit/5
+        
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: StatisticController/Edit/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -75,13 +75,13 @@ namespace F1Store.Controllers
             }
         }
 
-        // GET: StatisticController/Delete/5
+        
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: StatisticController/Delete/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

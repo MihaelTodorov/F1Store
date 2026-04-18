@@ -95,7 +95,7 @@
         margin-top: 15px;
     }
 
-    /* Hero Styling */
+    
     .custom-f1-clip {
         clip-path: polygon(0 0, 100% 0, 100% 92%, 0% 100%);
     }
@@ -112,7 +112,7 @@
         background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 100%);
     }
 
-    /* Team Cards Base */
+    
     .f1-card {
         text-decoration: none !important;
         display: block;
@@ -123,7 +123,7 @@
         border-bottom: 4px solid #333;
         transition: all 0.3s ease;
         border-radius: 6px;
-        min-height: 280px; /* Още по-високи карти за масивния вид */
+        min-height: 280px; 
     }
 
     .f1-card-inner {
@@ -131,15 +131,15 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between; /* Разпределя пространството равномерно */
+        justify-content: space-between; 
         position: relative;
         z-index: 3;
         height: 100%;
     }
 
-    /* Контейнерът, който оправя подравняването */
+    
     .logo-container {
-        height: 120px; /* Твърда височина - всички лога ще се центрират тук */
+        height: 120px; 
         width: 100%;
         display: flex;
         align-items: center;
@@ -148,7 +148,7 @@
     }
 
     .team-logo {
-        max-width: 200px; /* МНОГО по-големи лога (от 160px на 200px) */
+        max-width: 200px; 
         max-height: 110px;
         object-fit: contain;
         transition: transform 0.4s ease;
@@ -160,12 +160,12 @@
     }
 
     .f1-card-inner h5 {
-        font-size: 1.15rem; /* По-голям шрифт за имената (от 0.95 на 1.15) */
+        font-size: 1.15rem; 
         font-weight: 700;
         color: white;
         margin: 0 0 10px 0;
         letter-spacing: 1px;
-        white-space: nowrap; /* Гарантира 1 ред */
+        white-space: nowrap; 
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -180,7 +180,7 @@
         transform: translateY(10px);
     }
 
-    /* Rising Glow Layer */
+    
     .f1-card::after {
         content: "";
         position: absolute;
@@ -192,7 +192,7 @@
         transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* --- DESKTOP --- */
+    
     @@media (min-width: 992px) {
         .team-logo {
             filter: grayscale(1) brightness(0.7);
@@ -224,7 +224,7 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        /* Rising Glow Colors */
+        
         .red-bull:hover::after {
             background: linear-gradient(0deg, rgba(6,0,239,0.2) 0%, transparent 100%);
         }
@@ -314,7 +314,7 @@
         }
     }
 
-    /* --- MOBILE --- */
+    
     @@media (max-width: 991px) {
         .custom-f1-clip {
             clip-path: none;
@@ -337,7 +337,7 @@
         .team-logo {
             max-width: 140px;
         }
-        /* Малко по-малки за мобилни, за да не излизат */
+        
         .f1-card-inner h5 {
             font-size: 0.9rem;
         }

@@ -57,13 +57,13 @@ namespace F1Store.Core.Services
                 existing.Quantity += quantity;
                 existing.Price = product.Price;
                 existing.Discount = product.Discount;
-                // ТУК: Премахнат _context.CartItems.Update(existing); - по препоръка на учителката
+                
             }
 
             return _context.SaveChanges() != 0;
         }
 
-        // ... останалите методи (UpdateQuantity, Remove, Clear) също без .Update() ...
+        
         public bool Remove(int cartItemId, string userId)
         {
             var item = _context.CartItems.SingleOrDefault(x => x.Id == cartItemId && x.UserId == userId);

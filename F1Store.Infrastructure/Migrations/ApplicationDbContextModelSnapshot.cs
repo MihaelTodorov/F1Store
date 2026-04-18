@@ -223,8 +223,8 @@ namespace F1Store.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
@@ -451,7 +451,7 @@ namespace F1Store.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("F1Store.Infrastructure.Data.Domain.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Favorites")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -470,7 +470,7 @@ namespace F1Store.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("F1Store.Infrastructure.Data.Domain.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -548,6 +548,13 @@ namespace F1Store.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.ApplicationUser", b =>
+                {
+                    b.Navigation("Favorites");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("F1Store.Infrastructure.Data.Domain.Category", b =>

@@ -13,6 +13,6 @@
         public string ProductName { get; set; } = string.Empty;
         public int Requested { get; set; }
         public int Available { get; set; }
-        public string Action { get; set; } = string.Empty; // "Removed" / "Adjusted"
+        public string Action { get; set; } = string.Empty; 
     }
 }

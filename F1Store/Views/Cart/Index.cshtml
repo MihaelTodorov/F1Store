@@ -138,22 +138,22 @@
 
 <style>
 
-    /* Скриване на системния скролбар за целия документ */
+    
     html, body {
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
     }
 
         body::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
+            display: none; 
         }
 
-    /* Оправяне на Hover ефекта за бутона Clear Cart */
+    
     .hover-opacity-100:hover {
         opacity: 1 !important;
     }
 
-    /* Стилизиране на бутоните за количество */
+    
     .btn-outline-secondary {
         border-color: rgba(255,255,255,0.2) !important;
         min-width: 30px;
@@ -165,7 +165,7 @@
     }
 
     .header-cart-icon {
-        font-size: 4.5rem !important; /* Достатъчно голяма, но не огромна */
+        font-size: 4.5rem !important; 
         filter: drop-shadow(0 0 15px rgba(225, 6, 0, 0.4));
         display: inline-block;
         animation: fadeInDown 0.8s ease-out;
@@ -185,7 +185,7 @@
         border-width: 1px;
     }
 
-    /* Анимация за иконата */
+    
     @@keyframes fadeInDown {
         from {
             opacity: 0;
@@ -198,7 +198,7 @@
         }
     }
 
-    /* Бутони и контроли */
+    
     .btn-danger {
         background-color: #e10600 !important;
         border: none !important;
@@ -223,7 +223,7 @@
         transform: scale(1.1);
     }
 
-    /* Responsive корекции */
+    
     @@media (max-width: 768px) {
         .header-cart-icon {
             font-size: 3.5rem !important;
