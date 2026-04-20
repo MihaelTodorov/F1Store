@@ -2,7 +2,6 @@
 {
     public class FavoriteVM
     {
-        // Използваме списък от обекти за визуализация
         public IEnumerable<FavoriteItemVM> Items { get; set; } = new List<FavoriteItemVM>();
     }
 

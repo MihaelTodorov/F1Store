@@ -21,7 +21,6 @@ namespace F1Store.Infrastructure.Data.Domain
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
-
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
     }

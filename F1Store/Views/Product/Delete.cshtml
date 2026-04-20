@@ -7,7 +7,6 @@
 <div class="container py-5 mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
-            @* Картата с лек стъклен ефект и червена граница *@
             <div class="card bg-dark text-white border-danger shadow-lg rounded-0" style="background: rgba(21, 21, 30, 0.95) !important; backdrop-filter: blur(10px);">
 
                 <div class="card-header bg-danger text-white py-3 border-0">
@@ -22,17 +21,15 @@
                         <span class="text-danger fw-bold uppercase" style="font-size: 0.75rem;">This action cannot be undone.</span>
                     </p>
 
-                    @* --- PRODUCT PREVIEW --- *@
                     <div class="bg-black p-3 border border-secondary mb-4 position-relative">
                         <img src="@Model.Picture" alt="@Model.ProductName" class="img-fluid mb-3" style="max-height: 180px; object-fit: contain;" />
                         <h5 class="text-white f1-font mb-1 text-uppercase" style="font-size: 1rem;">@Model.ProductName</h5>
                         <div class="d-flex justify-content-center gap-2 mt-2">
                             <span class="badge bg-secondary rounded-0 uppercase" style="font-size: 0.7rem;">@Model.TeamName</span>
-                            <span class="text-danger fw-bold">@Model.Price.ToString("F2") лв.</span>
+                            <span class="text-danger fw-bold">@Model.Price.ToString("F2")€</span>
                         </div>
                     </div>
 
-                    @* --- DETAILS LIST --- *@
                     <div class="mb-4">
                         <div class="d-flex justify-content-between border-bottom border-secondary py-2 small">
                             <span class="text-secondary uppercase">Category:</span>

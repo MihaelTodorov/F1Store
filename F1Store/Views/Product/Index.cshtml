@@ -127,12 +127,12 @@
                                         }
                                         else if (item.Discount > 0)
                                         {
-                                            <small class="text-secondary text-decoration-line-through d-block" style="font-size: 0.75rem;">@item.Price.ToString("F2") лв.</small>
-                                            <span class="text-danger fw-bold fs-4 f1-font">€@discountedPrice.ToString("F2")</span>
+                                            <small class="text-secondary text-decoration-line-through d-block" style="font-size: 0.75rem;">@item.Price.ToString("F2")€</small>
+                                            <span class="text-danger fw-bold fs-4 f1-font">@discountedPrice.ToString("F2")€</span>
                                         }
                                         else
                                         {
-                                            <span class="text-white fw-bold fs-4 f1-font">€@item.Price.ToString("F2")</span>
+                                            <span class="text-white fw-bold fs-4 f1-font">@item.Price.ToString("F2")€</span>
                                         }
                                     </div>
 
@@ -310,6 +310,8 @@
 
     <script>
         $(document).ready(function() {
+            const isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
+
             const choicesOptions = {
                 removeItemButton: true,
                 shouldSort: false,
@@ -371,6 +373,11 @@
             toastr.options = { "positionClass": "toast-bottom-right", "progressBar": true };
 
             $('.fav-ajax-btn').on('click', function() {
+                if (!isAuthenticated) {
+                    toastr.warning("Please log in or register to be able to add to favorites!");
+                    return;
+                }
+
                 const btn = $(this);
                 const icon = btn.find('i');
                 const productId = btn.data('id');
@@ -395,6 +402,11 @@
             });
 
             $('.cart-ajax-btn').on('click', function() {
+                if (!isAuthenticated) {
+                    toastr.warning("Please log in or register to be able to add to cart!");
+                    return;
+                }
+
                 const btn = $(this);
                 const productId = btn.data('id');
                 $.post('/Cart/AddAjax', { productId: productId, __RequestVerificationToken: token }, function(res) {

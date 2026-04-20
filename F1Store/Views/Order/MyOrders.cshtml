@@ -33,7 +33,6 @@
                                     <div class="row align-items-center">
                                         <div class="col-md-4">
                                             <h5 class="card-title mb-1 text-truncate">@item.Product</h5>
-                                            @* ТУК Е КОРЕКЦИЯТА ЗА ГРЕШКА CS1503 *@
                                             <small class="text-secondary">Ordered on: @item.OrderDate</small>
                                         </div>
 
@@ -44,7 +43,7 @@
 
                                         <div class="col-md-2 text-center">
                                             <div class="small text-secondary text-uppercase">Price</div>
-                                            <div>@item.Price.ToString("F2") лв.</div>
+                                            <div>@item.Price.ToString("F2")€</div>
                                         </div>
 
                                         <div class="col-md-2 text-center">
@@ -54,7 +53,7 @@
 
                                         <div class="col-md-2 text-end">
                                             <div class="small text-secondary text-uppercase">Total</div>
-                                            <h5 class="text-danger fw-bold mb-0">@item.TotalPrice.ToString("F2") лв.</h5>
+                                            <h5 class="text-danger fw-bold mb-0">@item.TotalPrice.ToString("F2")€</h5>
                                         </div>
                                     </div>
                                 </div>

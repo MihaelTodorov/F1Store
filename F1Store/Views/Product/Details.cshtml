@@ -226,15 +226,15 @@
                     <div>
                         @if (Model.Discount > 0)
                         {
-                            <div class="old-price">€@Model.Price.ToString("F2")</div>
+                            <div class="old-price">@Model.Price.ToString("F2")€</div>
                             <div class="d-flex align-items-center">
-                                <span class="current-price price-discounted">€@discountedPrice.ToString("F2")</span>
+                                <span class="current-price price-discounted">@discountedPrice.ToString("F2")€</span>
                                 <span class="discount-badge">-@Model.Discount.ToString("0.##")% OFF</span>
                             </div>
                         }
                         else
                         {
-                            <div class="current-price price-normal mt-2">€@Model.Price.ToString("F2")</div>
+                            <div class="current-price price-normal mt-2">@Model.Price.ToString("F2")€</div>
                         }
                     </div>
                     <div class="pb-2">
